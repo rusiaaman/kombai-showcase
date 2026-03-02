@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paws & Whiskers — Your Pet's Happy Place</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== Design Tokens ===== */
+    :root {
+      --color-primary: #FA8072;
+      --color-primary-dark: #E8665A;
+      --color-secondary: #E0AB76;
+      --color-background: #FAF0E6;
+      --color-accent: #5B9A8B;
+      --color-accent-light: #7AB8A8;
+      --color-text: #2D2926;
+      --color-text-secondary: #6B6462;
+      --color-surface: #FFFFFF;
+      --color-highlight: #FFE5B4;
+      --color-footer-bg: #2D2926;
+      --color-footer-text: #C5BFB8;
+
+      --font-heading: 'Quicksand', sans-serif;
+      --font-body: 'Source Sans 3', sans-serif;
+
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 2px 8px rgba(45, 41, 38, 0.06);
+      --shadow-md: 0 4px 20px rgba(45, 41, 38, 0.08);
+      --shadow-lg: 0 8px 40px rgba(45, 41, 38, 0.12);
+      --shadow-hover: 0 12px 48px rgba(45, 41, 38, 0.16);
+
+      --spacing-xs: 8px;
+      --spacing-sm: 16px;
+      --spacing-md: 24px;
+      --spacing-lg: 48px;
+      --spacing-xl: 80px;
+      --spacing-2xl: 120px;
+
+      --max-width: 1200px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--color-text);
+      background-color: var(--color-background);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* ===== Typography ===== */
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--color-text);
+    }
+
+    h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); }
+    h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); }
+    h4 { font-size: 1.1rem; }
+
+    p {
+      color: var(--color-text-secondary);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    /* ===== Utilities ===== */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--spacing-md);
+    }
+
+    .section-label {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .section-title {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--color-surface);
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--color-primary);
+      border: 2px solid var(--color-primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--color-primary);
+      color: var(--color-surface);
+      transform: translateY(-2px);
+    }
+
+    .btn-white {
+      background: var(--color-surface);
+      color: var(--color-primary);
+    }
+
+    .btn-white:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* ===== Fade-in animations ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== Floating Paw Decorations ===== */
+    .floating-paw {
+      position: absolute;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    @keyframes floatReverse {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(20px) rotate(-10deg); }
+    }
+
+    /* ===== NAVIGATION ===== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      transition: all var(--transition);
+    }
+
+    .nav.scrolled {
+      background: rgba(250, 240, 230, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 12px 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--spacing-md);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--color-text);
+    }
+
+    .nav-logo svg {
+      width: 32px;
+      height: 32px;
+      color: var(--color-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-heading);
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      transition: color var(--transition);
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--color-primary);
+      border-radius: 2px;
+      transition: width var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--color-primary);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-cta {
+      padding: 10px 24px;
+      font-size: 0.9rem;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .mobile-toggle svg {
+      width: 28px;
+      height: 28px;
+      color: var(--color-text);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 100px;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-xl);
+      align-items: center;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: var(--color-highlight);
+      border-radius: var(--radius-full);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .hero-badge svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .hero h1 {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .hero h1 span {
+      color: var(--color-primary);
+      position: relative;
+    }
+
+    .hero h1 span::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: var(--color-highlight);
+      border-radius: 4px;
+      z-index: -1;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      max-width: 480px;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: var(--spacing-sm);
+      flex-wrap: wrap;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-lg);
+      padding-top: var(--spacing-md);
+      border-top: 1px solid rgba(45, 41, 38, 0.08);
+    }
+
+    .hero-stat-number {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: var(--color-text);
+    }
+
+    .hero-stat-label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .hero-visual {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-image-wrapper {
+      position: relative;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hero-image-wrapper img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+    }
+
+    .hero-blob {
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 110%;
+      height: 110%;
+      z-index: -1;
+    }
+
+    .hero-floating-card {
+      position: absolute;
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 3;
+    }
+
+    .hero-floating-card.card-top {
+      top: -20px;
+      right: 20px;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .hero-floating-card.card-bottom {
+      bottom: 30px;
+      left: -30px;
+      animation: floatReverse 5s ease-in-out infinite;
+    }
+
+    .hero-floating-card .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-floating-card .card-icon.salmon { background: rgba(250, 128, 114, 0.15); color: var(--color-primary); }
+    .hero-floating-card .card-icon.teal { background: rgba(91, 154, 139, 0.15); color: var(--color-accent); }
+
+    .hero-floating-card .card-icon svg { width: 20px; height: 20px; }
+
+    .hero-floating-card .card-text strong {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .hero-floating-card .card-text span {
+      font-size: 0.78rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== WAVE DIVIDERS ===== */
+    .wave-divider {
+      width: 100%;
+      line-height: 0;
+      overflow: hidden;
+    }
+
+    .wave-divider svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ===== SERVICES ===== */
+    .services {
+      position: relative;
+      background: var(--color-surface);
+      padding: var(--spacing-2xl) 0;
+    }
+
+    .services-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .services-header p {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .service-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-xl);
+      align-items: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .service-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .service-row.reverse .service-image {
+      order: 2;
+    }
+
+    .service-row.reverse .service-text {
+      order: 1;
+    }
+
+    .service-image {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition);
+      position: relative;
+    }
+
+    .service-image:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .service-image img {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+    }
+
+    .service-icon-badge {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 52px;
+      height: 52px;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .service-icon-badge svg {
+      width: 24px;
+      height: 24px;
+      color: var(--color-primary);
+    }
+
+    .service-text h3 {
+      margin-bottom: var(--spacing-sm);
+      font-size: 1.6rem;
+    }
+
+    .service-text p {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .service-text .btn {
+      padding: 12px 28px;
+      font-size: 0.9rem;
+    }
+
+    /* ===== PETS ===== */
+    .pets {
+      position: relative;
+      padding: var(--spacing-2xl) 0;
+      background: var(--color-background);
+    }
+
+    .pets-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .pets-header p {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .pets-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spacing-md);
+    }
+
+    .pet-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+
+    .pet-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .pet-card:nth-child(even) {
+      margin-top: var(--spacing-lg);
+    }
+
+    .pet-card-image {
+      position: relative;
+      height: 280px;
+      overflow: hidden;
+    }
+
+    .pet-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition);
+    }
+
+    .pet-card:hover .pet-card-image img {
+      transform: scale(1.05);
+    }
+
+    .pet-card-heart {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition);
+      z-index: 2;
+    }
+
+    .pet-card-heart svg {
+      width: 18px;
+      height: 18px;
+      color: var(--color-primary);
+      transition: all var(--transition);
+    }
+
+    .pet-card-heart:hover {
+      background: var(--color-primary);
+    }
+
+    .pet-card-heart:hover svg {
+      color: var(--color-surface);
+    }
+
+    .pet-card-heart.liked {
+      background: var(--color-primary);
+    }
+
+    .pet-card-heart.liked svg {
+      color: var(--color-surface);
+      fill: var(--color-surface);
+    }
+
+    .pet-card-info {
+      padding: var(--spacing-md);
+    }
+
+    .pet-card-info h4 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.15rem;
+      margin-bottom: 4px;
+    }
+
+    .pet-card-breed {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .pet-card-desc {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    .testimonials {
+      position: relative;
+      padding: var(--spacing-2xl) 0;
+      background: var(--color-surface);
+      overflow: hidden;
+    }
+
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+    }
+
+    .testimonial-card {
+      background: var(--color-background);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-lg) var(--spacing-md);
+      position: relative;
+      transition: all var(--transition);
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .testimonial-quote-mark {
+      font-family: var(--font-heading);
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      opacity: 0.25;
+      line-height: 1;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .testimonial-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-md);
+      font-style: italic;
+    }
+
+    .testimonial-stars {
+      display: flex;
+      gap: 4px;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .testimonial-stars svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-secondary);
+      fill: var(--color-secondary);
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testimonial-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .testimonial-author-name {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .testimonial-author-role {
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== CTA / NEWSLETTER ===== */
+    .cta {
+      padding: var(--spacing-xl) 0 var(--spacing-2xl);
+      background: var(--color-background);
+    }
+
+    .cta-inner {
+      background: var(--color-primary);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-xl) var(--spacing-lg);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+    }
+
+    .cta-inner::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -40px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 50%;
+    }
+
+    .cta h2 {
+      color: var(--color-surface);
+      margin-bottom: var(--spacing-sm);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta p {
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 460px;
+      margin: 0 auto var(--spacing-md);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-form {
+      display: flex;
+      gap: 12px;
+      max-width: 460px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-form input {
+      flex: 1;
+      padding: 14px 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-full);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--color-surface);
+      outline: none;
+      transition: all var(--transition);
+    }
+
+    .cta-form input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .cta-form input:focus {
+      border-color: var(--color-surface);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .cta-form button {
+      white-space: nowrap;
+    }
+
+    .cta-decor {
+      position: absolute;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: var(--color-footer-bg);
+      padding: var(--spacing-xl) 0 var(--spacing-md);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: var(--spacing-xl);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .footer-brand .nav-logo {
+      color: var(--color-surface);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .footer-brand p {
+      color: var(--color-footer-text);
+      font-size: 0.95rem;
+      max-width: 320px;
+    }
+
+    .footer h4 {
+      color: var(--color-surface);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      font-size: 1rem;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      color: var(--color-footer-text);
+      font-size: 0.95rem;
+      transition: color var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--color-primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: var(--spacing-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-bottom p {
+      color: var(--color-footer-text);
+      font-size: 0.85rem;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 16px;
+    }
+
+    .footer-socials a {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+    }
+
+    .footer-socials a svg {
+      width: 18px;
+      height: 18px;
+      color: var(--color-footer-text);
+    }
+
+    .footer-socials a:hover {
+      background: var(--color-primary);
+    }
+
+    .footer-socials a:hover svg {
+      color: var(--color-surface);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: var(--spacing-lg);
+      }
+
+      .hero p { margin: 0 auto var(--spacing-lg); }
+      .hero-actions { justify-content: center; }
+      .hero-stats { justify-content: center; }
+
+      .hero-image-wrapper img { height: 400px; }
+
+      .hero-floating-card.card-bottom { left: 10px; }
+
+      .service-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+      }
+
+      .service-row.reverse .service-image { order: 0; }
+      .service-row.reverse .service-text { order: 0; }
+
+      .pets-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .mobile-toggle { display: block; }
+
+      .hero { padding-top: 80px; min-height: auto; padding-bottom: var(--spacing-xl); }
+
+      .hero-floating-card { display: none; }
+
+      .pets-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .pet-card:nth-child(even) {
+        margin-top: 0;
+      }
+
+      .cta-form {
+        flex-direction: column;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="8" r="2"/>
+          <path d="M12 18c-4 0-7-2-7-5 0-2 1.5-3.5 3.5-3.5S12 11 12 13c0-2 1.5-3.5 3.5-3.5S19 11 19 13c0 3-3 5-7 5z"/>
+        </svg>
+        Paws & Whiskers
+      </a>
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#pets">Adopt</a></li>
+        <li><a href="#testimonials">Reviews</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#pets" class="btn btn-primary nav-cta">Meet Our Friends</a>
+      <button class="mobile-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="hero">
+    <!-- Decorative paw prints -->
+    <svg class="floating-paw" style="top:15%;left:5%;width:60px;animation:float 6s ease-in-out infinite" viewBox="0 0 24 24" fill="currentColor" color="#FA8072">
+      <circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="8" r="2"/>
+      <path d="M12 18c-4 0-7-2-7-5 0-2 1.5-3.5 3.5-3.5S12 11 12 13c0-2 1.5-3.5 3.5-3.5S19 11 19 13c0 3-3 5-7 5z"/>
+    </svg>
+    <svg class="floating-paw" style="top:60%;right:8%;width:45px;animation:floatReverse 7s ease-in-out infinite" viewBox="0 0 24 24" fill="currentColor" color="#E0AB76">
+      <circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="8" r="2"/>
+      <path d="M12 18c-4 0-7-2-7-5 0-2 1.5-3.5 3.5-3.5S12 11 12 13c0-2 1.5-3.5 3.5-3.5S19 11 19 13c0 3-3 5-7 5z"/>
+    </svg>
+    <svg class="floating-paw" style="bottom:20%;left:12%;width:35px;animation:float 8s ease-in-out infinite 1s" viewBox="0 0 24 24" fill="currentColor" color="#5B9A8B">
+      <circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="8" r="2"/>
+      <path d="M12 18c-4 0-7-2-7-5 0-2 1.5-3.5 3.5-3.5S12 11 12 13c0-2 1.5-3.5 3.5-3.5S19 11 19 13c0 3-3 5-7 5z"/>
+    </svg>
+
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-content fade-in">
+          <div class="hero-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            #1 Pet Care in Furryville
+          </div>
+          <h1>Your Pet's<br><span>Happy Place</span></h1>
+          <p>We believe every pet deserves love, care, and the best life possible. From premium nutrition to expert grooming, we're here for every wag, purr, and chirp.</p>
+          <div class="hero-actions">
+            <a href="#pets" class="btn btn-primary">Explore Our Friends</a>
+            <a href="#services" class="btn btn-outline">Our Services</a>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-number">2,500+</div>
+              <div class="hero-stat-label">Happy Pets</div>
+            </div>
+            <div>
+              <div class="hero-stat-number">150+</div>
+              <div class="hero-stat-label">Adoptions</div>
+            </div>
+            <div>
+              <div class="hero-stat-number">4.9★</div>
+              <div class="hero-stat-label">Rating</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual fade-in" style="transition-delay:0.2s">
+          <!-- Decorative blob behind image -->
+          <svg class="hero-blob" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <path d="M440,320Q430,390,365,420Q300,450,235,440Q170,430,115,390Q60,350,55,280Q50,210,90,155Q130,100,190,70Q250,40,315,60Q380,80,420,140Q460,200,450,260Q440,320,440,320Z" fill="rgba(250,128,114,0.08)"/>
+          </svg>
+
+          <div class="hero-image-wrapper">
+            <img src="https://images.pexels.com/photos/8863636/pexels-photo-8863636.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Happy golden retriever dog — Photo by Ahmet Faruk Dalan on Pexels" />
+          </div>
+
+          <!-- Floating cards -->
+          <div class="hero-floating-card card-top">
+            <div class="card-icon salmon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="card-text">
+              <strong>Loved Pets</strong>
+              <span>2,500+ happy families</span>
+            </div>
+          </div>
+
+          <div class="hero-floating-card card-bottom">
+            <div class="card-icon teal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.8 2.655A7 7 0 0 1 8 2c1.5 0 2.7.5 3.5 1.5a5 5 0 0 1 5-1.5c2 .5 3 2 3.5 4s0 4-1.5 5.5L12 18l-6.5-6.5C3.5 9.5 3 7.5 3.5 5.5a5 5 0 0 1 1.3-2.845z"/><path d="M12 18v4"/><path d="M8 22h8"/></svg>
+            </div>
+            <div class="card-text">
+              <strong>Vet Approved</strong>
+              <span>Expert care on-site</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WAVE: Hero → Services ===== -->
+  <div class="wave-divider">
+    <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:80px">
+      <path d="M0,40 C360,100 720,0 1080,60 C1260,80 1380,40 1440,40 L1440,100 L0,100 Z" fill="#FFFFFF"/>
+    </svg>
+  </div>
+
+  <!-- ===== SERVICES ===== -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="services-header fade-in">
+        <div class="section-label">What We Offer</div>
+        <h2 class="section-title">Our Services</h2>
+        <p>Everything your pet needs under one roof — from pampering spa days to expert medical care and gourmet nutrition.</p>
+      </div>
+
+      <!-- Grooming -->
+      <div class="service-row fade-in">
+        <div class="service-image">
+          <div class="service-icon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></svg>
+          </div>
+          <img src="https://images.pexels.com/photos/1436139/pexels-photo-1436139.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Cute wet puppy in bathtub — Photo by Benjamin Lehman on Pexels" />
+        </div>
+        <div class="service-text">
+          <h3>Grooming Spa</h3>
+          <p>Give your furry friend the royal treatment with our professional grooming services. From relaxing baths to breed-specific cuts, our certified groomers ensure your pet looks and feels their absolute best.</p>
+          <a href="#" class="btn btn-outline">Learn More</a>
+        </div>
+      </div>
+
+      <!-- Veterinary -->
+      <div class="service-row reverse fade-in">
+        <div class="service-image">
+          <div class="service-icon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.655A7 7 0 0 1 8 2c1.5 0 2.7.5 3.5 1.5a5 5 0 0 1 5-1.5c2 .5 3 2 3.5 4s0 4-1.5 5.5L12 18l-6.5-6.5C3.5 9.5 3 7.5 3.5 5.5a5 5 0 0 1 1.3-2.845z"/><path d="M12 18v4"/><path d="M8 22h8"/></svg>
+          </div>
+          <img src="https://images.pexels.com/photos/6235650/pexels-photo-6235650.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Veterinarian checks a Pomeranian dog — Photo by Tima Miroshnichenko on Pexels" />
+        </div>
+        <div class="service-text">
+          <h3>Veterinary Care</h3>
+          <p>Expert veterinary services to keep your pet healthy and happy. Our compassionate team provides regular checkups, vaccinations, dental care, and emergency services — all with a gentle touch.</p>
+          <a href="#" class="btn btn-outline">Learn More</a>
+        </div>
+      </div>
+
+      <!-- Nutrition -->
+      <div class="service-row fade-in">
+        <div class="service-image">
+          <div class="service-icon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/></svg>
+          </div>
+          <img src="https://images.pexels.com/photos/13581209/pexels-photo-13581209.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Happy dog with food bowl — Photo by Yasin Aydın on Pexels" />
+        </div>
+        <div class="service-text">
+          <h3>Premium Nutrition</h3>
+          <p>Carefully curated, vet-approved food and treats made with the finest natural ingredients. We carry trusted brands for every breed, age, and dietary need — because great health starts with great food.</p>
+          <a href="#" class="btn btn-outline">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WAVE: Services → Pets ===== -->
+  <div class="wave-divider">
+    <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:80px">
+      <path d="M0,60 C240,0 480,80 720,40 C960,0 1200,80 1440,50 L1440,100 L0,100 Z" fill="#FAF0E6"/>
+    </svg>
+  </div>
+
+  <!-- ===== FEATURED PETS ===== -->
+  <section class="pets" id="pets">
+    <div class="container">
+      <div class="pets-header fade-in">
+        <div class="section-label">Adoption</div>
+        <h2 class="section-title">Meet Our Friends</h2>
+        <p>These lovely souls are looking for a forever home. Could you be the one?</p>
+      </div>
+
+      <div class="pets-grid">
+        <!-- Buddy -->
+        <div class="pet-card fade-in">
+          <div class="pet-card-image">
+            <img src="https://images.pexels.com/photos/9248865/pexels-photo-9248865.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Happy golden retriever — Photo by Barnabas Davoti on Pexels" />
+            <button class="pet-card-heart" aria-label="Like Buddy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+          <div class="pet-card-info">
+            <h4>Buddy</h4>
+            <div class="pet-card-breed">Golden Retriever • 2 years</div>
+            <div class="pet-card-desc">Playful and loyal companion looking for a forever home</div>
+          </div>
+        </div>
+
+        <!-- Whiskers -->
+        <div class="pet-card fade-in" style="transition-delay:0.1s">
+          <div class="pet-card-image">
+            <img src="https://images.pexels.com/photos/29140791/pexels-photo-29140791.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Ginger cat on porch — Photo by Nikolaeva Nastia on Pexels" />
+            <button class="pet-card-heart" aria-label="Like Whiskers">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+          <div class="pet-card-info">
+            <h4>Whiskers</h4>
+            <div class="pet-card-breed">Orange Tabby • 1 year</div>
+            <div class="pet-card-desc">Curious and cuddly, loves sunny windowsills</div>
+          </div>
+        </div>
+
+        <!-- Cinnamon -->
+        <div class="pet-card fade-in" style="transition-delay:0.2s">
+          <div class="pet-card-image">
+            <img src="https://pixabay.com/get/gd00ef6ea4068a4daa8a7051e898d6007dec4e1d1ff974df132673e822967c92c90ea57472e0780f97c0ddb498ce27ed4.jpg" alt="Cute young rabbit — Photo by SimonaR on Pixabay" />
+            <button class="pet-card-heart" aria-label="Like Cinnamon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+          <div class="pet-card-info">
+            <h4>Cinnamon</h4>
+            <div class="pet-card-breed">Holland Lop • 6 months</div>
+            <div class="pet-card-desc">Gentle and fluffy, perfect for families</div>
+          </div>
+        </div>
+
+        <!-- Rio -->
+        <div class="pet-card fade-in" style="transition-delay:0.3s">
+          <div class="pet-card-image">
+            <img src="https://images.unsplash.com/photo-1598341936732-017cb2e8b74b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHw0fHxjb2xvcmZ1bCUyMHRyb3BpY2FsJTIwcGFycm90JTIwYmlyZCUyMHBldHxlbnwwfDJ8fHwxNzcyNDU0NTQyfDA&ixlib=rb-4.1.0&q=85&w=500" alt="Colorful macaw parrot — Photo by Danny Oates on Unsplash" />
+            <button class="pet-card-heart" aria-label="Like Rio">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+          <div class="pet-card-info">
+            <h4>Rio</h4>
+            <div class="pet-card-breed">Scarlet Macaw • 3 years</div>
+            <div class="pet-card-desc">Vibrant and talkative, loves to sing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WAVE: Pets → Testimonials ===== -->
+  <div class="wave-divider">
+    <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:80px">
+      <path d="M0,30 C360,90 720,10 1080,70 C1260,90 1380,30 1440,30 L1440,100 L0,100 Z" fill="#FFFFFF"/>
+    </svg>
+  </div>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="testimonials-header fade-in">
+        <div class="section-label">Testimonials</div>
+        <h2 class="section-title">What Pet Parents Say</h2>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card fade-in">
+          <div class="testimonial-quote-mark">"</div>
+          <div class="testimonial-stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="testimonial-text">The grooming service is absolutely wonderful! My golden retriever always comes back looking and smelling amazing. The team is so gentle and caring.</p>
+          <div class="testimonial-author">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/88?u=sarah-mitchell" alt="Sarah Mitchell" />
+            <div>
+              <div class="testimonial-author-name">Sarah Mitchell</div>
+              <div class="testimonial-author-role">Dog Parent</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card fade-in" style="transition-delay:0.1s">
+          <div class="testimonial-quote-mark">"</div>
+          <div class="testimonial-stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="testimonial-text">Best pet food selection in town. My cat has never been healthier since switching to their recommended diet. The staff really knows their nutrition!</p>
+          <div class="testimonial-author">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/88?u=james-chen" alt="James Chen" />
+            <div>
+              <div class="testimonial-author-name">James Chen</div>
+              <div class="testimonial-author-role">Cat Parent</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card fade-in" style="transition-delay:0.2s">
+          <div class="testimonial-quote-mark">"</div>
+          <div class="testimonial-stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="testimonial-text">The vet team is so caring and knowledgeable. They treated our rabbit with such gentleness. We couldn't be more grateful for their expertise.</p>
+          <div class="testimonial-author">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/88?u=emma-rodriguez" alt="Emma Rodriguez" />
+            <div>
+              <div class="testimonial-author-name">Emma Rodriguez</div>
+              <div class="testimonial-author-role">Rabbit Parent</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA / NEWSLETTER ===== -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <div class="cta-inner fade-in">
+        <!-- Decorative paw -->
+        <svg class="cta-decor" style="top:20px;right:60px;width:50px" viewBox="0 0 24 24" fill="currentColor" color="white">
+          <circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="8" r="2"/>
+          <path d="M12 18c-4 0-7-2-7-5 0-2 1.5-3.5 3.5-3.5S12 11 12 13c0-2 1.5-3.5 3.5-3.5S19 11 19 13c0 3-3 5-7 5z"/>
+        </svg>
+        <svg class="cta-decor" style="bottom:20px;left:80px;width:35px;transform:rotate(30deg)" viewBox="0 0 24 24" fill="currentColor" color="white">
+          <path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/>
+        </svg>
+
+        <h2>Stay in the Loop</h2>
+        <p>Get the latest tips, deals, and adorable pet stories delivered to your inbox.</p>
+        <form class="cta-form" onsubmit="event.preventDefault(); this.querySelector('input').value=''; alert('Thanks for subscribing! 🐾');">
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit" class="btn btn-white">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-primary)">
+              <circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="8" r="2"/>
+              <path d="M12 18c-4 0-7-2-7-5 0-2 1.5-3.5 3.5-3.5S12 11 12 13c0-2 1.5-3.5 3.5-3.5S19 11 19 13c0 3-3 5-7 5z"/>
+            </svg>
+            Paws & Whiskers
+          </div>
+          <p>Your pet's happy place since 2020. We're passionate about providing the best care, nutrition, and love for every furry, feathery, and fluffy friend.</p>
+        </div>
+
+        <div>
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#pets">Adoption</a></li>
+            <li><a href="#">Shop</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Get In Touch</h4>
+          <ul class="footer-links">
+            <li><a href="mailto:hello@pawsandwhiskers.com">hello@pawsandwhiskers.com</a></li>
+            <li><a href="#">123 Pet Avenue, Furryville</a></li>
+            <li><a href="tel:+15557295683">+1 (555) PAW-LOVE</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Paws & Whiskers. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+          </a>
+          <a href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    // Sticky nav on scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Fade-in on scroll with IntersectionObserver
+    const fadeEls = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    fadeEls.forEach(el => observer.observe(el));
+
+    // Heart toggle on pet cards
+    document.querySelectorAll('.pet-card-heart').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('liked');
+      });
+    });
+  </script>
+</body>
+</html>
