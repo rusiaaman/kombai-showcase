@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pawhouse — Your Pet's Favorite Spot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Design Tokens ── */
+    :root {
+      --gold:         #D4A05A;
+      --gold-light:   #E8C07A;
+      --gold-dark:    #B8843E;
+      --gold-muted:   rgba(212,160,90,0.15);
+      --cream:        #FFF8E7;
+      --cream-dark:   #F5EDCF;
+      --charcoal:     #2D2D2D;
+      --charcoal-60:  rgba(45,45,45,0.6);
+      --charcoal-10:  rgba(45,45,45,0.08);
+      --warm-gray:    #8B7355;
+      --white:        #FFFFFF;
+
+      --font-heading: 'Playfair Display', Georgia, serif;
+      --font-body:    'Nunito', system-ui, sans-serif;
+
+      --shadow-sm:  0 2px 12px rgba(45,45,45,0.07);
+      --shadow-md:  0 8px 32px rgba(45,45,45,0.11);
+      --shadow-lg:  0 20px 60px rgba(45,45,45,0.16);
+      --shadow-gold: 0 8px 32px rgba(212,160,90,0.35);
+
+      --radius-sm:   10px;
+      --radius-md:   18px;
+      --radius-lg:   28px;
+      --radius-xl:   40px;
+      --radius-full: 9999px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y proximity;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--charcoal);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom Cursors ── */
+    #cursor-dot {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10001;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease;
+      mix-blend-mode: multiply;
+    }
+    #cursor-treat {
+      position: fixed;
+      width: 32px; height: 32px;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      opacity: 0.75;
+      will-change: left, top;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      padding: 18px 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,248,231,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(212,160,90,0.12);
+      transition: box-shadow 0.3s;
+    }
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+      letter-spacing: -0.01em;
+    }
+    .nav-logo .gold { color: var(--gold); }
+    .nav-logo svg { flex-shrink: 0; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .btn-nav {
+      background: var(--charcoal);
+      color: var(--cream) !important;
+      padding: 10px 26px;
+      border-radius: var(--radius-full);
+      transition: background 0.25s !important;
+    }
+    .btn-nav:hover { background: var(--gold) !important; }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--white);
+      padding: 15px 38px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.025em;
+      text-decoration: none;
+      border: none;
+      cursor: none;
+      box-shadow: var(--shadow-gold);
+      transition: background 0.25s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--gold-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(212,160,90,0.5);
+    }
+    .btn-outline {
+      display: inline-block;
+      background: transparent;
+      color: var(--charcoal);
+      padding: 13px 34px;
+      border-radius: var(--radius-full);
+      border: 2px solid rgba(45,45,45,0.35);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: none;
+      transition: all 0.25s;
+    }
+    .btn-outline:hover {
+      background: var(--charcoal);
+      color: var(--cream);
+      border-color: var(--charcoal);
+    }
+
+    /* ── Wag Animation ── */
+    @keyframes wag {
+      0%, 100% { transform: rotate(0deg) translateY(-6px); }
+      20%       { transform: rotate(-3.5deg) translateY(-6px); }
+      60%       { transform: rotate(3.5deg) translateY(-6px); }
+    }
+
+    /* ── Section snap ── */
+    section { scroll-snap-align: start; }
+
+    /* ═══════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 110px 64px 80px 64px;
+      background: var(--cream);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Subtle watercolor blob */
+    .hero-content::before {
+      content: '';
+      position: absolute;
+      top: 20%; left: -80px;
+      width: 380px; height: 380px;
+      background: radial-gradient(ellipse, rgba(212,160,90,0.13) 0%, transparent 70%);
+      border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      margin-bottom: 30px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 28px; height: 2px;
+      background: var(--gold);
+      display: inline-block;
+      border-radius: 2px;
+    }
+
+    .hero-h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(3.2rem, 5.2vw, 5.4rem);
+      font-weight: 700;
+      line-height: 1.07;
+      color: var(--charcoal);
+      margin-bottom: 26px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-h1 em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--warm-gray);
+      line-height: 1.75;
+      max-width: 420px;
+      margin-bottom: 44px;
+    }
+
+    .hero-actions {
+      display: flex; gap: 14px; align-items: center;
+      margin-bottom: 60px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 44px;
+      padding-top: 36px;
+      border-top: 1px solid rgba(212,160,90,0.22);
+    }
+    .hero-stat-num {
+      font-family: var(--font-heading);
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .hero-stat-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--warm-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .hero-image {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      display: block;
+      will-change: transform;
+    }
+    .hero-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right, var(--cream) 0%, rgba(255,248,231,0.15) 25%, transparent 50%),
+        linear-gradient(to top, rgba(45,45,45,0.3) 0%, transparent 40%);
+    }
+
+    .hero-floating-badge {
+      position: absolute;
+      bottom: 44px; left: 44px;
+      z-index: 5;
+      background: rgba(255,248,231,0.94);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      padding: 18px 22px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(212,160,90,0.2);
+    }
+    .hero-badge-title {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      margin-bottom: 3px;
+    }
+    .hero-badge-sub {
+      font-size: 0.73rem;
+      color: var(--warm-gray);
+      font-weight: 500;
+    }
+
+    /* ═══════════════════════════════════════
+       CHAIN-LINK DIVIDER
+    ═══════════════════════════════════════ */
+    .divider-wrap {
+      overflow: hidden;
+      line-height: 0;
+      display: block;
+    }
+    .divider-svg {
+      display: block;
+      width: 100%;
+      height: 52px;
+    }
+
+    /* ═══════════════════════════════════════
+       FAVORITES CAROUSEL
+    ═══════════════════════════════════════ */
+    #favorites {
+      background: var(--charcoal);
+      padding: 96px 0 100px;
+      position: relative;
+      overflow: hidden;
+      min-height: auto;
+      scroll-snap-align: start;
+    }
+    /* Watercolor blob on dark bg */
+    #favorites::before {
+      content: '';
+      position: absolute;
+      top: -120px; right: -140px;
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(212,160,90,0.11) 0%, transparent 68%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    #favorites::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -80px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(212,160,90,0.07) 0%, transparent 68%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 64px;
+      margin-bottom: 52px;
+    }
+    .section-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 3.2vw, 2.9rem);
+      font-weight: 700;
+      line-height: 1.15;
+    }
+    .section-title-light { color: var(--cream); }
+    .section-title-dark  { color: var(--charcoal); }
+
+    .carousel-controls { display: flex; gap: 10px; }
+    .carousel-btn {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 2px solid rgba(212,160,90,0.35);
+      background: transparent;
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      cursor: none;
+      transition: all 0.25s;
+      flex-shrink: 0;
+    }
+    .carousel-btn:hover {
+      background: var(--gold);
+      color: var(--white);
+      border-color: var(--gold);
+    }
+
+    .carousel-wrap { overflow: hidden; padding: 8px 0 36px; }
+    .carousel-track {
+      display: flex;
+      gap: 22px;
+      padding: 0 64px;
+      transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .product-card {
+      flex: 0 0 272px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(212,160,90,0.18);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
+    }
+    .product-card:hover {
+      animation: wag 0.55s ease infinite;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(212,160,90,0.3);
+      border-color: rgba(212,160,90,0.4);
+    }
+    .product-card-img {
+      width: 100%;
+      height: 196px;
+      object-fit: cover;
+      display: block;
+    }
+    .product-card-body { padding: 22px; }
+    .product-card-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 7px;
+    }
+    .product-card-name {
+      font-family: var(--font-heading);
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 9px;
+      line-height: 1.3;
+    }
+    .product-card-desc {
+      font-size: 0.8rem;
+      color: rgba(255,248,231,0.55);
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+    .product-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .product-price {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .product-add {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: none;
+      color: var(--white);
+      font-size: 1.3rem;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      cursor: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .product-add:hover { background: var(--gold-dark); transform: scale(1.12); }
+
+    /* ═══════════════════════════════════════
+       CATEGORY GRID
+    ═══════════════════════════════════════ */
+    #categories {
+      background: var(--cream);
+      padding: 100px 64px 112px;
+      position: relative;
+      min-height: auto;
+      scroll-snap-align: start;
+      overflow: hidden;
+    }
+    /* Watercolor blobs */
+    #categories::before {
+      content: '';
+      position: absolute;
+      top: 60px; right: -60px;
+      width: 320px; height: 320px;
+      background: radial-gradient(ellipse, rgba(212,160,90,0.12) 0%, transparent 70%);
+      border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%;
+      pointer-events: none;
+    }
+    #categories::after {
+      content: '';
+      position: absolute;
+      bottom: 60px; left: -40px;
+      width: 260px; height: 260px;
+      background: radial-gradient(ellipse, rgba(212,160,90,0.09) 0%, transparent 70%);
+      border-radius: 60% 40% 45% 55% / 40% 60% 45% 55%;
+      pointer-events: none;
+    }
+
+    .cat-section-inner { max-width: 1280px; margin: 0 auto; }
+    .cat-section-top {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 52px;
+    }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .cat-tile {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 38px 34px 32px;
+      border: 1.5px solid rgba(212,160,90,0.13);
+      cursor: none;
+      transition: transform 0.3s ease, box-shadow 0.3s, border-color 0.3s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+    .cat-tile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(to right, var(--gold), var(--gold-light));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+      border-radius: 0 0 3px 3px;
+    }
+    /* Watercolor blob per tile */
+    .cat-tile::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: -30px;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(212,160,90,0.07) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .cat-tile:hover {
+      animation: wag 0.55s ease infinite;
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(212,160,90,0.32);
+    }
+    .cat-tile:hover::before { transform: scaleX(1); }
+    .cat-tile:hover::after  { opacity: 3; }
+
+    .cat-icon-wrap {
+      width: 56px; height: 56px;
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .cat-icon-wrap svg { width: 26px; height: 26px; }
+
+    .cat-name {
+      font-family: var(--font-heading);
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: var(--charcoal);
+    }
+    .cat-desc {
+      font-size: 0.84rem;
+      color: var(--warm-gray);
+      line-height: 1.65;
+      flex: 1;
+    }
+    .cat-count {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+    }
+    .cat-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      text-decoration: none;
+      margin-top: auto;
+      transition: gap 0.2s, color 0.2s;
+    }
+    .cat-tile:hover .cat-cta { gap: 10px; color: var(--gold); }
+
+    /* ═══════════════════════════════════════
+       LOYALTY CTA
+    ═══════════════════════════════════════ */
+    #loyalty {
+      background: var(--gold);
+      padding: 120px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      min-height: auto;
+      scroll-snap-align: start;
+    }
+    #loyalty::before {
+      content: '';
+      position: absolute;
+      top: -130px; left: -130px;
+      width: 460px; height: 460px;
+      background: rgba(255,255,255,0.09);
+      border-radius: 50%;
+    }
+    #loyalty::after {
+      content: '';
+      position: absolute;
+      bottom: -180px; right: -120px;
+      width: 520px; height: 520px;
+      background: rgba(45,45,45,0.07);
+      border-radius: 50%;
+    }
+    .loyalty-inner {
+      text-align: center;
+      max-width: 680px;
+      position: relative;
+      z-index: 1;
+    }
+    .loyalty-pill {
+      display: inline-block;
+      background: rgba(255,255,255,0.22);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: var(--radius-full);
+      padding: 8px 22px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 30px;
+    }
+    .loyalty-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.4rem, 4vw, 3.4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 18px;
+    }
+    .loyalty-sub {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.83);
+      line-height: 1.72;
+      margin-bottom: 44px;
+    }
+    .loyalty-perks {
+      display: flex;
+      gap: 28px;
+      justify-content: center;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+    .perk {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+    .perk-icon {
+      width: 50px; height: 50px;
+      background: rgba(255,255,255,0.2);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s;
+    }
+    .perk:hover .perk-icon { background: rgba(255,255,255,0.32); }
+    .perk-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      text-align: center;
+      line-height: 1.4;
+    }
+    .loyalty-form {
+      display: flex;
+      gap: 10px;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+    .loyalty-input {
+      flex: 1;
+      padding: 15px 22px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: rgba(255,255,255,0.95);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--charcoal);
+      outline: none;
+    }
+    .loyalty-input::placeholder { color: rgba(45,45,45,0.4); }
+    .loyalty-btn {
+      background: var(--charcoal);
+      color: var(--cream);
+      border: none;
+      padding: 15px 30px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: none;
+      white-space: nowrap;
+      transition: background 0.25s, transform 0.2s;
+    }
+    .loyalty-btn:hover { background: #1a1a1a; transform: translateY(-1px); }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    footer {
+      background: var(--charcoal);
+      padding: 80px 64px 48px;
+      color: var(--cream);
+      scroll-snap-align: start;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px;
+      padding-bottom: 60px;
+      border-bottom: 1px solid rgba(255,248,231,0.09);
+    }
+    .footer-logo {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 14px;
+    }
+    .footer-logo .gold { color: var(--gold); }
+    .footer-desc {
+      font-size: 0.85rem;
+      color: rgba(255,248,231,0.5);
+      line-height: 1.72;
+      max-width: 270px;
+      margin-bottom: 28px;
+    }
+    .footer-socials { display: flex; gap: 10px; }
+    .social-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(212,160,90,0.28);
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .social-btn:hover {
+      background: var(--gold);
+      color: var(--white);
+      border-color: var(--gold);
+    }
+    .footer-col-title {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 22px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .footer-links a {
+      font-size: 0.85rem;
+      color: rgba(255,248,231,0.5);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom {
+      padding-top: 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-copy {
+      font-size: 0.78rem;
+      color: rgba(255,248,231,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor elements -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-treat">
+    <!-- Bone / treat SVG -->
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path d="M28 18 C17 7 5 13 7 24 C9 35 19 34 19 34 L34 66 C34 66 14 64 10 75 C6 86 18 95 29 84 C40 73 37 66 37 66 L63 66 C63 66 60 74 71 84 C82 95 94 86 90 75 C86 64 66 66 66 66 L81 34 C81 34 91 35 93 24 C95 13 83 7 72 18 C61 29 63 34 63 34 L37 34 C37 34 39 29 28 18Z" fill="#D4A05A" opacity="0.9"/>
+    </svg>
+  </div>
+
+  <!-- ─── NAV ─── -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">
+      <!-- Paw icon -->
+      <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="16" fill="#D4A05A" opacity="0.14"/>
+        <ellipse cx="12" cy="15" rx="3.5" ry="4.5" fill="#D4A05A"/>
+        <ellipse cx="28" cy="15" rx="3.5" ry="4.5" fill="#D4A05A"/>
+        <ellipse cx="17" cy="11" rx="3" ry="4" fill="#D4A05A"/>
+        <ellipse cx="23" cy="11" rx="3" ry="4" fill="#D4A05A"/>
+        <path d="M10 22 C10 16 30 16 30 22 C30 29 25 34 20 34 C15 34 10 29 10 22Z" fill="#D4A05A"/>
+      </svg>
+      Paw<span class="gold">house</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#favorites">Shop</a></li>
+      <li><a href="#categories">Browse</a></li>
+      <li><a href="#loyalty">Rewards</a></li>
+      <li><a href="#loyalty" class="btn-nav">Join Club</a></li>
+    </ul>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Est. 2019 &nbsp;·&nbsp; 50k+ happy pet parents</p>
+      <h1 class="hero-h1">
+        Your pet's<br>
+        <em>favorite</em><br>
+        spot.
+      </h1>
+      <p class="hero-sub">
+        Handpicked goods for your furry family. Wholesome treats, snuggly beds, and everything they love — curated with heart.
+      </p>
+      <div class="hero-actions">
+        <a href="#favorites" class="btn-primary">Shop Now</a>
+        <a href="#categories" class="btn-outline">Browse All</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">50k+</div>
+          <div class="hero-stat-label">Happy Pets</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">1,200+</div>
+          <div class="hero-stat-label">Products</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">4.9 ★</div>
+          <div class="hero-stat-label">Avg Rating</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-image">
+      <img
+        src="https://images.pexels.com/photos/11927589/pexels-photo-11927589.jpeg?auto=compress&cs=tinysrgb&w=1400"
+        alt="Charming golden retriever gazing upward on a warm yellow backdrop — Mithul Varshan on Pexels"
+        id="hero-img"
+      >
+      <div class="hero-floating-badge">
+        <div class="hero-badge-title">🐾 New arrivals every week</div>
+        <div class="hero-badge-sub">Free shipping on orders $50+</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Chain-link divider: cream → charcoal ─── -->
+  <div class="divider-wrap" style="background:var(--cream);">
+    <svg class="divider-svg" viewBox="0 0 1440 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1440" height="52" fill="#2D2D2D"/>
+      <g fill="none" stroke="rgba(212,160,90,0.48)" stroke-width="2.5">
+        <ellipse cx="18"   cy="26" rx="14" ry="9"/><ellipse cx="54"   cy="26" rx="14" ry="9"/>
+        <ellipse cx="90"   cy="26" rx="14" ry="9"/><ellipse cx="126"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="162"  cy="26" rx="14" ry="9"/><ellipse cx="198"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="234"  cy="26" rx="14" ry="9"/><ellipse cx="270"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="306"  cy="26" rx="14" ry="9"/><ellipse cx="342"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="378"  cy="26" rx="14" ry="9"/><ellipse cx="414"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="450"  cy="26" rx="14" ry="9"/><ellipse cx="486"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="522"  cy="26" rx="14" ry="9"/><ellipse cx="558"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="594"  cy="26" rx="14" ry="9"/><ellipse cx="630"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="666"  cy="26" rx="14" ry="9"/><ellipse cx="702"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="738"  cy="26" rx="14" ry="9"/><ellipse cx="774"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="810"  cy="26" rx="14" ry="9"/><ellipse cx="846"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="882"  cy="26" rx="14" ry="9"/><ellipse cx="918"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="954"  cy="26" rx="14" ry="9"/><ellipse cx="990"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="1026" cy="26" rx="14" ry="9"/><ellipse cx="1062" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1098" cy="26" rx="14" ry="9"/><ellipse cx="1134" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1170" cy="26" rx="14" ry="9"/><ellipse cx="1206" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1242" cy="26" rx="14" ry="9"/><ellipse cx="1278" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1314" cy="26" rx="14" ry="9"/><ellipse cx="1350" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1386" cy="26" rx="14" ry="9"/><ellipse cx="1422" cy="26" rx="14" ry="9"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       FAVORITES CAROUSEL
+  ═══════════════════════════════════════ -->
+  <section id="favorites">
+    <div class="section-header">
+      <div>
+        <p class="section-eyebrow">Staff Picks</p>
+        <h2 class="section-title section-title-light">This Week's<br>Tail-Waggers</h2>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" id="prev-btn" aria-label="Previous">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="carousel-btn" id="next-btn" aria-label="Next">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="carousel-track">
+
+        <!-- Card 1 -->
+        <div class="product-card">
+          <img class="product-card-img" src="https://images.pexels.com/photos/9248865/pexels-photo-9248865.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Happy golden retriever outdoors — Barnabas Davoti on Pexels">
+          <div class="product-card-body">
+            <p class="product-card-tag">Bestseller · Treats</p>
+            <h3 class="product-card-name">Golden Peanut Biscuits</h3>
+            <p class="product-card-desc">All-natural, vet-approved biscuits your dog will beg for. No additives, pure love.</p>
+            <div class="product-card-footer">
+              <span class="product-price">$12.99</span>
+              <button class="product-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="product-card">
+          <img class="product-card-img" src="https://images.pexels.com/photos/32070609/pexels-photo-32070609.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Beagle dog playing with orange ball — Christian Gazzabini on Pexels">
+          <div class="product-card-body">
+            <p class="product-card-tag">New · Toys</p>
+            <h3 class="product-card-name">Bounce & Fetch Ball</h3>
+            <p class="product-card-desc">Ultra-durable natural rubber. Hours of fetch, zero punctures. 3 sizes available.</p>
+            <div class="product-card-footer">
+              <span class="product-price">$9.50</span>
+              <button class="product-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="product-card">
+          <img class="product-card-img" src="https://images.pexels.com/photos/6441460/pexels-photo-6441460.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fluffy Ragdoll cat portrait — Karen Laårk Boshoff on Pexels">
+          <div class="product-card-body">
+            <p class="product-card-tag">Staff Fave · Grooming</p>
+            <h3 class="product-card-name">Silky Coat Brush Set</h3>
+            <p class="product-card-desc">Bamboo handle, gentle boar bristles. Cats approve — every single time.</p>
+            <div class="product-card-footer">
+              <span class="product-price">$24.00</span>
+              <button class="product-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="product-card">
+          <img class="product-card-img" src="https://images.pexels.com/photos/4841264/pexels-photo-4841264.jpeg?auto=compress&cs=tinysrgb&w=600" alt="White puppy with grooming products — Misolo Cosmetic on Pexels">
+          <div class="product-card-body">
+            <p class="product-card-tag">Premium · Care</p>
+            <h3 class="product-card-name">Cloud Foam Shampoo</h3>
+            <p class="product-card-desc">pH-balanced, tear-free formula with oat & lavender. Salon-soft at home.</p>
+            <div class="product-card-footer">
+              <span class="product-price">$18.75</span>
+              <button class="product-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="product-card">
+          <img class="product-card-img" src="https://images.pexels.com/photos/4085433/pexels-photo-4085433.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fashionable Boston Terrier in red coat — Erik Mclean on Pexels">
+          <div class="product-card-body">
+            <p class="product-card-tag">Trending · Apparel</p>
+            <h3 class="product-card-name">Cozy Winter Jacket</h3>
+            <p class="product-card-desc">Waterproof shell, fleece-lined interior. Your pup stays warm and impossibly stylish.</p>
+            <div class="product-card-footer">
+              <span class="product-price">$42.00</span>
+              <button class="product-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="product-card">
+          <img class="product-card-img" src="https://images.pexels.com/photos/9291110/pexels-photo-9291110.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Golden Retriever close-up outdoors — Barnabas Davoti on Pexels">
+          <div class="product-card-body">
+            <p class="product-card-tag">Limited · Wellness</p>
+            <h3 class="product-card-name">Daily Vitality Drops</h3>
+            <p class="product-card-desc">Omega-3 & probiotic blend for a glossy coat and happy tummy. 30-day supply.</p>
+            <div class="product-card-footer">
+              <span class="product-price">$31.00</span>
+              <button class="product-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="product-card">
+          <img class="product-card-img" src="https://images.pexels.com/photos/28587792/pexels-photo-28587792.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fluffy Persian cat indoors — Nishant Aneja on Pexels">
+          <div class="product-card-body">
+            <p class="product-card-tag">New · Beds</p>
+            <h3 class="product-card-name">Cloud Nine Cat Bed</h3>
+            <p class="product-card-desc">Memory foam base, plush sherpa rim. The nap they've been dreaming of.</p>
+            <div class="product-card-footer">
+              <span class="product-price">$54.00</span>
+              <button class="product-add">+</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Chain-link divider: charcoal → cream ─── -->
+  <div class="divider-wrap" style="background:var(--charcoal);">
+    <svg class="divider-svg" viewBox="0 0 1440 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1440" height="52" fill="#FFF8E7"/>
+      <g fill="none" stroke="rgba(212,160,90,0.38)" stroke-width="2.5">
+        <ellipse cx="18"   cy="26" rx="14" ry="9"/><ellipse cx="54"   cy="26" rx="14" ry="9"/>
+        <ellipse cx="90"   cy="26" rx="14" ry="9"/><ellipse cx="126"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="162"  cy="26" rx="14" ry="9"/><ellipse cx="198"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="234"  cy="26" rx="14" ry="9"/><ellipse cx="270"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="306"  cy="26" rx="14" ry="9"/><ellipse cx="342"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="378"  cy="26" rx="14" ry="9"/><ellipse cx="414"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="450"  cy="26" rx="14" ry="9"/><ellipse cx="486"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="522"  cy="26" rx="14" ry="9"/><ellipse cx="558"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="594"  cy="26" rx="14" ry="9"/><ellipse cx="630"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="666"  cy="26" rx="14" ry="9"/><ellipse cx="702"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="738"  cy="26" rx="14" ry="9"/><ellipse cx="774"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="810"  cy="26" rx="14" ry="9"/><ellipse cx="846"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="882"  cy="26" rx="14" ry="9"/><ellipse cx="918"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="954"  cy="26" rx="14" ry="9"/><ellipse cx="990"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="1026" cy="26" rx="14" ry="9"/><ellipse cx="1062" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1098" cy="26" rx="14" ry="9"/><ellipse cx="1134" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1170" cy="26" rx="14" ry="9"/><ellipse cx="1206" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1242" cy="26" rx="14" ry="9"/><ellipse cx="1278" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1314" cy="26" rx="14" ry="9"/><ellipse cx="1350" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1386" cy="26" rx="14" ry="9"/><ellipse cx="1422" cy="26" rx="14" ry="9"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       CATEGORY GRID
+  ═══════════════════════════════════════ -->
+  <section id="categories">
+    <div class="cat-section-inner">
+      <div class="cat-section-top">
+        <div>
+          <p class="section-eyebrow">All Departments</p>
+          <h2 class="section-title section-title-dark">Shop by<br>Category</h2>
+        </div>
+        <a href="#" class="btn-outline" style="font-size:0.84rem; padding:11px 28px;">View All →</a>
+      </div>
+
+      <div class="cat-grid">
+
+        <!-- Food -->
+        <div class="cat-tile">
+          <div class="cat-icon-wrap">
+            <svg viewBox="0 0 28 28" fill="none" stroke="#D4A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 9 h18 M9 9 v11 a2 2 0 0 0 2 2 h6 a2 2 0 0 0 2-2 V9"/>
+              <path d="M11 9 V6 M14 9 V5 M17 9 V6"/>
+            </svg>
+          </div>
+          <div class="cat-name">Food & Treats</div>
+          <div class="cat-desc">Premium nutrition for every breed, age, and appetite. Vet-formulated, tail-approved every time.</div>
+          <div class="cat-count">340+ Products</div>
+          <a href="#" class="cat-cta">Browse <span>→</span></a>
+        </div>
+
+        <!-- Toys -->
+        <div class="cat-tile">
+          <div class="cat-icon-wrap">
+            <svg viewBox="0 0 28 28" fill="none" stroke="#D4A05A" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="14" cy="14" r="8"/>
+              <path d="M14 6 C16 10 20 11 22 14"/>
+              <path d="M14 22 C12 18 8 17 6 14"/>
+              <circle cx="14" cy="14" r="2" fill="#D4A05A"/>
+            </svg>
+          </div>
+          <div class="cat-name">Toys & Play</div>
+          <div class="cat-desc">From squeaky pals to puzzle feeders — keep them active, engaged, and endlessly entertained.</div>
+          <div class="cat-count">180+ Products</div>
+          <a href="#" class="cat-cta">Browse <span>→</span></a>
+        </div>
+
+        <!-- Grooming -->
+        <div class="cat-tile">
+          <div class="cat-icon-wrap">
+            <svg viewBox="0 0 28 28" fill="none" stroke="#D4A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 7 h12 a2 2 0 0 1 2 2 v4 a6 6 0 0 1-6 6 h-4 a6 6 0 0 1-6-6 V9 a2 2 0 0 1 2-2z"/>
+              <path d="M14 19 v4 M10 23 h8"/>
+              <circle cx="11" cy="12" r="1.2" fill="#D4A05A"/>
+              <circle cx="17" cy="12" r="1.2" fill="#D4A05A"/>
+            </svg>
+          </div>
+          <div class="cat-name">Grooming</div>
+          <div class="cat-desc">Bath time made beautiful. Shampoos, brushes, clippers — for the freshest pet on the block.</div>
+          <div class="cat-count">95+ Products</div>
+          <a href="#" class="cat-cta">Browse <span>→</span></a>
+        </div>
+
+        <!-- Health -->
+        <div class="cat-tile">
+          <div class="cat-icon-wrap">
+            <svg viewBox="0 0 28 28" fill="none" stroke="#D4A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 5 v18 M5 14 h18"/>
+              <rect x="9" y="9" width="10" height="10" rx="3" stroke-opacity="0.45"/>
+            </svg>
+          </div>
+          <div class="cat-name">Health & Care</div>
+          <div class="cat-desc">Vitamins, supplements, and wellness essentials to keep your pet thriving from nose to tail.</div>
+          <div class="cat-count">210+ Products</div>
+          <a href="#" class="cat-cta">Browse <span>→</span></a>
+        </div>
+
+        <!-- Apparel -->
+        <div class="cat-tile">
+          <div class="cat-icon-wrap">
+            <svg viewBox="0 0 28 28" fill="none" stroke="#D4A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 5 L4 11 L8 13 L8 24 L20 24 L20 13 L24 11 L18 5 C18 5 16.5 8 14 8 C11.5 8 10 5 10 5Z"/>
+            </svg>
+          </div>
+          <div class="cat-name">Apparel & Style</div>
+          <div class="cat-desc">Cozy sweaters, rain jackets, and bandanas. Because your pet deserves a signature look.</div>
+          <div class="cat-count">120+ Products</div>
+          <a href="#" class="cat-cta">Browse <span>→</span></a>
+        </div>
+
+        <!-- Beds -->
+        <div class="cat-tile">
+          <div class="cat-icon-wrap">
+            <svg viewBox="0 0 28 28" fill="none" stroke="#D4A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 21 L4 13 L14 7 L24 13 L24 21"/>
+              <path d="M10 21 L10 16 L18 16 L18 21"/>
+              <path d="M2 21 L26 21"/>
+            </svg>
+          </div>
+          <div class="cat-name">Beds & Home</div>
+          <div class="cat-desc">Plush beds, crates, and feeding stations. The coziest corner for your furry roommate.</div>
+          <div class="cat-count">160+ Products</div>
+          <a href="#" class="cat-cta">Browse <span>→</span></a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Chain-link divider: cream → gold ─── -->
+  <div class="divider-wrap" style="background:var(--cream);">
+    <svg class="divider-svg" viewBox="0 0 1440 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1440" height="52" fill="#D4A05A"/>
+      <g fill="none" stroke="rgba(255,255,255,0.42)" stroke-width="2.5">
+        <ellipse cx="18"   cy="26" rx="14" ry="9"/><ellipse cx="54"   cy="26" rx="14" ry="9"/>
+        <ellipse cx="90"   cy="26" rx="14" ry="9"/><ellipse cx="126"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="162"  cy="26" rx="14" ry="9"/><ellipse cx="198"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="234"  cy="26" rx="14" ry="9"/><ellipse cx="270"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="306"  cy="26" rx="14" ry="9"/><ellipse cx="342"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="378"  cy="26" rx="14" ry="9"/><ellipse cx="414"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="450"  cy="26" rx="14" ry="9"/><ellipse cx="486"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="522"  cy="26" rx="14" ry="9"/><ellipse cx="558"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="594"  cy="26" rx="14" ry="9"/><ellipse cx="630"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="666"  cy="26" rx="14" ry="9"/><ellipse cx="702"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="738"  cy="26" rx="14" ry="9"/><ellipse cx="774"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="810"  cy="26" rx="14" ry="9"/><ellipse cx="846"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="882"  cy="26" rx="14" ry="9"/><ellipse cx="918"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="954"  cy="26" rx="14" ry="9"/><ellipse cx="990"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="1026" cy="26" rx="14" ry="9"/><ellipse cx="1062" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1098" cy="26" rx="14" ry="9"/><ellipse cx="1134" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1170" cy="26" rx="14" ry="9"/><ellipse cx="1206" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1242" cy="26" rx="14" ry="9"/><ellipse cx="1278" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1314" cy="26" rx="14" ry="9"/><ellipse cx="1350" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1386" cy="26" rx="14" ry="9"/><ellipse cx="1422" cy="26" rx="14" ry="9"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       LOYALTY CTA
+  ═══════════════════════════════════════ -->
+  <section id="loyalty">
+    <div class="loyalty-inner">
+      <span class="loyalty-pill">🐾 Pawhouse Rewards Club</span>
+      <h2 class="loyalty-title">Treats for you,<br><em style="font-style:italic;">every time too.</em></h2>
+      <p class="loyalty-sub">
+        Join our loyalty program and earn Paw Points on every purchase. Redeem them for free products, exclusive deals, and early access to new arrivals.
+      </p>
+      <div class="loyalty-perks">
+        <div class="perk">
+          <div class="perk-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+          </div>
+          <span class="perk-label">Earn Points<br>Every Order</span>
+        </div>
+        <div class="perk">
+          <div class="perk-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+              <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/>
+              <path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </div>
+          <span class="perk-label">Exclusive<br>Member Deals</span>
+        </div>
+        <div class="perk">
+          <div class="perk-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </div>
+          <span class="perk-label">Free Shipping<br>Always</span>
+        </div>
+        <div class="perk">
+          <div class="perk-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <span class="perk-label">Early Access<br>New Drops</span>
+        </div>
+      </div>
+      <div class="loyalty-form">
+        <input class="loyalty-input" type="email" placeholder="your@email.com" aria-label="Email address">
+        <button class="loyalty-btn">Join Free →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Chain-link divider: gold → charcoal ─── -->
+  <div class="divider-wrap" style="background:var(--gold);">
+    <svg class="divider-svg" viewBox="0 0 1440 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1440" height="52" fill="#2D2D2D"/>
+      <g fill="none" stroke="rgba(212,160,90,0.48)" stroke-width="2.5">
+        <ellipse cx="18"   cy="26" rx="14" ry="9"/><ellipse cx="54"   cy="26" rx="14" ry="9"/>
+        <ellipse cx="90"   cy="26" rx="14" ry="9"/><ellipse cx="126"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="162"  cy="26" rx="14" ry="9"/><ellipse cx="198"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="234"  cy="26" rx="14" ry="9"/><ellipse cx="270"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="306"  cy="26" rx="14" ry="9"/><ellipse cx="342"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="378"  cy="26" rx="14" ry="9"/><ellipse cx="414"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="450"  cy="26" rx="14" ry="9"/><ellipse cx="486"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="522"  cy="26" rx="14" ry="9"/><ellipse cx="558"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="594"  cy="26" rx="14" ry="9"/><ellipse cx="630"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="666"  cy="26" rx="14" ry="9"/><ellipse cx="702"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="738"  cy="26" rx="14" ry="9"/><ellipse cx="774"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="810"  cy="26" rx="14" ry="9"/><ellipse cx="846"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="882"  cy="26" rx="14" ry="9"/><ellipse cx="918"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="954"  cy="26" rx="14" ry="9"/><ellipse cx="990"  cy="26" rx="14" ry="9"/>
+        <ellipse cx="1026" cy="26" rx="14" ry="9"/><ellipse cx="1062" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1098" cy="26" rx="14" ry="9"/><ellipse cx="1134" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1170" cy="26" rx="14" ry="9"/><ellipse cx="1206" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1242" cy="26" rx="14" ry="9"/><ellipse cx="1278" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1314" cy="26" rx="14" ry="9"/><ellipse cx="1350" cy="26" rx="14" ry="9"/>
+        <ellipse cx="1386" cy="26" rx="14" ry="9"/><ellipse cx="1422" cy="26" rx="14" ry="9"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════ -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Paw<span class="gold">house</span></div>
+        <p class="footer-desc">The cozy corner of the internet where every pet finds something to love. Handpicked, tested, tail-approved since 2019.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-btn" aria-label="Instagram">ig</a>
+          <a href="#" class="social-btn" aria-label="Facebook">fb</a>
+          <a href="#" class="social-btn" aria-label="Twitter">tw</a>
+          <a href="#" class="social-btn" aria-label="YouTube">yt</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Shop</div>
+        <ul class="footer-links">
+          <li><a href="#">Food & Treats</a></li>
+          <li><a href="#">Toys & Play</a></li>
+          <li><a href="#">Grooming</a></li>
+          <li><a href="#">Health & Care</a></li>
+          <li><a href="#">Apparel</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Help</div>
+        <ul class="footer-links">
+          <li><a href="#">Track Order</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Vet Advice</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Sustainability</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Pawhouse. Made with love for pets everywhere.</p>
+      <span style="font-size:1.3rem;">🐾</span>
+    </div>
+  </footer>
+
+  <script>
+    // ── Custom Cursor ──
+    const dot   = document.getElementById('cursor-dot');
+    const treat = document.getElementById('cursor-treat');
+    let mx = 0, my = 0, tx = 0, ty = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px';
+      dot.style.top  = my + 'px';
+    });
+
+    (function animateTreat() {
+      tx += (mx - tx) * 0.09;
+      ty += (my - ty) * 0.09;
+      treat.style.left = tx + 'px';
+      treat.style.top  = ty + 'px';
+      requestAnimationFrame(animateTreat);
+    })();
+
+    // ── Carousel ──
+    const track    = document.getElementById('carousel-track');
+    const prevBtn  = document.getElementById('prev-btn');
+    const nextBtn  = document.getElementById('next-btn');
+    const CARD_W   = 272 + 22; // card width + gap
+    let offset     = 0;
+
+    function getMaxOffset() {
+      const visibleCards = Math.floor(track.parentElement.offsetWidth / CARD_W);
+      return Math.max(0, (track.children.length - visibleCards) * CARD_W);
+    }
+
+    nextBtn.addEventListener('click', () => {
+      offset = Math.min(offset + CARD_W, getMaxOffset());
+      track.style.transform = `translateX(-${offset}px)`;
+    });
+    prevBtn.addEventListener('click', () => {
+      offset = Math.max(offset - CARD_W, 0);
+      track.style.transform = `translateX(-${offset}px)`;
+    });
+
+    // ── Nav shadow on scroll ──
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 60
+        ? '0 4px 28px rgba(45,45,45,0.09)'
+        : 'none';
+    }, { passive: true });
+
+    // ── Hero image subtle parallax ──
+    const heroImg = document.getElementById('hero-img');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight) {
+        heroImg.style.transform = `translateY(${window.scrollY * 0.18}px)`;
+      }
+    }, { passive: true });
+
+    // ── Loyalty form submit ──
+    document.querySelector('.loyalty-btn').addEventListener('click', () => {
+      const input = document.querySelector('.loyalty-input');
+      if (input.value.includes('@')) {
+        input.value = '';
+        input.placeholder = '🐾 Welcome to the club!';
+        input.style.background = 'rgba(255,255,255,0.98)';
+      }
+    });
+  </script>
+</body>
+</html>
