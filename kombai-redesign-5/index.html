@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kombai — The AI Agent Built for Frontend Development</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design Tokens ─────────────────────────────────────────── */
+    :root {
+      --bg-primary:   #0A0E1A;
+      --bg-secondary: #0D1325;
+      --bg-card:      rgba(255,255,255,0.04);
+      --bg-glass:     rgba(255,255,255,0.05);
+      --mint:         #7AEDC5;
+      --mint-dim:     rgba(122,237,197,0.12);
+      --mint-glow:    rgba(122,237,197,0.25);
+      --amber:        #F5C542;
+      --amber-dim:    rgba(245,197,66,0.12);
+      --text-primary: #FFFFFF;
+      --text-body:    #B0B0B0;
+      --text-muted:   #6B7280;
+      --border:       rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.16);
+      --radius-sm:    8px;
+      --radius-md:    16px;
+      --radius-lg:    24px;
+      --radius-xl:    32px;
+      --font-head:    'Space Grotesk', sans-serif;
+      --font-body:    'Inter', sans-serif;
+      --shadow-mint:  0 0 40px rgba(122,237,197,0.15);
+      --shadow-card:  0 1px 1px rgba(255,255,255,0.04) inset, 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    /* ── Reset & Base ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ── Typography ────────────────────────────────────────────── */
+    .h-display {
+      font-family: var(--font-head);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .h-xl {
+      font-family: var(--font-head);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+    }
+    .h-lg {
+      font-family: var(--font-head);
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+    .h-md {
+      font-family: var(--font-head);
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .body-lg { font-size: 1.125rem; color: var(--text-body); line-height: 1.7; }
+    .body-md { font-size: 1rem;     color: var(--text-body); line-height: 1.65; }
+    .body-sm { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+
+    .accent-mint  { color: var(--mint); }
+    .accent-amber { color: var(--amber); }
+
+    /* ── Layout Utils ──────────────────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .section { padding: 120px 0; position: relative; }
+    .section-sm { padding: 80px 0; position: relative; }
+
+    /* ── Reveal Animation ──────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── Navigation ────────────────────────────────────────────── */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      transition: background 0.4s ease, backdrop-filter 0.4s ease, padding 0.4s ease, border-color 0.4s ease;
+      border-bottom: 1px solid transparent;
+    }
+    #nav.scrolled {
+      background: rgba(10,14,26,0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 14px 0;
+      border-color: var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo-mark {
+      width: 32px; height: 32px;
+      background: var(--mint);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+    }
+    .nav-logo-mark svg { width: 18px; height: 18px; fill: #0A0E1A; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.9rem;
+      color: var(--text-body);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+    .btn-nav {
+      background: var(--mint);
+      color: #0A0E1A;
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+    .btn-nav:hover {
+      background: #9af5d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--mint-glow);
+    }
+
+    /* ── Hero Section ──────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-glow-1 {
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(122,237,197,0.08) 0%, transparent 70%);
+      top: -100px; left: -200px;
+      pointer-events: none;
+    }
+    .hero-glow-2 {
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(245,197,66,0.05) 0%, transparent 70%);
+      bottom: 0; right: -100px;
+      pointer-events: none;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 58% 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--amber-dim);
+      border: 1px solid rgba(245,197,66,0.2);
+      color: var(--amber);
+      font-size: 0.8rem;
+      font-weight: 500;
+      font-family: var(--font-head);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+    .hero-label-dot {
+      width: 6px; height: 6px;
+      background: var(--amber);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.7); }
+    }
+    .hero-headline { margin-bottom: 24px; }
+    .hero-headline .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: word-in 0.6s ease forwards;
+    }
+    @keyframes word-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-subhead {
+      font-size: 1.15rem;
+      color: var(--text-body);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fade-up 0.7s ease 1s forwards;
+    }
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fade-up 0.7s ease 1.2s forwards;
+    }
+    .btn-primary {
+      background: var(--mint);
+      color: #0A0E1A;
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 14px 28px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--mint-glow);
+      background: #9af5d3;
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      font-family: var(--font-head);
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: 1px solid var(--border-hover);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.05);
+      transform: translateY(-2px);
+    }
+
+    /* Terminal mockup */
+    .hero-terminal {
+      background: rgba(13,18,37,0.8);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card), 0 0 0 1px rgba(122,237,197,0.05);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.5s forwards;
+    }
+    .terminal-bar {
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .terminal-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .terminal-dot-r { background: #FF5F57; }
+    .terminal-dot-y { background: #FFBD2E; }
+    .terminal-dot-g { background: #28C840; }
+    .terminal-title {
+      margin-left: 8px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'Courier New', monospace;
+    }
+    .terminal-body {
+      padding: 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      min-height: 320px;
+    }
+    .term-prompt { color: var(--mint); }
+    .term-cmd    { color: var(--text-primary); }
+    .term-output { color: var(--text-body); }
+    .term-success { color: var(--mint); }
+    .term-info   { color: var(--amber); }
+    .term-cursor {
+      display: inline-block;
+      width: 7px; height: 14px;
+      background: var(--mint);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ── Ticker / Framework Bar ────────────────────────────────── */
+    #ticker-section {
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      background: linear-gradient(90deg, var(--bg-primary) 0%, rgba(122,237,197,0.02) 50%, var(--bg-primary) 100%);
+    }
+    .ticker-label {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .ticker-track-wrap {
+      display: flex;
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+    }
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      animation: ticker-scroll 30s linear infinite;
+      will-change: transform;
+    }
+    @keyframes ticker-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 28px;
+      margin: 0 8px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      white-space: nowrap;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-body);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .ticker-item:hover { border-color: var(--border-hover); color: var(--text-primary); }
+    .ticker-item img { width: 20px; height: 20px; object-fit: contain; }
+
+    /* ── Use Case Showcase ─────────────────────────────────────── */
+    #showcase { padding: 100px 0 0; }
+    .showcase-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: var(--font-head);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 16px;
+    }
+    .section-tag::before {
+      content: '';
+      display: block;
+      width: 16px; height: 1px;
+      background: var(--amber);
+    }
+    .showcase-scroll-wrap {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 0 24px 48px;
+      cursor: grab;
+    }
+    .showcase-scroll-wrap::-webkit-scrollbar { display: none; }
+    .showcase-scroll-wrap:active { cursor: grabbing; }
+    .showcase-track {
+      display: flex;
+      gap: 24px;
+      width: max-content;
+    }
+    .showcase-card {
+      width: 460px;
+      scroll-snap-align: start;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      flex-shrink: 0;
+    }
+    .showcase-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .showcase-card-header {
+      padding: 28px 28px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .showcase-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+    }
+    .showcase-card-body { padding: 0 28px 28px; }
+    .showcase-card-body p { font-size: 0.9rem; color: var(--text-body); margin-top: 8px; line-height: 1.6; }
+    .showcase-visual {
+      height: 240px;
+      margin: 0 28px 28px;
+      background: rgba(0,0,0,0.3);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .code-editor-bar {
+      background: rgba(255,255,255,0.04);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-area {
+      flex: 1;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      line-height: 1.7;
+      overflow: hidden;
+    }
+    .code-line { display: flex; gap: 8px; }
+    .code-ln { color: #3d4560; min-width: 20px; text-align: right; user-select: none; }
+    .kw  { color: #C792EA; }
+    .fn  { color: #82AAFF; }
+    .str { color: #C3E88D; }
+    .cm  { color: #546E7A; }
+    .typ { color: var(--amber); }
+    .val { color: var(--mint); }
+    .sc-mint { background: var(--mint-dim); color: var(--mint); border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; font-weight: 600; }
+    .sc-amber { background: var(--amber-dim); color: var(--amber); border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; font-weight: 600; }
+
+    /* Figma → Code visual */
+    .figma-visual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      height: 100%;
+    }
+    .figma-side {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .figma-side-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .figma-block {
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 8px;
+    }
+    .figma-element {
+      height: 12px;
+      border-radius: 3px;
+      margin-bottom: 6px;
+    }
+    .figma-divider {
+      width: 1px;
+      background: var(--border);
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+    }
+
+    /* ── Feature Sections ──────────────────────────────────────── */
+    .feature-section {
+      padding: 100px 0;
+      position: relative;
+    }
+    .feature-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .feature-row.reverse { direction: rtl; }
+    .feature-row.reverse > * { direction: ltr; }
+    .feature-text .section-tag { margin-bottom: 16px; }
+    .feature-text h2 { margin-bottom: 20px; }
+    .feature-text p { margin-bottom: 32px; }
+    .feature-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .feature-bullets li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: var(--text-body);
+    }
+    .bullet-icon {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--mint-dim);
+      border: 1px solid rgba(122,237,197,0.2);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .bullet-icon svg { width: 10px; height: 10px; stroke: var(--mint); fill: none; stroke-width: 2.5; }
+
+    .feature-visual {
+      position: relative;
+    }
+    .feature-mock {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card);
+    }
+    .feature-mock-header {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-mock-title { font-size: 0.78rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-left: 8px; }
+    .feature-mock-body { padding: 24px; }
+    .feature-float-badge {
+      position: absolute;
+      background: rgba(13,18,37,0.9);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card);
+    }
+    .badge-top-right { top: -20px; right: -20px; }
+    .badge-bottom-left { bottom: -20px; left: -20px; }
+    .badge-stat { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; color: var(--mint); }
+    .badge-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* skill tags */
+    .skill-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .skill-tag {
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 100px;
+      border: 1px solid;
+    }
+    .skill-tag-mint  { border-color: rgba(122,237,197,0.3); color: var(--mint);  background: var(--mint-dim); }
+    .skill-tag-amber { border-color: rgba(245,197,66,0.3);  color: var(--amber); background: var(--amber-dim); }
+    .skill-tag-grey  { border-color: var(--border); color: var(--text-muted); background: rgba(255,255,255,0.03); }
+
+    /* browser mock */
+    .browser-mock {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+    .browser-chrome {
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .browser-dots { display: flex; gap: 6px; }
+    .browser-dots span { width: 9px; height: 9px; border-radius: 50%; }
+    .browser-url {
+      flex: 1;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: 'Courier New', monospace;
+    }
+    .browser-body { padding: 20px; }
+    .browser-panel { background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); }
+    .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 500; color: var(--text-body); }
+    .panel-body { padding: 14px 16px; }
+    .panel-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .panel-row:last-child { border: none; }
+    .panel-key { font-size: 0.72rem; color: var(--text-muted); }
+    .panel-val { font-size: 0.72rem; color: var(--mint); font-family: 'Courier New', monospace; }
+
+    /* repo files */
+    .repo-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .repo-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-family: 'Courier New', monospace;
+      color: var(--text-body);
+      background: rgba(0,0,0,0.15);
+      transition: background 0.2s;
+    }
+    .repo-item.active { background: var(--mint-dim); color: var(--mint); }
+    .repo-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Enterprise Bento ──────────────────────────────────────── */
+    #enterprise { padding: 120px 0; }
+    .enterprise-header { text-align: center; margin-bottom: 64px; }
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .bento-card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card);
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .bento-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+    .bento-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    }
+    .bento-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+      margin-bottom: 24px;
+    }
+    .bento-card h3 {
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+    .bento-card p { font-size: 0.9rem; color: var(--text-body); line-height: 1.7; }
+    .bento-cta {
+      margin-top: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--mint);
+      font-family: var(--font-head);
+      transition: gap 0.2s;
+    }
+    .bento-cta:hover { gap: 10px; }
+    .bento-glow {
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.06;
+      top: -50px; right: -50px;
+    }
+
+    /* ── Testimonials Marquee ──────────────────────────────────── */
+    #testimonials { padding: 120px 0; overflow: hidden; }
+    .testimonials-header { text-align: center; margin-bottom: 64px; }
+    .marquee-wrap {
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 20px;
+      animation: marquee 40s linear infinite;
+      will-change: transform;
+      cursor: default;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .testimonial-card {
+      width: 340px;
+      flex-shrink: 0;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .testimonial-card:hover { border-color: rgba(122,237,197,0.2); transform: translateY(-2px); }
+    .testimonial-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    }
+    .testimonial-card { position: relative; }
+    .test-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .test-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid rgba(255,255,255,0.1);
+    }
+    .test-name { font-size: 0.9rem; font-weight: 500; font-family: var(--font-head); }
+    .test-handle { font-size: 0.75rem; color: var(--text-muted); }
+    .test-text { font-size: 0.88rem; color: var(--text-body); line-height: 1.65; }
+    .test-quote { font-size: 2rem; line-height: 1; color: var(--mint); opacity: 0.4; font-family: Georgia, serif; margin-bottom: 8px; }
+
+    /* second marquee row — reverse */
+    .marquee-track.reverse { animation-direction: reverse; }
+
+    /* ── CTA Section ───────────────────────────────────────────── */
+    #cta-section {
+      padding: 140px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-glow-ring {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      border: 1px solid rgba(122,237,197,0.08);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      animation: ring-pulse 4s ease-in-out infinite;
+    }
+    .cta-glow-ring:nth-child(2) { width: 800px; height: 800px; animation-delay: 0.8s; opacity: 0.6; }
+    .cta-glow-ring:nth-child(3) { width: 1000px; height: 1000px; animation-delay: 1.6s; opacity: 0.3; }
+    @keyframes ring-pulse {
+      0%, 100% { opacity: 0.6; transform: translate(-50%,-50%) scale(1); }
+      50%       { opacity: 0.2; transform: translate(-50%,-50%) scale(1.04); }
+    }
+    .cta-radial {
+      position: absolute;
+      width: 500px; height: 300px;
+      background: radial-gradient(ellipse, rgba(122,237,197,0.06) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    .cta-content { position: relative; z-index: 2; }
+    .cta-content h2 { margin-bottom: 20px; }
+    .cta-content p { max-width: 560px; margin: 0 auto 40px; }
+    .btn-cta-glow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--mint);
+      color: #0A0E1A;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 16px 36px;
+      border-radius: 12px;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-cta-glow::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 15px;
+      background: var(--mint);
+      opacity: 0.3;
+      filter: blur(12px);
+      animation: cta-pulse 2.5s ease-in-out infinite;
+      z-index: -1;
+    }
+    @keyframes cta-pulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.05); }
+    }
+    .btn-cta-glow:hover { transform: translateY(-3px); box-shadow: 0 12px 40px var(--mint-glow); }
+
+    /* ── Footer ────────────────────────────────────────────────── */
+    #footer {
+      border-top: 1px solid var(--border);
+      padding: 72px 0 40px;
+      background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 56px;
+    }
+    .footer-brand p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; margin-top: 14px; max-width: 280px; }
+    .footer-col-title {
+      font-family: var(--font-head);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .footer-links a { font-size: 0.9rem; color: var(--text-body); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--mint); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-bottom p { font-size: 0.82rem; color: var(--text-muted); }
+    .footer-social { display: flex; gap: 16px; }
+    .footer-social a {
+      width: 34px; height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .footer-social a:hover { border-color: var(--mint); color: var(--mint); background: var(--mint-dim); }
+
+    /* ── Diagonal divider ──────────────────────────────────────── */
+    .angular-divider {
+      height: 80px;
+      overflow: hidden;
+      position: relative;
+    }
+    .angular-divider svg { display: block; }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-terminal { display: none; }
+      .feature-row, .feature-row.reverse { grid-template-columns: 1fr; direction: ltr; gap: 40px; }
+      .bento-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .showcase-card { width: 320px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAV ════════════════════════════════════════════════════ -->
+  <nav id="nav">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo">
+          <div class="nav-logo-mark">
+            <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 4h12v2H3V4zm0 4h8v2H3V8zm0 4h10v2H3v-2z"/>
+            </svg>
+          </div>
+          Kombai
+        </a>
+        <ul class="nav-links">
+          <li><a href="https://kombai.com/features/">Features</a></li>
+          <li><a href="https://kombai.com/pricing/">Pricing</a></li>
+          <li><a href="https://docs.kombai.com/">Docs</a></li>
+          <li><a href="https://kombai.com/guide/">Guides</a></li>
+          <li><a href="https://kombai.com/support/">Support</a></li>
+        </ul>
+        <a href="https://kombai.com/install/" class="btn-nav">Install Kombai</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ═══════════════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Left column -->
+        <div class="hero-left">
+          <div class="hero-label">
+            <span class="hero-label-dot"></span>
+            AI Agent · Built for Frontend
+          </div>
+          <h1 class="h-display hero-headline" id="hero-headline"></h1>
+          <p class="hero-subhead">
+            Kombai combines specialized frontend skills, deep browser access,
+            and a dev-like understanding of your repo. Build, refactor, test,
+            and improve every part of your frontend — with an agent that
+            actually knows your stack.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://kombai.com/install/" class="btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+              Install Kombai
+            </a>
+            <a href="https://kombai.com/features/" class="btn-secondary">
+              Explore Features
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right — terminal mockup -->
+        <div class="hero-terminal">
+          <div class="terminal-bar">
+            <span class="terminal-dot terminal-dot-r"></span>
+            <span class="terminal-dot terminal-dot-y"></span>
+            <span class="terminal-dot terminal-dot-g"></span>
+            <span class="terminal-title">kombai — agent session</span>
+          </div>
+          <div class="terminal-body" id="terminal-body">
+            <div class="term-line">
+              <span class="term-prompt">❯ </span>
+              <span class="term-cmd" id="term-output"></span><span class="term-cursor" id="term-cursor"></span>
+            </div>
+            <div id="term-history"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TICKER ═════════════════════════════════════════════════ -->
+  <div id="ticker-section">
+    <p class="ticker-label">Supports 400+ Frameworks &amp; Libraries</p>
+    <div class="ticker-track-wrap">
+      <div class="ticker-track" id="ticker-track"></div>
+    </div>
+  </div>
+
+  <!-- ══ ANGULAR DIVIDER ════════════════════════════════════════ -->
+  <div class="angular-divider">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" width="100%" height="80">
+      <path d="M0,0 L1440,40 L1440,80 L0,80 Z" fill="rgba(13,18,37,0.5)"/>
+    </svg>
+  </div>
+
+  <!-- ══ SHOWCASE ═══════════════════════════════════════════════ -->
+  <section id="showcase">
+    <div class="container">
+      <div class="showcase-header reveal">
+        <div class="section-tag">Use Cases</div>
+        <h2 class="h-xl">Everything your frontend team needs</h2>
+      </div>
+    </div>
+    <div class="showcase-scroll-wrap" id="showcase-scroll">
+      <div class="showcase-track">
+
+        <!-- Card 1: Extend Repos -->
+        <div class="showcase-card">
+          <div class="showcase-card-header">
+            <div class="showcase-icon" style="background:var(--mint-dim)">⚙️</div>
+            <div>
+              <div class="h-md">Extend Complex Repos</div>
+              <span class="sc-mint" style="font-size:0.7rem">Add Features</span>
+            </div>
+          </div>
+          <div class="showcase-card-body">
+            <p>Add features to complex repos without breaking existing patterns. Kombai reads your codebase like a senior dev.</p>
+          </div>
+          <div class="showcase-visual">
+            <div class="code-editor-bar">
+              <div style="display:flex;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#FF5F57;display:block"></span><span style="width:8px;height:8px;border-radius:50%;background:#FFBD2E;display:block"></span><span style="width:8px;height:8px;border-radius:50%;background:#28C840;display:block"></span></div>
+              src/components/Dashboard.tsx
+            </div>
+            <div class="code-area">
+              <div class="code-line"><span class="code-ln">1</span><span><span class="kw">import</span> <span class="fn">React</span> <span class="kw">from</span> <span class="str">'react'</span></span></div>
+              <div class="code-line"><span class="code-ln">2</span><span><span class="kw">import</span> { <span class="fn">useTheme</span>, <span class="fn">Card</span> } <span class="kw">from</span> <span class="str">'@mui/material'</span></span></div>
+              <div class="code-line"><span class="code-ln">3</span><span><span class="cm">// ✨ Kombai auto-detects your MUI theme</span></span></div>
+              <div class="code-line"><span class="code-ln">4</span><span><span class="kw">const</span> <span class="fn">Dashboard</span> = () =&gt; {</span></div>
+              <div class="code-line"><span class="code-ln">5</span><span>&nbsp;&nbsp;<span class="kw">const</span> <span class="val">theme</span> = <span class="fn">useTheme</span>()</span></div>
+              <div class="code-line"><span class="code-ln">6</span><span>&nbsp;&nbsp;<span class="kw">return</span> &lt;<span class="typ">Card</span> sx={{ p: <span class="val">3</span>, borderRadius: <span class="val">2</span> }}&gt;</span></div>
+              <div class="code-line"><span class="code-ln">7</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// New feature added seamlessly</span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Build Beautiful UX -->
+        <div class="showcase-card">
+          <div class="showcase-card-header">
+            <div class="showcase-icon" style="background:var(--amber-dim)">✦</div>
+            <div>
+              <div class="h-md">Build Beautiful UX</div>
+              <span class="sc-amber" style="font-size:0.7rem">Design → Code</span>
+            </div>
+          </div>
+          <div class="showcase-card-body">
+            <p>Ship stunning UI with clean, efficient code. Built-in design skills make every component pixel-perfect.</p>
+          </div>
+          <div class="showcase-visual">
+            <div class="code-editor-bar">
+              <div style="display:flex;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#FF5F57;display:block"></span><span style="width:8px;height:8px;border-radius:50%;background:#FFBD2E;display:block"></span><span style="width:8px;height:8px;border-radius:50%;background:#28C840;display:block"></span></div>
+              Kombai Preview
+            </div>
+            <div style="flex:1;padding:16px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;gap:8px;align-items:center">
+                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--mint),#4AAAD4)"></div>
+                <div style="flex:1">
+                  <div style="height:8px;border-radius:4px;background:rgba(255,255,255,0.15);width:80%;margin-bottom:5px"></div>
+                  <div style="height:6px;border-radius:3px;background:rgba(255,255,255,0.07);width:55%"></div>
+                </div>
+                <div style="background:var(--mint);color:#0A0E1A;font-size:0.65rem;font-weight:700;padding:4px 10px;border-radius:6px">Active</div>
+              </div>
+              <div style="height:1px;background:var(--border)"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div style="background:rgba(122,237,197,0.08);border:1px solid rgba(122,237,197,0.15);border-radius:10px;padding:12px">
+                  <div style="font-size:1.2rem;font-weight:700;color:var(--mint)">2.4k</div>
+                  <div style="font-size:0.65rem;color:var(--text-muted)">Components</div>
+                </div>
+                <div style="background:rgba(245,197,66,0.08);border:1px solid rgba(245,197,66,0.15);border-radius:10px;padding:12px">
+                  <div style="font-size:1.2rem;font-weight:700;color:var(--amber)">98%</div>
+                  <div style="font-size:0.65rem;color:var(--text-muted)">Match Rate</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Figma → Code -->
+        <div class="showcase-card">
+          <div class="showcase-card-header">
+            <div class="showcase-icon" style="background:rgba(167,139,250,0.1)">⬡</div>
+            <div>
+              <div class="h-md">Figma → Code</div>
+              <span style="background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);color:#A78BFA;border-radius:6px;padding:4px 10px;font-size:0.7rem;font-weight:600">Pixel Perfect</span>
+            </div>
+          </div>
+          <div class="showcase-card-body">
+            <p>Turn messy Figma files into production-ready components — with real component libraries, not raw HTML.</p>
+          </div>
+          <div class="showcase-visual">
+            <div class="code-editor-bar">
+              <div style="display:flex;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#FF5F57;display:block"></span><span style="width:8px;height:8px;border-radius:50%;background:#FFBD2E;display:block"></span><span style="width:8px;height:8px;border-radius:50%;background:#28C840;display:block"></span></div>
+              Figma → Code
+            </div>
+            <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative">
+              <div style="padding:14px;border-right:1px solid var(--border)">
+                <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:8px;letter-spacing:0.08em">FIGMA</div>
+                <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:10px">
+                  <div style="height:10px;background:linear-gradient(90deg,#A78BFA,#7C3AED);border-radius:3px;margin-bottom:6px;width:70%"></div>
+                  <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:2px;margin-bottom:4px"></div>
+                  <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:2px;width:60%"></div>
+                </div>
+                <div style="height:8px;background:rgba(255,255,255,0.05);border-radius:4px;margin-top:8px"></div>
+              </div>
+              <div style="padding:14px">
+                <div style="font-size:0.62rem;color:var(--mint);margin-bottom:8px;letter-spacing:0.08em">CODE</div>
+                <div class="code-area" style="padding:0;font-size:0.68rem">
+                  <div class="code-line"><span class="kw">const</span> <span class="fn">Card</span> =</div>
+                  <div class="code-line">&nbsp;() =&gt; (</div>
+                  <div class="code-line">&nbsp;&lt;<span class="typ">Box</span> sx={{</div>
+                  <div class="code-line">&nbsp;&nbsp;p: <span class="val">3</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;bgcolor:</div>
+                  <div class="code-line">&nbsp;&nbsp;<span class="str">'primary'</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FEATURE 1: Built-in Skills ════════════════════════════ -->
+  <section class="feature-section">
+    <div class="container">
+      <div class="feature-row">
+        <div class="feature-text reveal">
+          <div class="section-tag">Built-in Skills</div>
+          <h2 class="h-xl">Frontend intelligence baked in</h2>
+          <p class="body-lg">Ship stunning UX with clean, efficient code. Kombai automatically incorporates best practices from 400+ frontend libraries and makes refined design choices.</p>
+          <ul class="feature-bullets">
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Knows MUI, Tailwind, Shadcn, Chakra and 400+ more libraries
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Auto-incorporates design system best practices
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Generates pixel-perfect, accessible components
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              No backend hallucinations — isolated to frontend
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual reveal reveal-delay-2">
+          <div class="feature-mock">
+            <div class="feature-mock-header">
+              <span class="terminal-dot terminal-dot-r"></span>
+              <span class="terminal-dot terminal-dot-y"></span>
+              <span class="terminal-dot terminal-dot-g"></span>
+              <span class="feature-mock-title">kombai/skills.index</span>
+            </div>
+            <div class="feature-mock-body">
+              <div style="margin-bottom:16px">
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px;font-family:var(--font-head);font-weight:500">Loaded Skills</div>
+                <div class="skill-grid">
+                  <span class="skill-tag skill-tag-mint">MUI v7</span>
+                  <span class="skill-tag skill-tag-mint">Tailwind v4</span>
+                  <span class="skill-tag skill-tag-mint">Shadcn</span>
+                  <span class="skill-tag skill-tag-amber">Next.js 15</span>
+                  <span class="skill-tag skill-tag-amber">React Router v7</span>
+                  <span class="skill-tag skill-tag-grey">Recharts</span>
+                  <span class="skill-tag skill-tag-grey">Tanstack Query</span>
+                  <span class="skill-tag skill-tag-grey">Zustand</span>
+                  <span class="skill-tag skill-tag-mint">Mantine v8</span>
+                  <span class="skill-tag skill-tag-grey">Framer Motion</span>
+                </div>
+              </div>
+              <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+                <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px">Active context</div>
+                <div class="repo-list">
+                  <div class="repo-item active"><span class="repo-dot" style="background:var(--mint)"></span>theme.ts — MUI theme detected</div>
+                  <div class="repo-item"><span class="repo-dot" style="background:var(--amber)"></span>components/ — 48 reusable found</div>
+                  <div class="repo-item"><span class="repo-dot" style="background:#6B7280"></span>tailwind.config — v4 syntax</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-float-badge badge-top-right">
+            <div class="badge-stat">400+</div>
+            <div class="badge-label">Libraries supported</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FEATURE 2: Browser ════════════════════════════════════ -->
+  <section class="feature-section" style="background:linear-gradient(180deg, rgba(122,237,197,0.02) 0%, transparent 100%)">
+    <div class="container">
+      <div class="feature-row reverse">
+        <div class="feature-text reveal">
+          <div class="section-tag">AI Browser</div>
+          <h2 class="h-xl">The browser engineered for AI&nbsp;+&nbsp;you</h2>
+          <p class="body-lg">Don't limit your agent to screenshots. Our browser combines agentic automation with deep multi-tab data access and precise controls to guide, debug, and audit.</p>
+          <ul class="feature-bullets">
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Full agentic browser automation — not just screenshots
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Deep DOM inspection and audit capabilities
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Multi-tab access for cross-page debugging
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              You stay in control — guide and correct the agent
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual reveal reveal-delay-2">
+          <div class="browser-mock">
+            <div class="browser-chrome">
+              <div class="browser-dots">
+                <span style="background:#FF5F57"></span>
+                <span style="background:#FFBD2E"></span>
+                <span style="background:#28C840"></span>
+              </div>
+              <div class="browser-url">localhost:3000/dashboard</div>
+            </div>
+            <div class="browser-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="browser-panel">
+                  <div class="panel-header">🔍 DOM Inspector</div>
+                  <div class="panel-body">
+                    <div class="panel-row"><span class="panel-key">element</span><span class="panel-val">&lt;Card /&gt;</span></div>
+                    <div class="panel-row"><span class="panel-key">padding</span><span class="panel-val">16px 24px</span></div>
+                    <div class="panel-row"><span class="panel-key">color</span><span class="panel-val">#7AEDC5</span></div>
+                    <div class="panel-row"><span class="panel-key">z-index</span><span class="panel-val">10</span></div>
+                  </div>
+                </div>
+                <div class="browser-panel">
+                  <div class="panel-header">📊 Audit</div>
+                  <div class="panel-body">
+                    <div class="panel-row"><span class="panel-key">Accessibility</span><span style="color:#28C840;font-size:0.72rem;font-family:monospace">98/100</span></div>
+                    <div class="panel-row"><span class="panel-key">Performance</span><span style="color:#28C840;font-size:0.72rem;font-family:monospace">94/100</span></div>
+                    <div class="panel-row"><span class="panel-key">SEO</span><span style="color:#28C840;font-size:0.72rem;font-family:monospace">100/100</span></div>
+                    <div class="panel-row"><span class="panel-key">Best Practices</span><span style="color:var(--amber);font-size:0.72rem;font-family:monospace">87/100</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-float-badge badge-bottom-left">
+            <div class="badge-stat" style="color:var(--amber)">Live</div>
+            <div class="badge-label">Real-time DOM access</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FEATURE 3: Learns Your Stack ══════════════════════════ -->
+  <section class="feature-section">
+    <div class="container">
+      <div class="feature-row">
+        <div class="feature-text reveal">
+          <div class="section-tag">Repo Intelligence</div>
+          <h2 class="h-xl">Learns your stack. Reuses your components.</h2>
+          <p class="body-lg">Kombai learns your stack, components, and patterns, then reuses them intelligently to generate code that fits cleanly into your repo.</p>
+          <ul class="feature-bullets">
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Indexes your entire component library automatically
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Matches your naming conventions and folder structure
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              Respects your existing theme and design tokens
+            </li>
+            <li>
+              <div class="bullet-icon"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              No generic output — code that belongs in your codebase
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual reveal reveal-delay-2">
+          <div class="feature-mock">
+            <div class="feature-mock-header">
+              <span class="terminal-dot terminal-dot-r"></span>
+              <span class="terminal-dot terminal-dot-y"></span>
+              <span class="terminal-dot terminal-dot-g"></span>
+              <span class="feature-mock-title">repo-context.json</span>
+            </div>
+            <div class="feature-mock-body">
+              <div style="font-family:'Courier New',monospace;font-size:0.75rem;color:var(--text-body);line-height:1.9">
+                <div>{</div>
+                <div>&nbsp;&nbsp;<span class="kw">"stack"</span>: {</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"framework"</span>: <span class="val">"Next.js 15"</span>,</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"ui"</span>: <span class="val">"MUI v7"</span>,</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"css"</span>: <span class="val">"Emotion"</span></div>
+                <div>&nbsp;&nbsp;},</div>
+                <div>&nbsp;&nbsp;<span class="kw">"components"</span>: <span style="color:var(--mint)">48 indexed</span>,</div>
+                <div>&nbsp;&nbsp;<span class="kw">"theme"</span>: <span style="color:var(--mint)">auto-detected</span>,</div>
+                <div>&nbsp;&nbsp;<span class="kw">"patterns"</span>: <span style="color:var(--amber)">"learned ✓"</span></div>
+                <div>}</div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-float-badge badge-top-right">
+            <div class="badge-stat">48</div>
+            <div class="badge-label">Components indexed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ANGULAR DIVIDER ════════════════════════════════════════ -->
+  <div class="angular-divider" style="transform:scaleX(-1)">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" width="100%" height="80">
+      <path d="M0,40 L1440,0 L1440,80 L0,80 Z" fill="rgba(13,18,37,0.4)"/>
+    </svg>
+  </div>
+
+  <!-- ══ ENTERPRISE BENTO ═══════════════════════════════════════ -->
+  <section id="enterprise">
+    <div class="container">
+      <div class="enterprise-header reveal">
+        <div class="section-tag" style="justify-content:center">Enterprise Ready</div>
+        <h2 class="h-xl">Powering Modern Frontend Teams</h2>
+        <p class="body-lg" style="max-width:560px;margin:16px auto 0">Kombai works for frontend projects of all sizes and complexities.</p>
+      </div>
+      <div class="bento-grid">
+        <div class="bento-card reveal">
+          <div class="bento-glow" style="background:var(--mint)"></div>
+          <div class="bento-icon" style="background:var(--mint-dim)">🔒</div>
+          <h3>Isolated to Frontend</h3>
+          <p>Kombai won't mistakenly change your database or backend logic. It understands where frontend ends and backend begins.</p>
+          <span class="bento-cta">
+            Learn more
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </div>
+        <div class="bento-card reveal reveal-delay-2">
+          <div class="bento-glow" style="background:var(--amber)"></div>
+          <div class="bento-icon" style="background:var(--amber-dim)">🏢</div>
+          <h3>Org-specific Context</h3>
+          <p>For enterprise customers, we set up custom context-engines that can accurately use complex, proprietary stacks and design systems.</p>
+          <a href="https://kombai.com/support/" class="bento-cta">
+            Contact us
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="bento-card reveal reveal-delay-3">
+          <div class="bento-glow" style="background:#A78BFA"></div>
+          <div class="bento-icon" style="background:rgba(167,139,250,0.1)">🛡️</div>
+          <h3>Enterprise-grade Privacy</h3>
+          <p>Kombai is SOC 2 certified. Your code never leaves your environment for training. We never use your data for model improvements.</p>
+          <a href="https://kombai.trust.site/" class="bento-cta">
+            Trust center
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIALS ═══════════════════════════════════════════ -->
+  <section id="testimonials">
+    <div class="container">
+      <div class="testimonials-header reveal">
+        <div class="section-tag" style="justify-content:center">Developer Love</div>
+        <h2 class="h-xl">Trusted by frontend teams</h2>
+      </div>
+    </div>
+
+    <!-- Row 1 -->
+    <div class="marquee-wrap" style="margin-bottom:20px">
+      <div class="marquee-track" id="marquee-1"></div>
+    </div>
+
+    <!-- Row 2 (reverse) -->
+    <div class="marquee-wrap">
+      <div class="marquee-track reverse" id="marquee-2"></div>
+    </div>
+  </section>
+
+  <!-- ══ CTA ════════════════════════════════════════════════════ -->
+  <section id="cta-section">
+    <div class="cta-glow-ring"></div>
+    <div class="cta-glow-ring"></div>
+    <div class="cta-glow-ring"></div>
+    <div class="cta-radial"></div>
+    <div class="container">
+      <div class="cta-content reveal">
+        <div class="section-tag" style="justify-content:center;margin-bottom:24px">Get Started</div>
+        <h2 class="h-xl">Try Kombai Now</h2>
+        <p class="body-lg" style="max-width:540px;margin:16px auto 40px">
+          From small components to full app UIs — Kombai generates frontend code right inside your IDE. Clean, backend-agnostic output that fits your stack.
+        </p>
+        <a href="https://kombai.com/install/" class="btn-cta-glow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          Install Kombai — It's Free
+        </a>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-top:20px">Runs inside VS Code &amp; compatible IDEs · No credit card required</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ═════════════════════════════════════════════════ -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo">
+            <div class="nav-logo-mark">
+              <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 4h12v2H3V4zm0 4h8v2H3V8zm0 4h10v2H3v-2z"/>
+              </svg>
+            </div>
+            Kombai
+          </div>
+          <p>The AI Agent Built for Frontend Development. Ship world-class UX, faster.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Resources</div>
+          <ul class="footer-links">
+            <li><a href="https://docs.kombai.com/">Docs</a></li>
+            <li><a href="https://kombai.com/blog/">Blog</a></li>
+            <li><a href="https://kombai.com/guide/">Guides</a></li>
+            <li><a href="https://kombai.com/changelog/">Changelog</a></li>
+            <li><a href="https://kombai.com/support/">Support</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Libraries</div>
+          <ul class="footer-links">
+            <li><a href="https://kombai.com/mui/autocomplete/">Material UI</a></li>
+            <li><a href="https://kombai.com/tailwind/introduction/">Tailwind CSS</a></li>
+            <li><a href="https://kombai.com/features/">All Frameworks</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Legal</div>
+          <ul class="footer-links">
+            <li><a href="https://kombai.com/terms/">Terms &amp; Conditions</a></li>
+            <li><a href="https://kombai.com/privacy/">Privacy Policy</a></li>
+            <li><a href="https://kombai.com/usepolicy/">Acceptable Use</a></li>
+            <li><a href="https://kombai.trust.site/">Trust Center</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Kombai. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="https://twitter.com/kombaico" title="Twitter/X">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.732-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://linkedin.com/company/kombai" title="LinkedIn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── Design tokens for JS ─────────────────────────────────── */
+    const MINT = '#7AEDC5';
+    const AMBER = '#F5C542';
+
+    /* ── Nav scroll ───────────────────────────────────────────── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    /* ── Hero headline word-by-word animation ─────────────────── */
+    const headline = document.getElementById('hero-headline');
+    const words = [
+      { text: 'The ', color: '#fff' },
+      { text: 'AI ', color: '#fff' },
+      { text: 'Agent', color: '#fff' },
+      { text: '\n', color: '' },
+      { text: 'Built ', color: MINT },
+      { text: 'for ', color: MINT },
+      { text: 'Frontend', color: MINT },
+    ];
+    let wordHtml = '';
+    let delay = 0.2;
+    words.forEach(w => {
+      if (w.text === '\n') { wordHtml += '<br/>'; return; }
+      wordHtml += `<span class="word" style="color:${w.color};animation-delay:${delay}s">${w.text}</span>`;
+      delay += 0.12;
+    });
+    headline.innerHTML = wordHtml;
+
+    /* ── Terminal typewriter ──────────────────────────────────── */
+    const termOutput = document.getElementById('term-output');
+    const termHistory = document.getElementById('term-history');
+    const termCursor = document.getElementById('term-cursor');
+
+    const session = [
+      {
+        cmd: 'kombai "Add a dark mode toggle to the header"',
+        responses: [
+          { cls: 'term-output', text: '→ Reading repo context...' },
+          { cls: 'term-output', text: '→ Detected: Next.js 15, MUI v7, Emotion' },
+          { cls: 'term-output', text: '→ Found: ThemeProvider in app/layout.tsx' },
+          { cls: 'term-success', text: '✓ Reusing existing useColorMode hook' },
+          { cls: 'term-success', text: '✓ Component written: Header.tsx updated' },
+          { cls: 'term-info',    text: '⚡ 3 files modified, 0 regressions' },
+        ]
+      },
+      {
+        cmd: 'kombai "Create a DataTable with sorting and filters"',
+        responses: [
+          { cls: 'term-output', text: '→ Loading Tanstack Table skills...' },
+          { cls: 'term-output', text: '→ Matched design tokens from theme.ts' },
+          { cls: 'term-success', text: '✓ DataTable.tsx created (187 lines)' },
+          { cls: 'term-success', text: '✓ Accessible, keyboard navigable' },
+          { cls: 'term-info',    text: '⚡ Production-ready in 8s' },
+        ]
+      }
+    ];
+
+    let sessionIdx = 0, charIdx = 0, responseIdx = 0;
+    let typingPhase = 'cmd'; // 'cmd' | 'responses' | 'pause'
+
+    function addHistoryLine(cls, text) {
+      const div = document.createElement('div');
+      div.className = 'term-line';
+      div.innerHTML = `<span class="${cls}">${text}</span>`;
+      termHistory.appendChild(div);
+    }
+
+    function typeStep() {
+      const current = session[sessionIdx];
+      if (typingPhase === 'cmd') {
+        if (charIdx < current.cmd.length) {
+          termOutput.textContent += current.cmd[charIdx++];
+          setTimeout(typeStep, 40 + Math.random() * 30);
+        } else {
+          typingPhase = 'responses';
+          responseIdx = 0;
+          setTimeout(typeStep, 400);
+        }
+      } else if (typingPhase === 'responses') {
+        if (responseIdx < current.responses.length) {
+          const r = current.responses[responseIdx++];
+          addHistoryLine(r.cls, r.text);
+          setTimeout(typeStep, 300 + Math.random() * 200);
+        } else {
+          typingPhase = 'pause';
+          setTimeout(typeStep, 2500);
+        }
+      } else if (typingPhase === 'pause') {
+        // Reset for next session
+        addHistoryLine('term-output', '');
+        addHistoryLine('term-prompt', '');
+        termOutput.textContent = '';
+        charIdx = 0;
+        responseIdx = 0;
+        sessionIdx = (sessionIdx + 1) % session.length;
+        typingPhase = 'cmd';
+
+        // Keep terminal from growing too long
+        while (termHistory.children.length > 14) {
+          termHistory.removeChild(termHistory.firstChild);
+        }
+        setTimeout(typeStep, 600);
+      }
+    }
+    setTimeout(typeStep, 1500);
+
+    /* ── Ticker ───────────────────────────────────────────────── */
+    const frameworks = [
+      { name: 'React', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><g fill="#61DAFB"><circle cx="64" cy="64" r="11.4"/><path d="M107.3 45.2c-2.2-.8-4.5-1.6-6.9-2.3c.6-2.4 1.1-4.8 1.5-7.1c2.1-13.2-.2-22.5-6.6-26.1c-1.9-1.1-4-1.6-6.4-1.6c-7 0-15.9 5.2-24.9 13.9c-9-8.7-17.9-13.9-24.9-13.9c-2.4 0-4.5.5-6.4 1.6c-6.4 3.7-8.7 13-6.6 26.1c.4 2.3.9 4.7 1.5 7.1c-2.4.7-4.7 1.4-6.9 2.3C8.2 50 1.4 56.6 1.4 64s6.9 14 19.3 18.8c2.2.8 4.5 1.6 6.9 2.3c-.6 2.4-1.1 4.8-1.5 7.1c-2.1 13.2.2 22.5 6.6 26.1c1.9 1.1 4 1.6 6.4 1.6c7.1 0 16-5.2 24.9-13.9c9 8.7 17.9 13.9 24.9 13.9c2.4 0 4.5-.5 6.4-1.6c6.4-3.7 8.7-13 6.6-26.1c-.4-2.3-.9-4.7-1.5-7.1c2.4-.7 4.7-1.4 6.9-2.3c12.5-4.8 19.3-11.4 19.3-18.8s-6.8-14-19.3-18.8M92.5 14.7c4.1 2.4 5.5 9.8 3.8 20.3c-.3 2.1-.8 4.3-1.4 6.6c-5.2-1.2-10.7-2-16.5-2.5c-3.4-4.8-6.9-9.1-10.4-13c7.4-7.3 14.9-12.3 21-12.3c1.3 0 2.5.3 3.5.9M81.3 74c-1.8 3.2-3.9 6.4-6.1 9.6c-3.7.3-7.4.4-11.2.4c-3.9 0-7.6-.1-11.2-.4q-3.3-4.8-6-9.6c-1.9-3.3-3.7-6.7-5.3-10c1.6-3.3 3.4-6.7 5.3-10c1.8-3.2 3.9-6.4 6.1-9.6c3.7-.3 7.4-.4 11.2-.4c3.9 0 7.6.1 11.2.4q3.3 4.8 6 9.6c1.9 3.3 3.7 6.7 5.3 10c-1.7 3.3-3.4 6.6-5.3 10m8.3-3.3c1.5 3.5 2.7 6.9 3.8 10.3c-3.4.8-7 1.4-10.8 1.9c1.2-1.9 2.5-3.9 3.6-6c1.2-2.1 2.3-4.2 3.4-6.2M64 97.8c-2.4-2.6-4.7-5.4-6.9-8.3c2.3.1 4.6.2 6.9.2s4.6-.1 6.9-.2c-2.2 2.9-4.5 5.7-6.9 8.3m-18.6-15c-3.8-.5-7.4-1.1-10.8-1.9c1.1-3.3 2.3-6.8 3.8-10.3c1.1 2 2.2 4.1 3.4 6.1c1.2 2.2 2.4 4.1 3.6 6.1m-7-25.5c-1.5-3.5-2.7-6.9-3.8-10.3c3.4-.8 7-1.4 10.8-1.9c-1.2 1.9-2.5 3.9-3.6 6c-1.2 2.1-2.3 4.2-3.4 6.2M64 30.2c2.4 2.6 4.7 5.4 6.9 8.3c-2.3-.1-4.6-.2-6.9-.2s-4.6.1-6.9.2c2.2-2.9 4.5-5.7 6.9-8.3m22.2 21l-3.6-6c3.8.5 7.4 1.1 10.8 1.9c-1.1 3.3-2.3 6.8-3.8 10.3c-1.1-2.1-2.2-4.2-3.4-6.2M31.7 35c-1.7-10.5-.3-17.9 3.8-20.3c1-.6 2.2-.9 3.5-.9c6 0 13.5 4.9 21 12.3c-3.5 3.8-7 8.2-10.4 13c-5.8.5-11.3 1.4-16.5 2.5c-.6-2.3-1-4.5-1.4-6.6M7 64c0-4.7 5.7-9.7 15.7-13.4c2-.8 4.2-1.5 6.4-2.1c1.6 5 3.6 10.3 6 15.6c-2.4 5.3-4.5 10.5-6 15.5C15.3 75.6 7 69.6 7 64m28.5 49.3c-4.1-2.4-5.5-9.8-3.8-20.3c.3-2.1.8-4.3 1.4-6.6c5.2 1.2 10.7 2 16.5 2.5c3.4 4.8 6.9 9.1 10.4 13c-7.4 7.3-14.9 12.3-21 12.3c-1.3 0-2.5-.3-3.5-.9M96.3 93c1.7 10.5.3 17.9-3.8 20.3c-1 .6-2.2.9-3.5.9c-6 0-13.5-4.9-21-12.3c3.5-3.8 7-8.2 10.4-13c5.8-.5 11.3-1.4 16.5-2.5c.6 2.3 1 4.5 1.4 6.6m9-15.6c-2 .8-4.2 1.5-6.4 2.1c-1.6-5-3.6-10.3-6-15.6c2.4-5.3 4.5-10.5 6-15.5c13.8 4 22.1 10 22.1 15.6c0 4.7-5.8 9.7-15.7 13.4"/></g></svg>` },
+      { name: 'Next.js', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><circle cx="64" cy="64" r="64"/><path fill="url(#nj-a)" d="M106.317 112.014L49.167 38.4H38.4v51.179h8.614v-40.24l52.54 67.884a64 64 0 0 0 6.763-5.209"/><path fill="url(#nj-b)" d="M81.778 38.4h8.533v51.2h-8.533z"/><defs><linearGradient id="nj-a" x1="109" x2="144.5" y1="116.5" y2="160.5" gradientTransform="scale(.71111)" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="nj-b" x1="121" x2="120.799" y1="54" y2="106.875" gradientTransform="scale(.71111)" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs></svg>` },
+      { name: 'Vue', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><path fill="#35495e" d="m25.997 9.393l23.002.009L64.035 34.36L79.018 9.404L102 9.398L64.15 75.053z"/><path fill="#41b883" d="m.91 9.569l25.067-.172l38.15 65.659L101.98 9.401l25.11.026l-62.966 108.06z"/></svg>` },
+      { name: 'Angular', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><linearGradient id="ng-a" x1="14.704" x2="110.985" y1="46.27" y2="92.024" gradientTransform="matrix(1 0 0 -1 0 130)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e40035"/><stop offset=".24" stop-color="#f60a48"/><stop offset=".494" stop-color="#dc087d"/><stop offset=".745" stop-color="#9717e7"/><stop offset="1" stop-color="#6c00f5"/></linearGradient><path fill="url(#ng-a)" d="m124.5 21.3l-4.4 68.6L78.3 0zm-29 88.7L64 128l-31.5-18l6.4-15.5h50.3zM64 34.1l16.5 40.2h-33zM7.9 89.9L3.5 21.3L49.7 0z"/></svg>` },
+      { name: 'Svelte', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><path fill="#ff3e00" d="M110.43 16.936C98.553-.076 75.09-5.118 58.13 5.696l-29.792 19a34.2 34.2 0 0 0-15.48 22.897a36.15 36.15 0 0 0 4.163 16.73A34.4 34.4 0 0 0 11.34 83.5a36.5 36.5 0 0 0 5.9 13.152c11.878 17.01 35.394 22.053 52.3 11.24l29.762-19.001a34.13 34.13 0 0 0 15.438-22.918a36.2 36.2 0 0 0-4.112-16.71a34.4 34.4 0 0 0 5.112-12.77a36.4 36.4 0 0 0-6.787-21.178z"/><path fill="#fff" d="M55.219 112.662a28.463 34.23 0 0 1-5.954.76a23.64 23.64 0 0 1-19.435-10.187a21.9 21.9 0 0 1-4.08-12.74l.72-2.782l1.52 1.156a38.7 38.7 0 0 0 11.658 5.834l1.104.333l-.104 1.104a6.63 6.63 0 0 0 1.228 3.854a7.1 7.1 0 0 0 5.85 3.125a8.251 9.923 0 0 0 1.79-.229l29.76-19.094a6.26 6.26 0 0 0 2.904-5.302a6.62 6.62 0 0 0-5.86-5.906a8.246 9.917 0 0 0-1.79.23l-11.346 7.25a24.376 29.314 0 0 1-6.048 2.656a23.64 23.64 0 0 1-25.39-9.416a21.94 21.94 0 0 1-4.08-12.74a20.65 20.65 0 0 1 9.286-13.781l29.792-18.99a21.9 21.9 0 0 1 6.048-2.667A23.68 23.68 0 0 1 98.22 24.745a21.94 21.94 0 0 1 4.029 12.75l-.718 2.781l-1.52-1.114a38.4 38.4 0 0 0-11.658-5.834l-1.104-.343l.104-1.105a6.7 6.7 0 0 0-1.228-3.865a7.1 7.1 0 0 0-5.85-3.063a8.221 9.887 0 0 0-1.77.271l-29.793 18.99a5.88 7.071 0 0 0-2.799 4.167a5.037 6.057 0 0 0-.136 1.104a6.62 6.62 0 0 0 5.85 5.906a8.247 9.918 0 0 0 1.79-.23l11.367-7.292a24.218 29.125 0 0 1 6.048-2.656a23.66 23.66 0 0 1 25.437 9.437a21.94 21.94 0 0 1 3.737 16.614a20.6 20.6 0 0 1-9.286 13.781l-29.74 18.99a24.308 29.233 0 0 1-6.057 2.667z"/></svg>` },
+      { name: 'Flutter', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><path fill="#3FB6D3" d="M12.3 64.2L76.3 0h39.4L32.1 83.6zm64 63.8h39.4L81.6 93.9l34.1-34.8H76.3L42.2 93.5z"/><path fill="#27AACD" d="m81.6 93.9l-20-20l-19.4 19.6l19.4 19.6z"/><path fill="#19599A" d="M115.7 128L81.6 93.9l-20 19.2L76.3 128z"/></svg>` },
+      { name: 'TypeScript', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><path fill="#fff" d="M22.67 47h99.67v73.67H22.67z"/><path fill="#007acc" d="M1.5 63.91v62.5h125v-125H1.5zm100.73-5a15.56 15.56 0 0 1 7.82 4.5a20.6 20.6 0 0 1 3 4c0 .16-5.4 3.81-8.69 5.85c-.12.08-.6-.44-1.13-1.23a7.09 7.09 0 0 0-5.87-3.53c-3.79-.26-6.23 1.73-6.21 5a4.6 4.6 0 0 0 .54 2.34c.83 1.73 2.38 2.76 7.24 4.86c8.95 3.85 12.78 6.39 15.16 10c2.66 4 3.25 10.46 1.45 15.24c-2 5.2-6.9 8.73-13.83 9.9a38.3 38.3 0 0 1-9.52-.1a23 23 0 0 1-12.72-6.63c-1.15-1.27-3.39-4.58-3.25-4.82a9 9 0 0 1 1.15-.73L82 101l3.59-2.08l.75 1.11a16.8 16.8 0 0 0 4.74 4.54c4 2.1 9.46 1.81 12.16-.62a5.43 5.43 0 0 0 .69-6.92c-1-1.39-3-2.56-8.59-5c-6.45-2.78-9.23-4.5-11.77-7.24a16.5 16.5 0 0 1-3.43-6.25a25 25 0 0 1-.22-8c1.33-6.23 6-10.58 12.82-11.87a31.7 31.7 0 0 1 9.49.26zm-29.34 5.24v5.12H56.66v46.23H45.15V69.26H28.88v-5a49 49 0 0 1 .12-5.17C29.08 59 39 59 51 59h21.83z"/></svg>` },
+      { name: 'Tailwind', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><path fill="#38bdf8" d="M64.004 25.602c-17.067 0-27.73 8.53-32 25.597c6.398-8.531 13.867-11.73 22.398-9.597c4.871 1.214 8.352 4.746 12.207 8.66C72.883 56.629 80.145 64 96.004 64c17.066 0 27.73-8.531 32-25.602q-9.6 12.803-22.399 9.602c-4.87-1.215-8.347-4.746-12.207-8.66c-6.27-6.367-13.53-13.738-29.394-13.738M32.004 64c-17.066 0-27.73 8.531-32 25.602Q9.603 76.799 22.402 80c4.871 1.215 8.352 4.746 12.207 8.66c6.274 6.367 13.536 13.738 29.395 13.738c17.066 0 27.73-8.53 32-25.597q-9.6 12.797-22.399 9.597c-4.87-1.214-8.347-4.746-12.207-8.66C55.128 71.371 47.868 64 32.004 64m0 0"/></svg>` },
+      { name: 'Nuxt', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><path fill="#00dc82" d="M71.679 106.667h47.359c1.514 0 2.962-.533 4.268-1.283c1.307-.75 2.66-1.688 3.415-2.986S128 99.629 128 98.134s-.524-2.971-1.279-4.268l-32-55.038c-.755-1.297-1.68-2.24-2.99-2.991c-1.312-.751-3.18-1.279-4.695-1.279c-1.514 0-2.957.533-4.263 1.279s-2.232 1.693-2.987 2.991l-8.108 14.08l-16.213-27.311c-.755-1.297-1.68-2.66-2.986-3.41s-2.755-.854-4.269-.854s-2.957.104-4.264.854c-1.306.75-2.66 2.113-3.415 3.41L.854 93.864C.099 95.161 0 96.634 0 98.134s.099 2.966.854 4.263c.754 1.297 2.103 2.24 3.415 2.986c1.311.747 2.754 1.284 4.264 1.284H38.4c11.835 0 20.449-5.31 26.453-15.364l14.505-25.17l7.678-13.226l23.468 40.104H79.359ZM37.97 93.01H17.066l31.147-53.76L64 66.134L53.543 84.361c-3.986 6.523-8.533 8.65-15.572 8.65zm0 0"/></svg>` },
+      { name: 'MUI', svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128"><path fill="#1FA6CA" d="M.2 68.6V13.4L48 41v18.4L16.1 41v36.8z"/><path fill="#1C7FB6" d="m48 41l47.9-27.6v55.3L64 87l-16-9.2l32-18.4V41L48 59.4z"/><path fill="#1FA6CA" d="M48 77.8v18.4l32 18.4V96.2z"/><path fill="#1C7FB6" d="M80 114.6L127.8 87V50.2l-16 9.2v18.4L80 96.2zM111.9 41V22.6l16-9.2v18.4z"/></svg>` },
+    ];
+
+    const track = document.getElementById('ticker-track');
+    // Duplicate for seamless loop
+    const items = [...frameworks, ...frameworks];
+    items.forEach(f => {
+      const el = document.createElement('div');
+      el.className = 'ticker-item';
+      el.innerHTML = `${f.svg}${f.name}`;
+      track.appendChild(el);
+    });
+
+    /* ── Testimonials ─────────────────────────────────────────── */
+    const testimonials = [
+      { name: 'berkantay',     handle: '@berkant_thedev',   avatar: 'berkantay',      text: "I have spent the last few days testing Kombai but so far I am impressed. It matched our MUI brand theme and conventions that we follow." },
+      { name: 'The Dev Logger', handle: '@TheDevLogger',    avatar: 'dev-logger',      text: "It just knows your stack really, really well. Kombai has built-in context tools for each supported front-end library." },
+      { name: 'Developers Digest', handle: '@DevelopersDigest', avatar: 'developers-digest', text: "Just kudos to the team at Kombai for focusing on a particular aspect of development. Very promising." },
+      { name: 'Anant',         handle: '@The_Anant_Raj',   avatar: 'anant',           text: "Try @Kombaico — that's better than both Claude Code and Codex." },
+      { name: 'AICodeKing',    handle: '@AICodeKing',       avatar: 'ai-code-king',    text: "I think this is probably the best agent for front-end development that I have seen yet." },
+      { name: 'Code With Nathan', handle: '@CodeWithNathan97', avatar: 'code-with-nathan', text: "Kombai generates code following best practices from specific libraries — other AI agents usually just give you generic output." },
+      { name: 'Chidera Humphrey', handle: '@ChideraCode',   avatar: 'chidera-humphrey', text: "I've been using Kombai for a while now, and it's pretty accurate in matching my design system and component structure." },
+      { name: 'Vivek Chavan',  handle: '@devloperVivek',    avatar: 'vivek-chavan',    text: "For frontend I use Kombai — understands my stack and existing components way better than general agents." },
+      { name: 'Shark Numbers', handle: '@ivankv',           avatar: 'shark-numbers',   text: "Focused on front end only. No hallucination, no backend drama, and the output is usable immediately. Worth trying." },
+      { name: 'Cess',          handle: '@Cessss',           avatar: 'cess',            text: "Kombai, easily. The code quality is genuinely good. Not 'AI good,' actually good." },
+      { name: 'Astro K Joseph', handle: '@AstroKJ',         avatar: 'astro-joseph',    text: "I have tested a bunch of Figma to code tools over the years, and nothing comes close to Kombai." },
+      { name: 'Harshil Tomar', handle: '@Hartdrawss',       avatar: 'harshil-tomar',   text: "I turned Figma files into MVPs hundreds of times now. @kombaico is the secret weapon." },
+    ];
+
+    function buildTestimonialCard(t) {
+      const card = document.createElement('div');
+      card.className = 'testimonial-card';
+      card.innerHTML = `
+        <div class="test-quote">"</div>
+        <div class="test-header">
+          <img class="test-avatar" src="https://i.pravatar.cc/80?u=${t.avatar}" alt="${t.name}" loading="lazy" />
+          <div>
+            <div class="test-name">${t.name}</div>
+            <div class="test-handle">${t.handle}</div>
+          </div>
+        </div>
+        <p class="test-text">${t.text}</p>
+      `;
+      return card;
+    }
+
+    const m1 = document.getElementById('marquee-1');
+    const m2 = document.getElementById('marquee-2');
+    const half = Math.ceil(testimonials.length / 2);
+    const row1 = testimonials.slice(0, half);
+    const row2 = testimonials.slice(half);
+
+    // Duplicate each row for seamless loop
+    [...row1, ...row1].forEach(t => m1.appendChild(buildTestimonialCard(t)));
+    [...row2, ...row2].forEach(t => m2.appendChild(buildTestimonialCard(t)));
+
+    /* ── Showcase horizontal drag scroll ─────────────────────── */
+    const scrollWrap = document.getElementById('showcase-scroll');
+    let isDown = false, startX, scrollLeft;
+    scrollWrap.addEventListener('mousedown', e => {
+      isDown = true;
+      startX = e.pageX - scrollWrap.offsetLeft;
+      scrollLeft = scrollWrap.scrollLeft;
+    });
+    scrollWrap.addEventListener('mouseleave', () => isDown = false);
+    scrollWrap.addEventListener('mouseup',    () => isDown = false);
+    scrollWrap.addEventListener('mousemove',  e => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - scrollWrap.offsetLeft;
+      scrollWrap.scrollLeft = scrollLeft - (x - startX) * 1.5;
+    });
+
+    /* ── Scroll reveal ────────────────────────────────────────── */
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+
+    /* ── Bento card mouse-tracking parallax ──────────────────── */
+    document.querySelectorAll('.bento-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width  - 0.5;
+        const y = (e.clientY - rect.top)  / rect.height - 0.5;
+        card.style.transform = `perspective(800px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-4px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.transition = 'transform 0.5s ease, border-color 0.3s, box-shadow 0.3s';
+      });
+    });
+  </script>
+</body>
+</html>
