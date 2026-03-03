@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kombai – The AI Agent Built for Frontend Development</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* =====================================================
+       DESIGN TOKENS — "Digital Dawn"
+    ===================================================== */
+    :root {
+      /* Colors */
+      --color-bg-primary: #F5FFFE;
+      --color-cyan-light: #E0FFFF;
+      --color-peach-soft: #FADFAD;
+      --color-coral: #F08080;
+      --color-coral-dark: #E06060;
+      --color-pink-mist: #F19CBB;
+      --color-pink-glow: rgba(241, 156, 187, 0.35);
+      --color-coral-glow: rgba(240, 128, 128, 0.4);
+      --color-text-primary: #1A1A2E;
+      --color-text-secondary: #4A4A6A;
+      --color-text-muted: #8888AA;
+      --color-glass-bg: rgba(255,255,255,0.45);
+      --color-glass-border: rgba(255,255,255,0.7);
+      --color-glass-dark: rgba(255,255,255,0.25);
+      --color-terminal-bg: rgba(10, 14, 28, 0.92);
+      --color-terminal-green: #4FFFB0;
+      --color-terminal-cyan: #7FEFFF;
+      --color-terminal-pink: #F19CBB;
+
+      /* Fonts */
+      --font-heading: 'Space Grotesk', sans-serif;
+      --font-body: 'Source Sans 3', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Spacing */
+      --space-xs: 8px;
+      --space-sm: 16px;
+      --space-md: 24px;
+      --space-lg: 48px;
+      --space-xl: 80px;
+      --space-2xl: 120px;
+
+      /* Border radii */
+      --radius-sm: 12px;
+      --radius-md: 24px;
+      --radius-lg: 48px;
+      --radius-pill: 999px;
+
+      /* Shadows */
+      --shadow-glass: 0 8px 32px rgba(31,38,135,0.1);
+      --shadow-card: 0 4px 40px rgba(180,160,200,0.18);
+      --shadow-coral-glow: 0 0 25px rgba(240,128,128,0.4);
+      --shadow-pink-glow: 0 0 40px rgba(241,156,187,0.5);
+    }
+
+    /* =====================================================
+       RESET & BASE
+    ===================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--color-text-primary);
+      background: var(--color-bg-primary);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* =====================================================
+       AURORA MESH BACKGROUND
+    ===================================================== */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .aurora-bg::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 20%, rgba(224,255,255,0.75) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 80% at 80% 80%, rgba(250,223,173,0.65) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 60% 10%, rgba(241,156,187,0.25) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 60% at 10% 80%, rgba(224,255,255,0.5) 0%, transparent 55%);
+      animation: auroraShift 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes auroraShift {
+      0%   { transform: scale(1) translate(0, 0) rotate(0deg); }
+      33%  { transform: scale(1.05) translate(2%, 1%) rotate(1deg); }
+      66%  { transform: scale(0.97) translate(-1%, 2%) rotate(-1deg); }
+      100% { transform: scale(1.03) translate(1%, -1%) rotate(0.5deg); }
+    }
+
+    /* Grainy noise texture overlay */
+    .aurora-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+      opacity: 0.6;
+    }
+
+    /* Background SVG patterns for parallax */
+    .bg-pattern {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.07;
+    }
+
+    /* =====================================================
+       LAYOUT UTILITIES
+    ===================================================== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-md);
+      position: relative;
+      z-index: 2;
+    }
+
+    .section {
+      position: relative;
+      z-index: 2;
+      padding: var(--space-xl) 0;
+    }
+
+    /* =====================================================
+       TYPOGRAPHY
+    ===================================================== */
+    h1, h2, h3 {
+      font-family: var(--font-heading);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    h1 { font-size: clamp(2.8rem, 6vw, 5.5rem); font-weight: 700; }
+    h2 { font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 700; }
+    h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 600; }
+
+    .label-mono {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, var(--color-coral) 0%, var(--color-pink-mist) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .text-gradient-dawn {
+      background: linear-gradient(135deg, #E07070 0%, var(--color-coral) 40%, var(--color-pink-mist) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    p {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+    }
+
+    /* =====================================================
+       GLASS CARD (Gourdful)
+    ===================================================== */
+    .glass-card {
+      background: var(--color-glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px solid var(--color-glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass), var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+    }
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      padding: 14px 28px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, var(--color-coral) 0%, #E87878 100%);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(240,128,128,0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: var(--shadow-coral-glow), 0 8px 30px rgba(240,128,128,0.3);
+    }
+
+    .btn-secondary {
+      padding: 14px 28px;
+      border-radius: var(--radius-pill);
+      background: var(--color-glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(240,128,128,0.3);
+      color: var(--color-text-primary);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.7);
+      border-color: var(--color-coral);
+      box-shadow: 0 8px 20px rgba(240,128,128,0.15);
+    }
+
+    /* =====================================================
+       NAVBAR
+    ===================================================== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      transition: all 0.4s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(245,255,254,0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 2px 20px rgba(180,160,200,0.15);
+      padding: 12px 0;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-md);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--color-text-primary);
+    }
+
+    .nav-logo-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--color-coral), var(--color-pink-mist));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--color-coral); }
+
+    /* =====================================================
+       HERO SECTION — Diagonal Cut / Paleoconcha
+    ===================================================== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 140px var(--space-md) 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Logarithmic spiral / diagonal mask */
+    .hero-diagonal-mask {
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      line-height: 0;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(240,128,128,0.1);
+      border: 1px solid rgba(240,128,128,0.3);
+      margin-bottom: 28px;
+      animation: floatY 3s ease-in-out infinite;
+    }
+
+    @keyframes floatY {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-6px); }
+    }
+
+    .hero-eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-coral);
+      box-shadow: 0 0 8px var(--color-coral);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 8px var(--color-coral); }
+      50%       { box-shadow: 0 0 16px var(--color-coral), 0 0 30px rgba(240,128,128,0.4); }
+    }
+
+    .hero h1 {
+      margin-bottom: 20px;
+      max-width: 820px;
+    }
+
+    .hero-sub {
+      max-width: 580px;
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 40px;
+      line-height: 1.65;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 56px;
+    }
+
+    /* Framework support strip */
+    .supports-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .supports-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--color-text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .framework-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .framework-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--color-glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid var(--color-glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: var(--shadow-glass);
+      transition: transform 0.2s;
+    }
+
+    .framework-badge:hover { transform: scale(1.15) translateY(-3px); }
+
+    .more-badge {
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: var(--color-glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid var(--color-glass-border);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Pink glow orbs (star-like) for AI elements */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .glow-orb-1 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(241,156,187,0.28) 0%, transparent 70%);
+      top: 15%;
+      right: 8%;
+      animation: orbFloat1 8s ease-in-out infinite;
+    }
+
+    .glow-orb-2 {
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(240,128,128,0.2) 0%, transparent 70%);
+      bottom: 20%;
+      left: 5%;
+      animation: orbFloat2 10s ease-in-out infinite;
+    }
+
+    .glow-orb-3 {
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(224,255,255,0.4) 0%, transparent 70%);
+      top: 40%;
+      left: 12%;
+      animation: orbFloat3 7s ease-in-out infinite;
+    }
+
+    @keyframes orbFloat1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%       { transform: translate(-20px, 15px) scale(1.08); }
+    }
+    @keyframes orbFloat2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%       { transform: translate(15px, -20px) scale(1.05); }
+    }
+    @keyframes orbFloat3 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%       { transform: translate(10px, 12px) scale(0.95); }
+    }
+
+    /* Hero product card preview */
+    .hero-product-preview {
+      margin-top: 48px;
+      width: 100%;
+      max-width: 900px;
+      position: relative;
+    }
+
+    .demo-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .demo-tab {
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,0.6);
+      color: var(--color-text-secondary);
+    }
+
+    .demo-tab.active {
+      background: linear-gradient(135deg, var(--color-coral), var(--color-pink-mist));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(240,128,128,0.35);
+    }
+
+    .demo-screen {
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255,255,255,0.75);
+      box-shadow: 0 20px 60px rgba(180,160,200,0.25), 0 4px 20px rgba(240,128,128,0.1);
+      overflow: hidden;
+      display: none;
+    }
+
+    .demo-screen.active { display: block; }
+
+    .demo-screen-bar {
+      background: rgba(250,245,255,0.8);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .window-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+
+    .demo-screen-content {
+      padding: 24px;
+      min-height: 220px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .code-panel {
+      flex: 1;
+      background: rgba(10,14,28,0.06);
+      border-radius: 12px;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.7;
+      color: #5566AA;
+      border: 1px solid rgba(100,120,200,0.12);
+    }
+
+    .code-keyword { color: var(--color-coral); font-weight: 600; }
+    .code-string  { color: #4CAF80; }
+    .code-comment { color: #8888AA; font-style: italic; }
+    .code-prop    { color: #7B68EE; }
+
+    .ui-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ui-mock-card {
+      background: rgba(255,255,255,0.85);
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1.5px solid rgba(240,128,128,0.15);
+      box-shadow: 0 4px 15px rgba(180,160,200,0.12);
+    }
+
+    .ui-mock-title {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 6px;
+    }
+
+    .ui-mock-bar {
+      height: 6px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--color-coral), var(--color-pink-mist));
+      margin-bottom: 6px;
+    }
+
+    .ui-mock-line {
+      height: 5px;
+      border-radius: 4px;
+      background: rgba(180,180,220,0.3);
+      margin-bottom: 5px;
+    }
+
+    /* adhibit arrow */
+    .adhibit-arrow {
+      display: flex;
+      align-items: center;
+      color: var(--color-coral);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      align-self: center;
+      animation: adhibitPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes adhibitPulse {
+      0%, 100% { opacity: 1; transform: translateX(0); }
+      50%       { opacity: 0.6; transform: translateX(6px); }
+    }
+
+    /* =====================================================
+       SECTION DIVIDER — Organic Wave
+    ===================================================== */
+    .wave-divider {
+      position: relative;
+      z-index: 2;
+      line-height: 0;
+      margin: 0;
+    }
+
+    /* =====================================================
+       FEATURES — BENTO CLUSTER
+    ===================================================== */
+    .features-section {
+      padding: var(--space-2xl) 0 var(--space-xl);
+    }
+
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .section-eyebrow-line {
+      width: 28px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-coral), var(--color-pink-mist));
+      border-radius: 2px;
+    }
+
+    .section-header {
+      margin-bottom: 60px;
+    }
+
+    .section-header h2 { margin-bottom: 16px; }
+
+    .section-header p {
+      max-width: 560px;
+      font-size: 1.05rem;
+    }
+
+    /* Alternating feature rows */
+    .feature-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin-bottom: 100px;
+    }
+
+    .feature-row.reverse { direction: rtl; }
+    .feature-row.reverse > * { direction: ltr; }
+
+    .feature-text {}
+
+    .feature-number {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-coral);
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .feature-text h3 {
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      margin-bottom: 14px;
+    }
+
+    .feature-visual {
+      border-radius: var(--radius-lg);
+      background: var(--color-glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid var(--color-glass-border);
+      box-shadow: var(--shadow-card);
+      padding: 32px;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-visual:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(180,160,200,0.25);
+    }
+
+    /* Skill pills */
+    .skill-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-pill {
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      background: rgba(240,128,128,0.1);
+      border: 1px solid rgba(240,128,128,0.25);
+      color: var(--color-coral-dark);
+      animation: floatPill 3s ease-in-out infinite;
+    }
+
+    .skill-pill:nth-child(2) { animation-delay: 0.4s; }
+    .skill-pill:nth-child(3) { animation-delay: 0.8s; }
+    .skill-pill:nth-child(4) { animation-delay: 1.2s; }
+    .skill-pill:nth-child(5) { animation-delay: 1.6s; }
+    .skill-pill:nth-child(6) { animation-delay: 2s; }
+
+    @keyframes floatPill {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+
+    /* Browser mini UI */
+    .browser-mock {
+      background: rgba(10,14,28,0.06);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(100,120,200,0.15);
+    }
+
+    .browser-mock-bar {
+      background: rgba(255,255,255,0.8);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .browser-mock-body {
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: #5566AA;
+      line-height: 1.8;
+    }
+
+    /* Component reuse visual */
+    .component-tree {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.9;
+      color: var(--color-text-secondary);
+      background: rgba(255,255,255,0.5);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .tree-item { display: flex; align-items: center; gap: 8px; }
+    .tree-indent { margin-left: 20px; }
+    .tree-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--color-coral);
+      flex-shrink: 0;
+    }
+    .tree-dot.pink { background: var(--color-pink-mist); }
+    .tree-dot.cyan { background: #56C9D4; }
+    .tree-tag { color: var(--color-coral); }
+    .tree-reused {
+      font-size: 0.62rem;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      background: rgba(240,128,128,0.1);
+      border: 1px solid rgba(240,128,128,0.25);
+      color: var(--color-coral-dark);
+    }
+
+    /* =====================================================
+       TALPA — Deep Analysis / Terminal
+    ===================================================== */
+    .talpa-section {
+      padding: var(--space-2xl) 0;
+      position: relative;
+    }
+
+    .talpa-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg,
+        rgba(250,223,173,0.08) 0%,
+        rgba(224,255,255,0.15) 50%,
+        rgba(250,223,173,0.08) 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .talpa-content {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 48px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .terminal-window {
+      background: var(--color-terminal-bg);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(10,14,28,0.35), 0 0 40px rgba(127,239,255,0.08);
+      border: 1px solid rgba(127,239,255,0.15);
+    }
+
+    .terminal-bar {
+      background: rgba(20,24,40,0.95);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(127,239,255,0.08);
+    }
+
+    .terminal-title {
+      margin-left: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .terminal-body {
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.9;
+      min-height: 280px;
+    }
+
+    .t-line { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 2px; }
+    .t-prompt { color: var(--color-terminal-cyan); flex-shrink: 0; }
+    .t-cmd { color: rgba(255,255,255,0.85); }
+    .t-output { color: rgba(180,200,255,0.6); padding-left: 20px; display: block; }
+    .t-success { color: var(--color-terminal-green); padding-left: 20px; display: block; }
+    .t-warn    { color: var(--color-peach-soft); padding-left: 20px; display: block; }
+    .t-highlight { color: var(--color-terminal-pink); }
+    .t-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--color-terminal-cyan);
+      border-radius: 1px;
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* Digging animation */
+    .dig-progress {
+      margin-top: 12px;
+    }
+
+    .dig-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: rgba(180,200,255,0.5);
+      margin-bottom: 5px;
+    }
+
+    .dig-bar-track {
+      height: 4px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .dig-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--color-terminal-cyan), var(--color-terminal-pink));
+      animation: digFill 3s ease-out forwards;
+      animation-delay: 0.5s;
+      width: 0%;
+    }
+
+    .dig-bar-fill.d80 { animation-name: digFill80; }
+    .dig-bar-fill.d60 { animation-name: digFill60; }
+    .dig-bar-fill.d95 { animation-name: digFill95; }
+
+    @keyframes digFill   { to { width: 100%; } }
+    @keyframes digFill80 { to { width: 80%; } }
+    @keyframes digFill60 { to { width: 60%; } }
+    @keyframes digFill95 { to { width: 95%; } }
+
+    .talpa-info h2 { margin-bottom: 20px; }
+    .talpa-info p  { margin-bottom: 28px; }
+
+    .talpa-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--color-glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1.5px solid var(--color-glass-border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .stat-value {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* =====================================================
+       ENTERPRISE / POWERING SECTION
+    ===================================================== */
+    .enterprise-section {
+      padding: var(--space-2xl) 0;
+    }
+
+    .enterprise-bento {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .enterprise-card {
+      padding: 36px 28px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .enterprise-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 60px rgba(180,160,200,0.25);
+    }
+
+    .enterprise-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, rgba(240,128,128,0.15), rgba(241,156,187,0.15));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      border: 1.5px solid rgba(240,128,128,0.2);
+    }
+
+    .enterprise-card h3 {
+      margin-bottom: 10px;
+      font-size: 1.15rem;
+    }
+
+    .enterprise-card p {
+      font-size: 0.92rem;
+    }
+
+    /* =====================================================
+       TESTIMONIALS
+    ===================================================== */
+    .testimonials-section {
+      padding: var(--space-2xl) 0;
+    }
+
+    .testimonials-section .section-header {
+      text-align: center;
+    }
+
+    .testimonials-section .section-header p {
+      margin: 0 auto;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .testimonial-card {
+      padding: 24px;
+      transition: transform 0.3s ease;
+      animation: floatY 4s ease-in-out infinite;
+    }
+
+    .testimonial-card:nth-child(2) { animation-delay: 0.6s; }
+    .testimonial-card:nth-child(3) { animation-delay: 1.2s; }
+    .testimonial-card:nth-child(4) { animation-delay: 0.3s; }
+    .testimonial-card:nth-child(5) { animation-delay: 0.9s; }
+    .testimonial-card:nth-child(6) { animation-delay: 1.5s; }
+
+    .testimonial-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 20px 50px rgba(180,160,200,0.2);
+    }
+
+    .testimonial-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .testimonial-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(240,128,128,0.2);
+    }
+
+    .testimonial-name {
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .testimonial-handle {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--color-text-muted);
+    }
+
+    .testimonial-text {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+    }
+
+    /* Star rating */
+    .stars {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 10px;
+      color: var(--color-coral);
+      font-size: 0.8rem;
+    }
+
+    /* Ornithogalum glow on highlighted testimonial */
+    .testimonial-highlight {
+      position: relative;
+    }
+
+    .testimonial-highlight::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: calc(var(--radius-lg) + 2px);
+      background: linear-gradient(135deg, rgba(240,128,128,0.3), rgba(241,156,187,0.3));
+      z-index: -1;
+      filter: blur(8px);
+    }
+
+    /* =====================================================
+       CTA SECTION
+    ===================================================== */
+    .cta-section {
+      padding: var(--space-2xl) var(--space-md);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-card {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 72px 48px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg,
+        rgba(255,255,255,0.65) 0%,
+        rgba(240,128,128,0.05) 100%);
+      backdrop-filter: blur(24px);
+      border: 1.5px solid rgba(255,255,255,0.8);
+      box-shadow: var(--shadow-card), 0 0 80px rgba(240,128,128,0.12);
+    }
+
+    .cta-card h2 {
+      margin-bottom: 16px;
+    }
+
+    .cta-card p {
+      margin-bottom: 36px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Pink star glows around CTA */
+    .star-glow {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .star-glow-1 {
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(241,156,187,0.5) 0%, transparent 70%);
+      top: 10%; right: 15%;
+      animation: orbFloat1 5s ease-in-out infinite;
+    }
+
+    .star-glow-2 {
+      width: 80px; height: 80px;
+      background: radial-gradient(circle, rgba(240,128,128,0.4) 0%, transparent 70%);
+      bottom: 20%; left: 10%;
+      animation: orbFloat2 6s ease-in-out infinite;
+    }
+
+    .star-glow-3 {
+      width: 60px; height: 60px;
+      background: radial-gradient(circle, rgba(241,156,187,0.5) 0%, transparent 70%);
+      top: 50%; left: 5%;
+      animation: orbFloat3 4s ease-in-out infinite;
+    }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    footer {
+      padding: var(--space-xl) 0 var(--space-md);
+      border-top: 1px solid rgba(240,128,128,0.12);
+      position: relative;
+      z-index: 2;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .footer-brand p {
+      font-size: 0.88rem;
+      max-width: 220px;
+    }
+
+    .footer-col h4 {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+
+    .footer-col ul a {
+      font-size: 0.88rem;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul a:hover { color: var(--color-coral); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid rgba(180,160,200,0.15);
+    }
+
+    .footer-copyright {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-text-muted);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 16px;
+    }
+
+    .social-link {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--color-glass-bg);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.25s;
+    }
+
+    .social-link:hover {
+      background: linear-gradient(135deg, var(--color-coral), var(--color-pink-mist));
+      color: white;
+      border-color: transparent;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(240,128,128,0.3);
+    }
+
+    /* =====================================================
+       CONTACT BUTTON
+    ===================================================== */
+    .contact-btn-wrap {
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    /* =====================================================
+       SCROLL REVEAL
+    ===================================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+    @media (max-width: 900px) {
+      .feature-row, .talpa-content { grid-template-columns: 1fr; }
+      .feature-row.reverse { direction: ltr; }
+      .enterprise-bento { grid-template-columns: 1fr 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .enterprise-bento, .testimonials-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .talpa-stats { grid-template-columns: 1fr 1fr; }
+      .hero { padding-top: 110px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Aurora Mesh Background -->
+  <div class="aurora-bg"></div>
+
+  <!-- Background SVG parallax layer -->
+  <svg class="bg-pattern" id="bgPattern" width="600" height="600" viewBox="0 0 600 600" style="top:-100px;left:-100px;">
+    <defs>
+      <pattern id="spiral" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+        <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(240,128,128,0.5)" stroke-width="0.6"/>
+        <circle cx="40" cy="40" r="18" fill="none" stroke="rgba(241,156,187,0.4)" stroke-width="0.5"/>
+        <circle cx="40" cy="40" r="8" fill="none" stroke="rgba(224,255,255,0.6)" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="600" height="600" fill="url(#spiral)"/>
+  </svg>
+
+  <svg class="bg-pattern" id="bgPattern2" width="500" height="500" viewBox="0 0 500 500" style="bottom:-80px;right:-80px;opacity:0.05;">
+    <defs>
+      <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+        <circle cx="20" cy="20" r="2" fill="rgba(240,128,128,0.8)"/>
+      </pattern>
+    </defs>
+    <rect width="500" height="500" fill="url(#dots)"/>
+  </svg>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9L9 3L15 9L9 15Z" fill="white" opacity="0.9"/>
+            <circle cx="9" cy="9" r="3" fill="white"/>
+          </svg>
+        </div>
+        Kombai
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="https://kombai.com/pricing/">Pricing</a></li>
+        <li><a href="https://docs.kombai.com/">Docs</a></li>
+        <li><a href="https://kombai.com/guide/">Guides</a></li>
+        <li><a href="https://kombai.com/support/">Support</a></li>
+      </ul>
+      <a href="/install/" class="btn btn-primary" style="padding:10px 22px;font-size:0.88rem;">
+        Install Kombai
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="hero">
+    <!-- Glow orbs -->
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
+
+    <div class="hero-eyebrow reveal">
+      <span class="hero-eyebrow-dot"></span>
+      <span class="label-mono" style="color:var(--color-coral);font-size:0.7rem;">The Digital Dawn of Frontend AI</span>
+    </div>
+
+    <h1 class="reveal" style="transition-delay:0.1s">
+      The AI Agent<br/>
+      <span class="text-gradient-dawn">Built for Frontend</span>
+    </h1>
+
+    <p class="hero-sub reveal" style="transition-delay:0.2s">
+      Kombai combines specialized frontend skills, deep browser access, and a dev-like understanding of your repo. Use it to build, refactor, test, and improve every part of your frontend.
+    </p>
+
+    <div class="hero-cta-row reveal" style="transition-delay:0.3s">
+      <a href="/install/" class="btn btn-primary">
+        Install Kombai
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#features" class="btn btn-secondary">
+        Explore Features
+      </a>
+    </div>
+
+    <div class="supports-strip reveal" style="transition-delay:0.4s">
+      <span class="supports-label">Supports</span>
+      <div class="framework-badges">
+        <div class="framework-badge" title="React">⚛️</div>
+        <div class="framework-badge" title="Next.js" style="font-size:0.85rem;font-weight:700;font-family:var(--font-heading);">N</div>
+        <div class="framework-badge" title="Vue">💚</div>
+        <div class="framework-badge" title="Angular">🔺</div>
+        <div class="framework-badge" title="Svelte">🔥</div>
+        <div class="framework-badge" title="Flutter">🐦</div>
+        <span class="more-badge">& 400+ Frameworks</span>
+      </div>
+    </div>
+
+    <!-- Adhibit Demo — Code → UI morph -->
+    <div class="hero-product-preview reveal" style="transition-delay:0.5s">
+      <div class="demo-tabs">
+        <button class="demo-tab active" onclick="switchTab('extend')">🔧 Extend Complex Repos</button>
+        <button class="demo-tab" onclick="switchTab('ux')">✨ Build Beautiful UX</button>
+        <button class="demo-tab" onclick="switchTab('figma')">🎨 Figma → Code</button>
+      </div>
+
+      <!-- Extend Complex Repos -->
+      <div class="demo-screen active glass-card" id="tab-extend">
+        <div class="demo-screen-bar">
+          <div class="window-dot" style="background:#F08080;"></div>
+          <div class="window-dot" style="background:#FADFAD;"></div>
+          <div class="window-dot" style="background:#4FFFB0;"></div>
+          <span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--color-text-muted);margin-left:8px;">Kombai — Extend Complex Repos</span>
+        </div>
+        <div class="demo-screen-content">
+          <div class="code-panel">
+            <span class="code-comment">// Adding new feature to existing repo</span><br/>
+            <span class="code-keyword">import</span> <span class="code-string">{ UserDashboard }</span> <span class="code-keyword">from</span> <span class="code-string">'@/components'</span><br/>
+            <span class="code-keyword">import</span> <span class="code-string">{ useAnalytics }</span> <span class="code-keyword">from</span> <span class="code-string">'@/hooks'</span><br/><br/>
+            <span class="code-keyword">export const</span> <span class="code-prop">AnalyticsView</span> = () =&gt; {<br/>
+            &nbsp;&nbsp;<span class="code-keyword">const</span> { data } = useAnalytics()<br/>
+            &nbsp;&nbsp;<span class="code-keyword">return</span> (<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="code-tag">UserDashboard</span><br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-prop">data</span>={data}<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-prop">theme</span>=<span class="code-string">"dawn"</span><br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;/&gt;<br/>
+            &nbsp;&nbsp;)<br/>
+            }
+          </div>
+          <div class="adhibit-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="ui-panel">
+            <div class="ui-mock-card">
+              <div class="ui-mock-title">Analytics Dashboard</div>
+              <div class="ui-mock-bar" style="width:85%;"></div>
+              <div class="ui-mock-line" style="width:60%;"></div>
+              <div class="ui-mock-line" style="width:75%;"></div>
+            </div>
+            <div class="ui-mock-card">
+              <div class="ui-mock-title">User Activity</div>
+              <div class="ui-mock-bar" style="width:70%;background:linear-gradient(90deg,#56C9D4,#7FEFFF);"></div>
+              <div class="ui-mock-line" style="width:50%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Build Beautiful UX -->
+      <div class="demo-screen glass-card" id="tab-ux">
+        <div class="demo-screen-bar">
+          <div class="window-dot" style="background:#F08080;"></div>
+          <div class="window-dot" style="background:#FADFAD;"></div>
+          <div class="window-dot" style="background:#4FFFB0;"></div>
+          <span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--color-text-muted);margin-left:8px;">Kombai — Build Beautiful UX</span>
+        </div>
+        <div class="demo-screen-content">
+          <div class="code-panel">
+            <span class="code-comment">// Kombai selects optimal components</span><br/>
+            &lt;<span class="code-keyword">Card</span> <span class="code-prop">variant</span>=<span class="code-string">"glass"</span><br/>
+            &nbsp;&nbsp;<span class="code-prop">radius</span>=<span class="code-string">"xl"</span><br/>
+            &nbsp;&nbsp;<span class="code-prop">shadow</span>=<span class="code-string">"soft"</span>&gt;<br/>
+            &nbsp;&nbsp;&lt;<span class="code-keyword">Chart</span><br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-prop">type</span>=<span class="code-string">"aurora"</span><br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-prop">animate</span>={<span class="code-string">true</span>}<br/>
+            &nbsp;&nbsp;/&gt;<br/>
+            &lt;/<span class="code-keyword">Card</span>&gt;
+          </div>
+          <div class="adhibit-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="ui-panel">
+            <div class="ui-mock-card" style="background:linear-gradient(135deg,rgba(224,255,255,0.8),rgba(250,223,173,0.6));border-color:rgba(255,255,255,0.7);">
+              <div class="ui-mock-title" style="color:#5A3A3A;">Beautiful Chart Component</div>
+              <div style="display:flex;gap:4px;align-items:flex-end;height:50px;margin-top:8px;">
+                <div style="width:14px;height:60%;background:var(--color-coral);border-radius:4px 4px 0 0;opacity:0.8;"></div>
+                <div style="width:14px;height:80%;background:var(--color-pink-mist);border-radius:4px 4px 0 0;opacity:0.8;"></div>
+                <div style="width:14px;height:45%;background:#56C9D4;border-radius:4px 4px 0 0;opacity:0.8;"></div>
+                <div style="width:14px;height:100%;background:var(--color-coral);border-radius:4px 4px 0 0;opacity:0.8;"></div>
+                <div style="width:14px;height:70%;background:var(--color-pink-mist);border-radius:4px 4px 0 0;opacity:0.8;"></div>
+                <div style="width:14px;height:55%;background:#56C9D4;border-radius:4px 4px 0 0;opacity:0.8;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Figma → Code -->
+      <div class="demo-screen glass-card" id="tab-figma">
+        <div class="demo-screen-bar">
+          <div class="window-dot" style="background:#F08080;"></div>
+          <div class="window-dot" style="background:#FADFAD;"></div>
+          <div class="window-dot" style="background:#4FFFB0;"></div>
+          <span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--color-text-muted);margin-left:8px;">Kombai — Figma → Production Code</span>
+        </div>
+        <div class="demo-screen-content">
+          <div class="code-panel" style="font-size:0.65rem;">
+            <span class="code-comment">// Figma design XML parsed</span><br/>
+            <span style="color:#7B68EE;">Frame</span>: <span class="code-string">"Card/Product"</span><br/>
+            &nbsp;├─ <span class="code-keyword">fill</span>: rgba(255,255,255,0.6)<br/>
+            &nbsp;├─ <span class="code-keyword">borderRadius</span>: 48<br/>
+            &nbsp;├─ <span class="code-keyword">blur</span>: 20<br/>
+            &nbsp;└─ <span class="code-keyword">children</span>: [Image, Title, CTA]<br/><br/>
+            <span class="code-comment">// Kombai detects MUI + Tailwind</span><br/>
+            <span class="code-comment">// Generates production-ready code</span>
+          </div>
+          <div class="adhibit-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="ui-panel">
+            <div class="ui-mock-card" style="border-radius:20px;overflow:hidden;padding:0;">
+              <div style="height:70px;background:linear-gradient(135deg,rgba(240,128,128,0.25),rgba(241,156,187,0.25));display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🖼️</div>
+              <div style="padding:12px 14px;">
+                <div class="ui-mock-title">Product Card</div>
+                <div class="ui-mock-bar" style="width:50%;height:5px;margin-bottom:8px;"></div>
+                <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--color-coral);">✓ Pixel-perfect match</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- end hero-product-preview -->
+
+    <!-- Diagonal cut mask at bottom of hero -->
+    <div class="hero-diagonal-mask">
+      <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;display:block;">
+        <path d="M0,80 L0,40 Q360,0 720,30 Q1080,60 1440,10 L1440,80 Z" fill="rgba(245,255,254,0.0)"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURES ===================== -->
+  <section class="features-section section" id="features">
+    <div class="container">
+
+      <div class="section-header reveal">
+        <div class="section-eyebrow">
+          <div class="section-eyebrow-line"></div>
+          <span class="label-mono" style="color:var(--color-coral);font-size:0.72rem;">Core Capabilities</span>
+        </div>
+        <h2>Built-in skills that build<br/><span class="text-gradient">world-class frontend</span></h2>
+        <p>Ship stunning UX with clean, efficient code. Kombai automatically incorporates best practices from 400+ frontend libraries and makes refined design choices.</p>
+      </div>
+
+      <!-- Feature 1 -->
+      <div class="feature-row reveal">
+        <div class="feature-text">
+          <span class="feature-number">01 / SKILL ENGINE</span>
+          <h3>Built-in skills that build world-class frontend</h3>
+          <p style="margin-bottom:20px;">Kombai comes pre-loaded with deep knowledge of 400+ libraries. It doesn't just generate generic code — it understands MUI, Tailwind, Chakra, shadcn, and picks the right component for every situation.</p>
+          <div class="skill-pills">
+            <span class="skill-pill">MUI v7</span>
+            <span class="skill-pill">Tailwind v4</span>
+            <span class="skill-pill">shadcn</span>
+            <span class="skill-pill">Chakra UI</span>
+            <span class="skill-pill">Mantine</span>
+            <span class="skill-pill">+ 400 more</span>
+          </div>
+        </div>
+        <div class="feature-visual">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-coral);box-shadow:0 0 8px var(--color-coral);animation:pulse-dot 2s infinite;"></div>
+            <span class="label-mono" style="color:var(--color-text-muted);">Skill Engine Active</span>
+          </div>
+          <div class="component-tree">
+            <div class="tree-item">
+              <div class="tree-dot"></div>
+              <span><span class="tree-tag">&lt;Button&gt;</span></span>
+              <span class="tree-reused">MUI v7 ✓</span>
+            </div>
+            <div class="tree-item tree-indent">
+              <div class="tree-dot pink"></div>
+              <span><span class="tree-tag">&lt;DataGrid&gt;</span></span>
+              <span class="tree-reused">MUI Data Grid</span>
+            </div>
+            <div class="tree-item tree-indent">
+              <div class="tree-dot cyan"></div>
+              <span><span class="tree-tag">&lt;ThemeProvider&gt;</span></span>
+              <span class="tree-reused">Extended ✓</span>
+            </div>
+            <div class="tree-item">
+              <div class="tree-dot"></div>
+              <span><span class="tree-tag">&lt;cn()</span> className}</span>
+              <span class="tree-reused">Tailwind v4 ✓</span>
+            </div>
+            <div class="tree-item tree-indent">
+              <div class="tree-dot pink"></div>
+              <span>Custom tokens reused</span>
+              <span class="tree-reused">4 vars ✓</span>
+            </div>
+          </div>
+          <div class="skill-pills" style="margin-top:auto;">
+            <span class="skill-pill">Design System Aware</span>
+            <span class="skill-pill">Theme Extending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="feature-row reverse reveal">
+        <div class="feature-visual">
+          <div class="browser-mock">
+            <div class="browser-mock-bar">
+              <div class="window-dot" style="width:8px;height:8px;border-radius:50%;background:#F08080;"></div>
+              <div class="window-dot" style="width:8px;height:8px;border-radius:50%;background:#FADFAD;"></div>
+              <div class="window-dot" style="width:8px;height:8px;border-radius:50%;background:#4FFFB0;"></div>
+              <div style="flex:1;background:rgba(180,180,220,0.1);border-radius:4px;margin:0 8px;padding:3px 8px;font-family:var(--font-mono);font-size:0.62rem;color:var(--color-text-muted);">kombai.app/preview</div>
+            </div>
+            <div class="browser-mock-body">
+              <span style="color:var(--color-terminal-cyan);">●</span> <span style="color:rgba(255,255,255,0);">.</span>Inspecting DOM element…<br/>
+              <span style="color:var(--color-coral);">→</span> div.card [overflow: hidden detected]<br/>
+              <span style="color:#4CAF80;">✓</span> Accessibility: aria-label missing<br/>
+              <span style="color:var(--color-coral);">→</span> Applied fix: role="article"<br/>
+              <span style="color:#4CAF80;">✓</span> SEO audit: score 96/100<br/>
+              <span style="color:rgba(180,200,255,0.5);">  Layout shift: 0.02 CLS ↓</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <div style="flex:1;padding:12px;background:rgba(255,255,255,0.5);border-radius:12px;border:1px solid rgba(255,255,255,0.6);">
+              <div class="label-mono" style="color:var(--color-text-muted);font-size:0.62rem;margin-bottom:4px;">Multi-tab Access</div>
+              <div style="font-family:var(--font-heading);font-size:1.1rem;font-weight:700;color:var(--color-text-primary);">12 tabs</div>
+            </div>
+            <div style="flex:1;padding:12px;background:rgba(255,255,255,0.5);border-radius:12px;border:1px solid rgba(255,255,255,0.6);">
+              <div class="label-mono" style="color:var(--color-text-muted);font-size:0.62rem;margin-bottom:4px;">DOM Precision</div>
+              <div style="font-family:var(--font-heading);font-size:1.1rem;font-weight:700;color:var(--color-text-primary);">Full access</div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-text">
+          <span class="feature-number">02 / BROWSER ENGINE</span>
+          <h3>The browser engineered for AI&nbsp;+&nbsp;you</h3>
+          <p>Don't limit your agent to screenshots. Our browser combines agentic automation with deep, multi-tab data access and the precise controls you need to guide, debug, and audit your frontend in real-time.</p>
+        </div>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature-row reveal">
+        <div class="feature-text">
+          <span class="feature-number">03 / REPO INTELLIGENCE</span>
+          <h3>Learns your stack. Reuses your components</h3>
+          <p style="margin-bottom:20px;">Kombai learns your stack, components, and patterns, then reuses them intelligently to generate code that fits cleanly into your repo — not generic boilerplate that you'll have to clean up.</p>
+          <a href="#" class="btn btn-secondary" style="font-size:0.88rem;padding:10px 20px;">
+            See how it works
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="feature-visual">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-terminal-green);box-shadow:0 0 8px var(--color-terminal-green);"></div>
+            <span class="label-mono" style="color:var(--color-text-muted);">Repo Indexed</span>
+          </div>
+          <div class="component-tree">
+            <div class="tree-item"><div class="tree-dot"></div><span>src/components/</span></div>
+            <div class="tree-item tree-indent"><div class="tree-dot pink"></div><span>Button.tsx</span><span class="tree-reused">reused 14×</span></div>
+            <div class="tree-item tree-indent"><div class="tree-dot cyan"></div><span>Modal.tsx</span><span class="tree-reused">reused 7×</span></div>
+            <div class="tree-item tree-indent"><div class="tree-dot"></div><span>DataTable.tsx</span><span class="tree-reused">reused 3×</span></div>
+            <div class="tree-item"><div class="tree-dot pink"></div><span>hooks/useAuth.ts</span><span class="tree-reused">extended ✓</span></div>
+            <div class="tree-item"><div class="tree-dot cyan"></div><span>theme.ts</span><span class="tree-reused">tokens reused ✓</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== TALPA SECTION ===================== -->
+  <section class="talpa-section" id="analysis">
+    <div class="container">
+      <div class="talpa-content">
+        <!-- Terminal Window -->
+        <div class="terminal-window reveal">
+          <div class="terminal-bar">
+            <div class="window-dot" style="width:10px;height:10px;border-radius:50%;background:#F08080;"></div>
+            <div class="window-dot" style="width:10px;height:10px;border-radius:50%;background:#FADFAD;"></div>
+            <div class="window-dot" style="width:10px;height:10px;border-radius:50%;background:#4FFFB0;"></div>
+            <span class="terminal-title">kombai — deep-analysis — repo-indexer</span>
+          </div>
+          <div class="terminal-body" id="terminalBody">
+            <!-- Lines added by JS typing animation -->
+          </div>
+          <div style="padding:0 24px 16px;">
+            <div class="dig-progress">
+              <div class="dig-bar-label"><span>Parsing components</span><span>100%</span></div>
+              <div class="dig-bar-track"><div class="dig-bar-fill"></div></div>
+              <div class="dig-bar-label"><span>Indexing design tokens</span><span>80%</span></div>
+              <div class="dig-bar-track"><div class="dig-bar-fill d80"></div></div>
+              <div class="dig-bar-label"><span>Mapping dependencies</span><span>95%</span></div>
+              <div class="dig-bar-track"><div class="dig-bar-fill d95"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Talpa Info -->
+        <div class="talpa-info reveal" style="transition-delay:0.15s">
+          <div class="section-eyebrow">
+            <div class="section-eyebrow-line"></div>
+            <span class="label-mono" style="color:var(--color-coral);font-size:0.72rem;">Talpa — Deep Analysis</span>
+          </div>
+          <h2>Digs deep into your repo like a senior engineer</h2>
+          <p>Kombai's analysis engine crawls your entire codebase — components, hooks, design tokens, dependencies — building a mental model so every generated piece of code fits perfectly.</p>
+
+          <div class="talpa-stats">
+            <div class="stat-card">
+              <div class="stat-value text-gradient">400+</div>
+              <div class="stat-label">Libraries & Frameworks</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value text-gradient">SOC2</div>
+              <div class="stat-label">Certified Security</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value text-gradient">100%</div>
+              <div class="stat-label">Frontend Focused</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value text-gradient">0</div>
+              <div class="stat-label">Backend Side Effects</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ENTERPRISE ===================== -->
+  <section class="enterprise-section section" id="enterprise">
+    <div class="container">
+      <div class="section-header reveal" style="text-align:center;">
+        <div class="section-eyebrow" style="justify-content:center;">
+          <div class="section-eyebrow-line"></div>
+          <span class="label-mono" style="color:var(--color-coral);font-size:0.72rem;">Enterprise Ready</span>
+          <div class="section-eyebrow-line"></div>
+        </div>
+        <h2>Powering Modern<br/><span class="text-gradient">Frontend Teams</span></h2>
+        <p style="margin:0 auto;">Kombai works for frontend projects of all sizes and complexities — from solo founders to enterprise engineering teams.</p>
+      </div>
+
+      <div class="enterprise-bento">
+        <div class="glass-card enterprise-card reveal">
+          <div class="enterprise-icon">🎯</div>
+          <h3>Isolated to Frontend</h3>
+          <p>Kombai won't mistakenly change your database or backend logic. It's purpose-built for the frontend, so it stays in its lane — every single time.</p>
+        </div>
+        <div class="glass-card enterprise-card reveal" style="transition-delay:0.1s">
+          <div class="enterprise-icon">🏢</div>
+          <h3>Org-specific context</h3>
+          <p>For enterprise customers, we set up custom context-engines that can accurately use complex stacks, internal design systems, and proprietary component libraries.</p>
+        </div>
+        <div class="glass-card enterprise-card reveal" style="transition-delay:0.2s">
+          <div class="enterprise-icon">🔒</div>
+          <h3>Enterprise-grade privacy</h3>
+          <p>Kombai is SOC2 certified. It never uses your data for training or model improvements. Your code stays private, secure, and under your control.</p>
+        </div>
+      </div>
+
+      <div class="contact-btn-wrap reveal">
+        <a href="https://kombai.com/support/" class="btn btn-primary">Contact Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TESTIMONIALS ===================== -->
+  <section class="testimonials-section section" id="testimonials">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-eyebrow" style="justify-content:center;">
+          <div class="section-eyebrow-line"></div>
+          <span class="label-mono" style="color:var(--color-coral);font-size:0.72rem;">Developer Love</span>
+          <div class="section-eyebrow-line"></div>
+        </div>
+        <h2 style="text-align:center;">What developers are saying</h2>
+        <p style="margin:0 auto;text-align:center;">Kombai is trusted by frontend engineers building real products that ship.</p>
+      </div>
+
+      <div class="testimonials-grid" style="margin-top:48px;">
+
+        <div class="glass-card testimonial-card testimonial-highlight">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=cess" alt="Cess avatar"/>
+            <div>
+              <div class="testimonial-name">Cess</div>
+              <div class="testimonial-handle">@Cessss</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"Kombai, easily. The code quality is genuinely good. Not 'AI good,' actually good."</p>
+        </div>
+
+        <div class="glass-card testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=aicodek" alt="AICodeKing avatar"/>
+            <div>
+              <div class="testimonial-name">AICodeKing</div>
+              <div class="testimonial-handle">@AICodeKing</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"I think that this is probably the best agent for front-end development that I have seen yet."</p>
+        </div>
+
+        <div class="glass-card testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=sharknum" alt="Shark Numbers avatar"/>
+            <div>
+              <div class="testimonial-name">Shark Numbers</div>
+              <div class="testimonial-handle">@ivankv</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"Focused on front-end only, and it does that one single job incredibly well. No hallucination, no backend drama, and the output is usable immediately."</p>
+        </div>
+
+        <div class="glass-card testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=berkant" alt="berkantay avatar"/>
+            <div>
+              <div class="testimonial-name">berkantay</div>
+              <div class="testimonial-handle">@berkant_thedev</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"I have spent the last few days testing Kombai but so far I am impressed. It matched our MUI brand theme and conventions that we follow."</p>
+        </div>
+
+        <div class="glass-card testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=harshil" alt="Harshil Tomar avatar"/>
+            <div>
+              <div class="testimonial-name">Harshil Tomar</div>
+              <div class="testimonial-handle">@Hartdrawss</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"I turned Figma files into MVPs hundreds of times now. @kombaico is the secret weapon."</p>
+        </div>
+
+        <div class="glass-card testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=vivek" alt="Vivek Chavan avatar"/>
+            <div>
+              <div class="testimonial-name">Vivek Chavan</div>
+              <div class="testimonial-handle">@devloperVivek</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"For frontend I use Kombai - understands my stack and existing components way better than general agents and generates production grade code."</p>
+        </div>
+
+        <div class="glass-card testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=astro" alt="Astro K Joseph avatar"/>
+            <div>
+              <div class="testimonial-name">Astro K Joseph</div>
+              <div class="testimonial-handle">@AstroKJ</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"I have tested a bunch of Figma to code tools over the years, and nothing comes close to Kombai."</p>
+        </div>
+
+        <div class="glass-card testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=devlogger" alt="The Dev Logger avatar"/>
+            <div>
+              <div class="testimonial-name">The Dev Logger</div>
+              <div class="testimonial-handle">@TheDevLogger</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"It just knows your stack really, really well. Kombai has built-in context tools for each supported front-end library."</p>
+        </div>
+
+        <div class="glass-card testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-header">
+            <img class="testimonial-avatar" src="https://i.pravatar.cc/42?u=anant" alt="Anant avatar"/>
+            <div>
+              <div class="testimonial-name">Anant</div>
+              <div class="testimonial-handle">@The_Anant_Raj</div>
+            </div>
+          </div>
+          <p class="testimonial-text">"Try @Kombaico. That's better than both Claude code and Codex."</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA ===================== -->
+  <section class="cta-section section" id="install">
+    <div class="star-glow star-glow-1"></div>
+    <div class="star-glow star-glow-2"></div>
+    <div class="star-glow star-glow-3"></div>
+    <div class="cta-card glass-card reveal">
+      <div class="section-eyebrow" style="justify-content:center;margin-bottom:20px;">
+        <div class="section-eyebrow-line"></div>
+        <span class="label-mono" style="color:var(--color-coral);font-size:0.72rem;">Get Started Today</span>
+        <div class="section-eyebrow-line"></div>
+      </div>
+      <h2>Try Kombai Now</h2>
+      <p>From small components to full app UIs — Kombai generates frontend code right inside your IDE. Get clean, backend-agnostic output that fits your stack and repo.</p>
+      <a href="/install/" class="btn btn-primary" style="font-size:1rem;padding:16px 36px;">
+        Install Kombai Free
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo" style="margin-bottom:12px;">
+            <div class="nav-logo-icon" style="width:28px;height:28px;">
+              <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+                <path d="M3 9L9 3L15 9L9 15Z" fill="white" opacity="0.9"/>
+                <circle cx="9" cy="9" r="3" fill="white"/>
+              </svg>
+            </div>
+            <span style="font-family:var(--font-heading);font-weight:700;font-size:1.1rem;color:var(--color-text-primary);">Kombai</span>
+          </div>
+          <p>The AI Agent Built for Frontend Development</p>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://docs.kombai.com/">Docs</a></li>
+            <li><a href="https://kombai.com/blog/">Blog</a></li>
+            <li><a href="https://kombai.com/guide/">Guides</a></li>
+            <li><a href="https://kombai.com/changelog/">Changelog</a></li>
+            <li><a href="https://kombai.com/support/">Support</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Libraries</h4>
+          <ul>
+            <li><a href="https://kombai.com/mui/autocomplete/">Material UI</a></li>
+            <li><a href="https://kombai.com/tailwind/introduction/">Tailwind CSS</a></li>
+            <li><a href="https://docs.kombai.com/features/supported-tech-stack">All Stacks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="https://kombai.com/terms/">Terms & Conditions</a></li>
+            <li><a href="https://kombai.com/privacy/">Privacy Policy</a></li>
+            <li><a href="https://kombai.com/usepolicy/">Acceptable Use</a></li>
+            <li><a href="https://kombai.trust.site/">Trust Center</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span class="footer-copyright">© 2026 Kombai. All rights reserved.</span>
+        <div class="footer-social">
+          <a class="social-link" href="https://twitter.com/kombaico" title="Twitter/X">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a class="social-link" href="https://linkedin.com/company/kombai" title="LinkedIn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a class="social-link" href="https://github.com/kombai-com" title="GitHub">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // =====================================================
+    // GSAP + ScrollTrigger Setup
+    // =====================================================
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Parallax background patterns (0.5x speed)
+    const bgPattern  = document.getElementById('bgPattern');
+    const bgPattern2 = document.getElementById('bgPattern2');
+
+    gsap.to(bgPattern, {
+      y: () => -(window.scrollY * 0.5),
+      ease: 'none',
+      scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: true }
+    });
+
+    gsap.to(bgPattern2, {
+      y: () => -(window.scrollY * 0.3),
+      ease: 'none',
+      scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: true }
+    });
+
+    // Scroll reveal for .reveal elements
+    gsap.utils.toArray('.reveal').forEach(el => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 36 },
+        {
+          opacity: 1, y: 0, duration: 0.75, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+        }
+      );
+    });
+
+    // Floating animation for feature-visual cards
+    gsap.utils.toArray('.feature-visual').forEach((el, i) => {
+      gsap.to(el, {
+        y: -10,
+        duration: 3 + i * 0.5,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        delay: i * 0.4
+      });
+    });
+
+    // Demo Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.demo-screen').forEach(s => s.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    // =====================================================
+    // TALPA TERMINAL — Typing + Digging Animation
+    // =====================================================
+    const terminalLines = [
+      { type: 'cmd',     text: 'kombai analyze ./src --deep' },
+      { type: 'output',  text: '→ Scanning directory structure...' },
+      { type: 'output',  text: '→ Found 247 components, 31 hooks' },
+      { type: 'success', text: '✓ Design tokens extracted: 68 vars' },
+      { type: 'output',  text: '→ Indexing MUI v7 usage patterns...' },
+      { type: 'success', text: '✓ Theme extensions detected (4 overrides)' },
+      { type: 'output',  text: '→ Mapping component relationships...' },
+      { type: 'warn',    text: '⚡ 3 components need modernization' },
+      { type: 'output',  text: '→ Building repo mental model...' },
+      { type: 'success', text: '✓ Repo intelligence ready. Kombai is set.' },
+      { type: 'cursor',  text: '' },
+    ];
+
+    const termBody = document.getElementById('terminalBody');
+    let lineIdx = 0;
+
+    function addTerminalLine() {
+      if (lineIdx >= terminalLines.length) return;
+      const line = terminalLines[lineIdx++];
+      const div = document.createElement('div');
+      div.className = 't-line';
+
+      if (line.type === 'cmd') {
+        div.innerHTML = `<span class="t-prompt">❯</span><span class="t-cmd" id="typeLine-${lineIdx}"></span>`;
+        termBody.appendChild(div);
+        typeText(div.querySelector(`#typeLine-${lineIdx}`), line.text, 40, () => {
+          setTimeout(addTerminalLine, 250);
+        });
+        return;
+      } else if (line.type === 'output') {
+        div.innerHTML = `<span class="t-output">${line.text}</span>`;
+      } else if (line.type === 'success') {
+        div.innerHTML = `<span class="t-success">${line.text}</span>`;
+      } else if (line.type === 'warn') {
+        div.innerHTML = `<span class="t-warn">${line.text}</span>`;
+      } else if (line.type === 'cursor') {
+        div.innerHTML = `<span class="t-prompt">❯</span><span class="t-cursor"></span>`;
+      }
+
+      termBody.appendChild(div);
+      termBody.scrollTop = termBody.scrollHeight;
+      setTimeout(addTerminalLine, 350);
+    }
+
+    function typeText(el, text, speed, cb) {
+      let i = 0;
+      const iv = setInterval(() => {
+        el.textContent += text[i++];
+        if (i >= text.length) {
+          clearInterval(iv);
+          if (cb) cb();
+        }
+      }, speed);
+    }
+
+    // Start terminal when it scrolls into view
+    ScrollTrigger.create({
+      trigger: '.talpa-section',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        setTimeout(addTerminalLine, 500);
+      }
+    });
+
+    // =====================================================
+    // Adhibit Layout Morph — code panels fade-morph on scroll
+    // =====================================================
+    gsap.utils.toArray('.demo-screen-content').forEach(el => {
+      const code = el.querySelector('.code-panel');
+      const arrow = el.querySelector('.adhibit-arrow');
+      const ui   = el.querySelector('.ui-panel');
+      if (!code || !ui) return;
+      gsap.fromTo([code, arrow],
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.6, delay: 0.1, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' } }
+      );
+      gsap.fromTo(ui,
+        { opacity: 0, x: 20 },
+        { opacity: 1, x: 0, duration: 0.6, delay: 0.3, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    // =====================================================
+    // Parallax on scroll for hero glow orbs
+    // =====================================================
+    window.addEventListener('scroll', () => {
+      const sy = window.scrollY;
+      document.querySelectorAll('.glow-orb').forEach((orb, i) => {
+        const factor = 0.15 + i * 0.08;
+        orb.style.transform = `translateY(${sy * factor}px)`;
+      });
+    }, { passive: true });
+  </script>
+</body>
+</html>
