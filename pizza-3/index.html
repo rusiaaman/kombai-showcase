@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORNO — The Elite Neapolitan Pizza Masterclass · Napoli MMXXVI</title>
+  <meta name="description" content="An annual elite masterclass in the art and science of Neapolitan pizza. Once per year. Twelve seats. Napoli, Italia." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700;1,6..96,900&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* =========================================
+       DESIGN TOKENS
+    ========================================= */
+    :root {
+      --bone:          #F5F0E8;
+      --bone-mid:      #E0D8C8;
+      --bone-dim:      rgba(245, 240, 232, 0.06);
+      --charcoal:      #1C1C1C;
+      --charcoal-soft: #2A2A2A;
+      --orange:        #F04A00;
+      --orange-hover:  #C83F00;
+      --orange-glow:   rgba(240, 74, 0, 0.15);
+
+      --font-serif:    'Bodoni Moda', 'Georgia', serif;
+      --font-sans:     'Raleway', 'Arial', sans-serif;
+
+      --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+      --transition: 0.9s var(--ease-out);
+    }
+
+    /* =========================================
+       RESET & BASE
+    ========================================= */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--bone);
+      color: var(--charcoal);
+      font-family: var(--font-sans);
+      font-weight: 300;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; }
+
+    /* =========================================
+       UTILITIES
+    ========================================= */
+    .u-orange     { color: var(--orange); }
+    .u-italic     { font-style: italic; }
+    .u-bone       { color: var(--bone); }
+    .u-outline    { -webkit-text-stroke: 2px var(--charcoal); color: transparent; }
+    .u-outline-bone { -webkit-text-stroke: 1px rgba(245,240,232,0.18); color: transparent; }
+
+    /* scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(56px);
+      transition: opacity 1s var(--ease-out), transform 1s var(--ease-out);
+    }
+    .reveal.from-left  { transform: translateX(-70px); }
+    .reveal.from-right { transform: translateX(70px); }
+    .reveal.scale-in   { transform: scale(0.94); }
+    .reveal.visible    { opacity: 1 !important; transform: none !important; }
+    .rd1 { transition-delay: 0.12s; }
+    .rd2 { transition-delay: 0.24s; }
+    .rd3 { transition-delay: 0.36s; }
+    .rd4 { transition-delay: 0.50s; }
+
+    /* =========================================
+       NAVIGATION
+    ========================================= */
+    #nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.6rem 3.5rem;
+      transition: background 0.4s ease, padding 0.4s ease, backdrop-filter 0.4s ease;
+    }
+    #nav.scrolled {
+      background: rgba(28, 28, 28, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 1rem 3.5rem;
+    }
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: 1.45rem;
+      color: var(--bone);
+      letter-spacing: 0.12em;
+    }
+    .nav-logo .dot { color: var(--orange); margin: 0 0.05em; }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.65);
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-cta {
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      background: var(--orange);
+      color: var(--bone);
+      padding: 0.75rem 1.8rem;
+      transition: background 0.3s, transform 0.25s;
+    }
+    .nav-cta:hover { background: var(--orange-hover); transform: translateY(-1px); }
+
+    /* =========================================
+       HERO
+    ========================================= */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 55% 1fr;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('https://images.pexels.com/photos/18771741/pexels-photo-18771741.jpeg') center/cover no-repeat;
+      filter: brightness(0.28) contrast(1.25) saturate(0.7);
+      will-change: transform;
+    }
+    /* subtle noise grain overlay */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    /* Diagonal vignette */
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(28,28,28,0.5) 0%,
+        transparent 55%,
+        rgba(28,28,28,0.4) 100%
+      );
+      pointer-events: none;
+    }
+    /* Orange accent slice bottom-left */
+    .hero-slice {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 38%;
+      height: 3px;
+      background: var(--orange);
+      z-index: 4;
+    }
+    .hero-left {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 4rem 7rem 5.5rem;
+    }
+    .hero-issue {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.58rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 2.5rem;
+    }
+    .hero-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(5.5rem, 11.5vw, 13.5rem);
+      line-height: 0.86;
+      color: var(--bone);
+      margin-bottom: 3rem;
+      overflow: hidden;
+    }
+    .hero-title .ht-line { display: block; overflow: hidden; }
+    .hero-title .ht-orange { color: var(--orange); }
+    .hero-sub {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.82rem;
+      line-height: 1.9;
+      color: rgba(245,240,232,0.55);
+      max-width: 28rem;
+      margin-bottom: 3.5rem;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+    }
+    .btn-primary {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      background: var(--orange);
+      color: var(--bone);
+      padding: 1.1rem 3.2rem;
+      transition: background 0.3s, transform 0.25s;
+    }
+    .btn-primary:hover { background: var(--orange-hover); transform: translateY(-2px); }
+    .btn-ghost {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.45);
+      border-bottom: 1px solid rgba(245,240,232,0.18);
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .btn-ghost:hover { color: var(--orange); border-color: var(--orange); }
+    .hero-right {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding: 0 5rem 7rem 2rem;
+      gap: 0;
+    }
+    .hero-meta {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .hero-meta-row { margin-bottom: 1.8rem; }
+    .hero-meta-label {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.57rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.3);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .hero-meta-value {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--bone);
+      display: block;
+    }
+    /* vertical scroll line */
+    .scroll-cue {
+      position: absolute;
+      bottom: 3.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .scroll-cue-label {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.52rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.3);
+    }
+    .scroll-cue-line {
+      width: 1px;
+      height: 3.5rem;
+      background: rgba(245,240,232,0.12);
+      overflow: hidden;
+      position: relative;
+    }
+    .scroll-cue-line::after {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: var(--orange);
+      animation: scrollCue 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollCue {
+      0%   { top: -50%; }
+      100% { top: 150%; }
+    }
+
+    /* =========================================
+       MARQUEE STRIP
+    ========================================= */
+    #marquee {
+      border-top: 1px solid var(--bone-mid);
+      border-bottom: 1px solid var(--bone-mid);
+      overflow: hidden;
+      padding: 3.2rem 0;
+      background: var(--bone);
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 28s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 2.5rem;
+      padding-right: 2.5rem;
+    }
+    .marquee-word {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: 2.2rem;
+      color: var(--charcoal);
+      white-space: nowrap;
+    }
+    .marquee-word.dim { color: var(--bone-mid); }
+    .marquee-sep {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* =========================================
+       MANIFESTO
+    ========================================= */
+    #manifesto {
+      padding: 11rem 0 9rem;
+      overflow: hidden;
+    }
+    .manifesto-grid {
+      display: grid;
+      grid-template-columns: 6rem 1fr 10rem;
+      align-items: start;
+    }
+    .manifesto-left {
+      padding-top: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    .manifesto-vert {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.58rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+    .manifesto-center { padding: 0 3rem; }
+    .manifesto-headline {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(4.2rem, 8.5vw, 10rem);
+      line-height: 0.88;
+      color: var(--charcoal);
+      margin-bottom: 5rem;
+    }
+    .manifesto-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .manifesto-text {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.88rem;
+      line-height: 1.95;
+      color: rgba(28,28,28,0.65);
+    }
+    .manifesto-text strong { font-weight: 500; color: var(--charcoal); }
+    .manifesto-quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.35rem;
+      line-height: 1.55;
+      color: var(--charcoal);
+      border-left: 3px solid var(--orange);
+      padding-left: 2rem;
+    }
+    .manifesto-right {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 2rem;
+    }
+    .manifesto-number {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 10rem;
+      line-height: 1;
+      color: var(--bone-mid);
+      letter-spacing: -0.04em;
+      user-select: none;
+    }
+
+    /* =========================================
+       OVEN (dark full-bleed)
+    ========================================= */
+    #oven {
+      position: relative;
+      min-height: 90vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+    .oven-bg {
+      position: absolute;
+      inset: 0;
+      background: url('https://images.pexels.com/photos/33471841/pexels-photo-33471841.jpeg') center/cover no-repeat;
+      filter: brightness(0.22) saturate(0.6) contrast(1.3);
+      will-change: transform;
+    }
+    /* left ghost word */
+    .oven-word-side {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      padding: 4rem;
+    }
+    .oven-ghost-word {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(6rem, 14vw, 18rem);
+      line-height: 0.8;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(245,240,232,0.1);
+      user-select: none;
+    }
+    .oven-panel {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      padding: 5rem;
+    }
+    .glass-card {
+      background: rgba(245,240,232,0.06);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(245,240,232,0.1);
+      padding: 4rem 3.5rem;
+    }
+    .oven-label {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.58rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 2rem;
+    }
+    .oven-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(2.4rem, 3.8vw, 4.5rem);
+      line-height: 1.0;
+      color: var(--bone);
+      margin-bottom: 2rem;
+    }
+    .oven-rule {
+      width: 3rem;
+      height: 2px;
+      background: var(--orange);
+      margin-bottom: 2rem;
+    }
+    .oven-body {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.83rem;
+      line-height: 1.95;
+      color: rgba(245,240,232,0.58);
+      margin-bottom: 3rem;
+    }
+    .oven-stats {
+      display: flex;
+      gap: 3rem;
+    }
+    .oven-stat-item { display: flex; flex-direction: column; }
+    .oven-stat-num {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 2.6rem;
+      line-height: 1;
+      color: var(--orange);
+    }
+    .oven-stat-label {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.57rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.35);
+      margin-top: 0.4rem;
+    }
+
+    /* =========================================
+       CURRICULUM
+    ========================================= */
+    #curriculum {
+      padding: 11rem 5.5rem;
+    }
+    .curriculum-head {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 7rem;
+      align-items: end;
+    }
+    .curriculum-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(3.5rem, 6vw, 7.5rem);
+      line-height: 0.9;
+      color: var(--charcoal);
+    }
+    .curriculum-intro {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: rgba(28,28,28,0.58);
+      max-width: 34rem;
+    }
+    /* Asymmetric 3-col grid */
+    .curriculum-cards {
+      display: grid;
+      grid-template-columns: 1.5fr 0.85fr 1.05fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    .cc { display: flex; flex-direction: column; }
+    .cc:nth-child(2) { margin-top: 5rem; }
+    .cc:nth-child(3) { margin-top: 2.5rem; }
+    .cc-num {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 4.5rem;
+      line-height: 1;
+      color: var(--bone-mid);
+      margin-bottom: -1rem;
+      position: relative;
+      z-index: 1;
+    }
+    .cc-img-wrap {
+      overflow: hidden;
+      position: relative;
+    }
+    .cc-img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      filter: grayscale(25%) contrast(1.1);
+      transition: filter 0.6s ease, transform 0.6s var(--ease-out);
+    }
+    .cc:hover .cc-img {
+      filter: grayscale(0%) contrast(1.15);
+      transform: scale(1.03);
+    }
+    .cc-img-grad {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 55%;
+      background: linear-gradient(to top, rgba(28,28,28,0.82), transparent);
+      pointer-events: none;
+    }
+    .cc-info { padding: 1.5rem 0; }
+    .cc-module {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.57rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.5rem;
+    }
+    .cc-name {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-style: italic;
+      font-size: 1.55rem;
+      line-height: 1.15;
+      color: var(--charcoal);
+      margin-bottom: 0.9rem;
+    }
+    .cc-desc {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.78rem;
+      line-height: 1.75;
+      color: rgba(28,28,28,0.52);
+    }
+
+    /* =========================================
+       IMAGE TRIPTYCH
+    ========================================= */
+    #triptych {
+      height: 65vh;
+      display: grid;
+      grid-template-columns: 1.1fr 0.8fr 1.1fr;
+      overflow: hidden;
+    }
+    .tp-panel { overflow: hidden; position: relative; }
+    .tp-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(18%);
+      transition: filter 0.6s ease, transform 0.7s var(--ease-out);
+    }
+    .tp-panel:nth-child(2) .tp-img { filter: grayscale(55%) contrast(1.2); }
+    .tp-panel:hover .tp-img { filter: grayscale(0%); transform: scale(1.04); }
+    .tp-cap {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 2rem;
+      background: linear-gradient(to top, rgba(28,28,28,0.75), transparent);
+    }
+    .tp-cap-text {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.57rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.55);
+    }
+
+    /* =========================================
+       ARENA — STATS (dark)
+    ========================================= */
+    #arena {
+      background: var(--charcoal);
+      padding: 10rem 5.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .arena-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: 30vw;
+      white-space: nowrap;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(245,240,232,0.03);
+      pointer-events: none;
+      user-select: none;
+    }
+    .arena-content { position: relative; z-index: 2; }
+    .arena-head {
+      display: flex;
+      align-items: baseline;
+      gap: 3rem;
+      margin-bottom: 6rem;
+    }
+    .arena-eyebrow {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.58rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--orange);
+      white-space: nowrap;
+    }
+    .arena-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(3rem, 6vw, 7.5rem);
+      line-height: 0.88;
+      color: var(--bone);
+    }
+    .arena-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(245,240,232,0.06);
+    }
+    .arena-stat {
+      background: var(--charcoal);
+      padding: 3rem 2.5rem;
+      position: relative;
+      transition: background 0.35s;
+    }
+    .arena-stat:hover { background: rgba(240,74,0,0.05); }
+    .arena-stat:first-child::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--orange);
+    }
+    .as-num {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: clamp(3.2rem, 4.5vw, 5.5rem);
+      line-height: 1;
+      color: var(--bone);
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+    .as-unit {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.4rem;
+      color: var(--orange);
+    }
+    .as-label {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.28);
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+    .as-desc {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.76rem;
+      line-height: 1.75;
+      color: rgba(245,240,232,0.38);
+      border-top: 1px solid rgba(245,240,232,0.07);
+      padding-top: 1.5rem;
+    }
+
+    /* =========================================
+       CONCEPT / QUOTE
+    ========================================= */
+    #concept {
+      padding: 12rem 5.5rem;
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 7rem;
+      align-items: center;
+    }
+    .concept-quote {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(2.4rem, 4.2vw, 5.2rem);
+      line-height: 1.06;
+      color: var(--charcoal);
+      margin-bottom: 3rem;
+    }
+    .concept-quote em {
+      font-style: normal;
+      color: var(--orange);
+    }
+    .concept-attr {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .attr-rule {
+      width: 3.5rem;
+      height: 1px;
+      background: var(--orange);
+      flex-shrink: 0;
+    }
+    .attr-text {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(28,28,28,0.4);
+    }
+    .concept-img-wrap {
+      position: relative;
+    }
+    .concept-img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      filter: grayscale(20%);
+    }
+    .concept-accent {
+      position: absolute;
+      top: -1.5rem;
+      right: -1.5rem;
+      width: 4.5rem;
+      height: 4.5rem;
+      background: var(--orange);
+    }
+
+    /* =========================================
+       APPLICATION
+    ========================================= */
+    #apply {
+      background: var(--charcoal);
+      position: relative;
+      overflow: hidden;
+      padding: 10rem 5.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8rem;
+      align-items: center;
+    }
+    .apply-atm {
+      position: absolute;
+      inset: 0;
+      background: url('https://images.pexels.com/photos/12464332/pexels-photo-12464332.jpeg') center/cover no-repeat;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+    .apply-left { position: relative; z-index: 2; }
+    .apply-label {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.58rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 2rem;
+    }
+    .apply-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(3.2rem, 5.5vw, 7rem);
+      line-height: 0.88;
+      color: var(--bone);
+      margin-bottom: 3rem;
+    }
+    .apply-body {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.83rem;
+      line-height: 1.9;
+      color: rgba(245,240,232,0.45);
+      margin-bottom: 3.5rem;
+      max-width: 32rem;
+    }
+    .apply-details { display: flex; flex-direction: column; gap: 1.1rem; }
+    .ad-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .ad-label {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.25);
+      width: 6rem;
+      flex-shrink: 0;
+    }
+    .ad-value {
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: rgba(245,240,232,0.8);
+    }
+    .apply-right { position: relative; z-index: 2; }
+    .apply-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.4rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.55rem; }
+    .form-label {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.3);
+    }
+    .form-control {
+      background: rgba(245,240,232,0.04);
+      border: 1px solid rgba(245,240,232,0.09);
+      color: var(--bone);
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.83rem;
+      padding: 0.95rem 1.2rem;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.3s, background 0.3s;
+      -webkit-appearance: none;
+      border-radius: 0;
+    }
+    .form-control::placeholder { color: rgba(245,240,232,0.18); }
+    .form-control:focus {
+      border-color: var(--orange);
+      background: rgba(245,240,232,0.07);
+    }
+    select.form-control option { background: var(--charcoal-soft); }
+    textarea.form-control { resize: none; height: 110px; }
+    .btn-submit {
+      width: 100%;
+      padding: 1.2rem;
+      background: var(--orange);
+      color: var(--bone);
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      transition: background 0.3s, transform 0.25s;
+    }
+    .btn-submit:hover { background: var(--orange-hover); transform: translateY(-2px); }
+    .form-note {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.62rem;
+      line-height: 1.65;
+      color: rgba(245,240,232,0.22);
+    }
+
+    /* =========================================
+       FOOTER
+    ========================================= */
+    footer {
+      background: var(--charcoal);
+      border-top: 1px solid rgba(245,240,232,0.055);
+      padding: 5.5rem 5.5rem 3rem;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 5rem;
+    }
+    .footer-logo {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: 2.2rem;
+      color: var(--bone);
+      display: block;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+    .footer-logo .dot { color: var(--orange); }
+    .footer-tagline {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.78rem;
+      line-height: 1.75;
+      color: rgba(245,240,232,0.28);
+      max-width: 22rem;
+    }
+    .footer-col-head {
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: 0.57rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.22);
+      margin-bottom: 1.5rem;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .footer-links a {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.8rem;
+      color: rgba(245,240,232,0.38);
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--orange); }
+    .footer-bottom {
+      border-top: 1px solid rgba(245,240,232,0.055);
+      padding-top: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-copy {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: rgba(245,240,232,0.18);
+    }
+    .footer-legal {
+      display: flex;
+      gap: 2.2rem;
+    }
+    .footer-legal a {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.62rem;
+      color: rgba(245,240,232,0.18);
+      transition: color 0.3s;
+    }
+    .footer-legal a:hover { color: var(--orange); }
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+    @media (max-width: 1100px) {
+      #hero        { grid-template-columns: 1fr; }
+      .hero-right  { display: none; }
+      .hero-left   { padding: 0 3rem 6rem; }
+      .manifesto-grid { grid-template-columns: 1fr; }
+      .manifesto-left, .manifesto-right { display: none; }
+      .manifesto-center { padding: 0 3rem; }
+      .manifesto-body { grid-template-columns: 1fr; gap: 2.5rem; }
+      #oven { grid-template-columns: 1fr; }
+      .oven-word-side { display: none; }
+      .oven-panel { grid-column: 1; padding: 4rem 3rem; }
+      .curriculum-cards { grid-template-columns: 1fr; gap: 4rem; }
+      .cc:nth-child(2), .cc:nth-child(3) { margin-top: 0; }
+      #curriculum { padding: 7rem 3rem; }
+      .arena-grid { grid-template-columns: 1fr 1fr; }
+      #arena { padding: 7rem 3rem; }
+      #concept { grid-template-columns: 1fr; gap: 4rem; }
+      .concept-img-wrap { display: none; }
+      #apply { grid-template-columns: 1fr; gap: 4rem; padding: 7rem 3rem; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 3rem; }
+      footer { padding: 4.5rem 3rem 2.5rem; }
+    }
+    @media (max-width: 640px) {
+      #nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero-left { padding: 0 1.5rem 5rem; }
+      .hero-title { font-size: 4.5rem; }
+      .hero-actions { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+      .arena-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      footer { padding: 4rem 1.5rem 2rem; }
+      #apply { padding: 6rem 1.5rem; }
+      .curriculum-head { grid-template-columns: 1fr; }
+      #concept { padding: 7rem 1.5rem; }
+      .manifesto-center { padding: 0 1.5rem; }
+      #marquee { padding: 2rem 0; }
+      .marquee-word { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─────────────────────────────────── -->
+  <nav id="nav">
+    <div class="nav-logo">F<span class="dot">·</span>O<span class="dot">·</span>R<span class="dot">·</span>N<span class="dot">·</span>O</div>
+    <ul class="nav-links">
+      <li><a href="#manifesto">Manifesto</a></li>
+      <li><a href="#curriculum">Curriculum</a></li>
+      <li><a href="#arena">The Arena</a></li>
+      <li><a href="#apply">Apply</a></li>
+    </ul>
+    <button class="nav-cta" onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+      Request Invitation
+    </button>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────── -->
+  <section id="hero">
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-vignette"></div>
+
+    <div class="hero-left">
+      <p class="hero-issue reveal">Napoli, Italia &nbsp;·&nbsp; September MMXXVI &nbsp;·&nbsp; One Event Per Year</p>
+      <h1 class="hero-title" id="hero-title" aria-label="The Oven is Your Arena.">
+        <span class="ht-line">The</span>
+        <span class="ht-line ht-orange">Oven</span>
+        <span class="ht-line">is Your</span>
+        <span class="ht-line ht-orange">Arena.</span>
+      </h1>
+      <p class="hero-sub reveal rd1">
+        An annual masterclass in the irreducible craft of Neapolitan pizza.
+        Twelve participants. Seventy-two hours. One wood-fired oven.
+        The most exclusive culinary event in the world.
+      </p>
+      <div class="hero-actions reveal rd2">
+        <a href="#apply" class="btn-primary">Request Invitation</a>
+        <a href="#manifesto" class="btn-ghost">Discover the Class</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-meta reveal rd1">
+        <div class="hero-meta-row">
+          <span class="hero-meta-label">Date</span>
+          <span class="hero-meta-value">14 – 17 September 2026</span>
+        </div>
+        <div class="hero-meta-row">
+          <span class="hero-meta-label">Location</span>
+          <span class="hero-meta-value">Napoli, Campania, Italia</span>
+        </div>
+        <div class="hero-meta-row">
+          <span class="hero-meta-label">Participants</span>
+          <span class="hero-meta-value">XII Seats Only</span>
+        </div>
+        <div class="hero-meta-row">
+          <span class="hero-meta-label">Tuition</span>
+          <span class="hero-meta-value">€ 8.400 — All Inclusive</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-slice"></div>
+    <div class="scroll-cue">
+      <span class="scroll-cue-label">Scroll</span>
+      <div class="scroll-cue-line"></div>
+    </div>
+  </section>
+
+  <!-- ─── MARQUEE ──────────────────────────────── -->
+  <div id="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <div class="marquee-item"><span class="marquee-word">Farina 00</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word dim">San Marzano</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word">Fior di Latte</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word dim">Olio Extra Vergine</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word">Basilico Fresco</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word dim">Lievito Madre</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word">Sale Marino</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word dim">Acqua di Sorgente</span><span class="marquee-sep"></span></div>
+      <!-- duplicate -->
+      <div class="marquee-item"><span class="marquee-word">Farina 00</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word dim">San Marzano</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word">Fior di Latte</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word dim">Olio Extra Vergine</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word">Basilico Fresco</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word dim">Lievito Madre</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word">Sale Marino</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-word dim">Acqua di Sorgente</span><span class="marquee-sep"></span></div>
+    </div>
+  </div>
+
+  <!-- ─── MANIFESTO ────────────────────────────── -->
+  <section id="manifesto">
+    <div class="manifesto-grid">
+      <div class="manifesto-left">
+        <span class="manifesto-vert reveal from-left">Manifesto · MMXXVI</span>
+      </div>
+      <div class="manifesto-center">
+        <h2 class="manifesto-headline reveal">
+          Peasant<br/>
+          <span class="u-outline">Food.</span><br/>
+          Royal<br/>
+          Craft.
+        </h2>
+        <div class="manifesto-body">
+          <p class="manifesto-text reveal rd1">
+            Pizza was <strong>never humble</strong>. Born in the volcanic streets of Napoli,
+            refined in its fires, it fed kings and labourers alike. The irony is that the
+            world forgot. We did not. FORNO returns pizza to its rightful position:
+            <strong>the highest expression of Italian culinary intelligence</strong>.
+            Not a performance. Not a product. A singular act of mastery.
+          </p>
+          <blockquote class="manifesto-quote reveal rd2">
+            "The dough does not lie. The oven does not forgive. The pizza does not pretend."
+          </blockquote>
+        </div>
+      </div>
+      <div class="manifesto-right">
+        <span class="manifesto-number reveal from-right" aria-hidden="true">01</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── OVEN ──────────────────────────────────── -->
+  <section id="oven">
+    <div class="oven-bg" id="oven-bg"></div>
+    <div class="oven-word-side">
+      <span class="oven-ghost-word reveal from-left" aria-hidden="true">FORNO</span>
+    </div>
+    <div class="oven-panel">
+      <div class="glass-card reveal from-right">
+        <p class="oven-label">The Instrument</p>
+        <h2 class="oven-title">The Wood-Fired<br/>Oven as Arena</h2>
+        <div class="oven-rule"></div>
+        <p class="oven-body">
+          At 485 °C, a Neapolitan pizza bakes in sixty to ninety seconds. There is no room
+          for hesitation. No margin for error. Our custom-built Vesuvian-stone oven — hewn
+          from the same volcanic tuff that has overlooked Napoli for millennia — becomes your
+          opponent, your partner, and your final judge. You will learn to read fire by instinct.
+        </p>
+        <div class="oven-stats">
+          <div class="oven-stat-item">
+            <span class="oven-stat-num">485</span>
+            <span class="oven-stat-label">°C Oven Temperature</span>
+          </div>
+          <div class="oven-stat-item">
+            <span class="oven-stat-num">90</span>
+            <span class="oven-stat-label">Seconds to Perfect</span>
+          </div>
+          <div class="oven-stat-item">
+            <span class="oven-stat-num">72</span>
+            <span class="oven-stat-label">Hours of Immersion</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CURRICULUM ───────────────────────────── -->
+  <section id="curriculum">
+    <div class="curriculum-head">
+      <h2 class="curriculum-title reveal">
+        The Three<br/><em class="u-italic u-orange">Acts</em><br/>of Mastery
+      </h2>
+      <p class="curriculum-intro reveal rd1">
+        Three intensive modules, each designed to deconstruct and rebuild your understanding
+        of Neapolitan pizza — from its geological origins in Campanian volcanic soil to its
+        final, singular expression in wood fire. No shortcuts. No compromises.
+      </p>
+    </div>
+    <div class="curriculum-cards">
+      <!-- Card 1 -->
+      <div class="cc reveal">
+        <span class="cc-num" aria-hidden="true">01</span>
+        <div class="cc-img-wrap">
+          <img class="cc-img" src="https://images.pexels.com/photos/7368032/pexels-photo-7368032.jpeg"
+               alt="Close-up of fresh dough balls on a floured surface — Christina Voinova on Pexels"
+               loading="lazy" />
+          <div class="cc-img-grad"></div>
+        </div>
+        <div class="cc-info">
+          <p class="cc-module">Module I — Days 1 – 2</p>
+          <h3 class="cc-name">The Dough.<br/>The Science of Nothing.</h3>
+          <p class="cc-desc">Water, flour, salt, yeast. Four elements that demand a lifetime of study.
+          Master the gluten matrix, the fermentation arc, and the tactile intelligence that no recipe can teach.</p>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="cc reveal rd1">
+        <span class="cc-num" aria-hidden="true">02</span>
+        <div class="cc-img-wrap">
+          <img class="cc-img" src="https://images.pexels.com/photos/18254763/pexels-photo-18254763.jpeg"
+               alt="Close-up of vibrant ripe cherry tomatoes — frank minjarez on Pexels"
+               loading="lazy" />
+          <div class="cc-img-grad"></div>
+        </div>
+        <div class="cc-info">
+          <p class="cc-module">Module II — Day 2</p>
+          <h3 class="cc-name">The Ingredients.<br/>Geography of Flavour.</h3>
+          <p class="cc-desc">San Marzano grown in Campanian volcanic soil. Fior di Latte from Agerola.
+          Learn to read an ingredient as a chef reads a landscape.</p>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="cc reveal rd2">
+        <span class="cc-num" aria-hidden="true">03</span>
+        <div class="cc-img-wrap">
+          <img class="cc-img" src="https://images.pexels.com/photos/29021744/pexels-photo-29021744.jpeg"
+               alt="Chef prepares to bake pizza in a traditional brick oven — Nano Erdozain on Pexels"
+               loading="lazy" />
+          <div class="cc-img-grad"></div>
+        </div>
+        <div class="cc-info">
+          <p class="cc-module">Module III — Days 3 – 4</p>
+          <h3 class="cc-name">The Fire.<br/>The Art of the Arena.</h3>
+          <p class="cc-desc">The wood-fired oven is not a tool — it is a living system.
+          Learn fire management, temperature reading by eye alone, and the decisive rotation
+          that separates a pizza from a masterpiece.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TRIPTYCH ─────────────────────────────── -->
+  <div id="triptych" aria-label="Gallery">
+    <div class="tp-panel">
+      <img class="tp-img"
+           src="https://images.pexels.com/photos/9419408/pexels-photo-9419408.jpeg"
+           alt="Wood-fired pizza baking in a rustic oven — Mariya Muschard on Pexels"
+           loading="lazy" />
+      <div class="tp-cap"><span class="tp-cap-text">Napoli · The Craft</span></div>
+    </div>
+    <div class="tp-panel">
+      <img class="tp-img"
+           src="https://images.pexels.com/photos/9718905/pexels-photo-9718905.jpeg"
+           alt="Majestic view of Mount Vesuvius over the Gulf of Naples — Daniel Eliashevsky on Pexels"
+           loading="lazy" />
+      <div class="tp-cap"><span class="tp-cap-text">Vesuvio · The Stage</span></div>
+    </div>
+    <div class="tp-panel">
+      <img class="tp-img"
+           src="https://pixabay.com/get/ga94258d81d2e1dc8c0c329652489fce60eea6c0b23e587818df2a84bf767f479559abf84933afe725dd8175489e28c06.jpg"
+           alt="Buffalo mozzarella artisan — maxsanna on Pixabay"
+           loading="lazy" />
+      <div class="tp-cap"><span class="tp-cap-text">Fior di Latte · The Soul</span></div>
+    </div>
+  </div>
+
+  <!-- ─── ARENA ─────────────────────────────────── -->
+  <section id="arena">
+    <div class="arena-watermark" aria-hidden="true">FORNO</div>
+    <div class="arena-content">
+      <div class="arena-head">
+        <span class="arena-eyebrow reveal">The Numbers</span>
+        <h2 class="arena-title reveal rd1">The <em class="u-italic u-orange">Arena.</em></h2>
+      </div>
+      <div class="arena-grid">
+        <div class="arena-stat reveal">
+          <span class="as-num">01<span class="as-unit">×</span></span>
+          <span class="as-label">Per Year</span>
+          <p class="as-desc">FORNO convenes once per year, in September, when the Neapolitan sun softens and the volcanic air carries the promise of perfect fermentation.</p>
+        </div>
+        <div class="arena-stat reveal rd1">
+          <span class="as-num">XII</span>
+          <span class="as-label">Participants Only</span>
+          <p class="as-desc">Twelve seats. No exceptions. The intimacy of a small cohort ensures each participant receives direct mentorship and unrestricted oven time.</p>
+        </div>
+        <div class="arena-stat reveal rd2">
+          <span class="as-num">72<span class="as-unit">h</span></span>
+          <span class="as-label">Immersive Hours</span>
+          <p class="as-desc">Seventy-two hours of continuous instruction, fire management, fermentation study, and hands-on production. Sleep is optional. Mastery is not.</p>
+        </div>
+        <div class="arena-stat reveal rd3">
+          <span class="as-num">200<span class="as-unit">+</span></span>
+          <span class="as-label">Years of Tradition</span>
+          <p class="as-desc">Napoli has been producing the world's finest pizza for over two centuries. We are the latest chapter in an unbroken line of volcanic obsession.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONCEPT QUOTE ────────────────────────── -->
+  <section id="concept">
+    <div>
+      <blockquote class="concept-quote reveal">
+        "We did not invent <em>pizza.</em><br/>Pizza invented <em>Napoli.</em><br/>We merely learned to listen."
+      </blockquote>
+      <div class="concept-attr reveal rd1">
+        <div class="attr-rule"></div>
+        <span class="attr-text">Maestro Antonio Ferrante &nbsp;·&nbsp; Head of Faculty &nbsp;·&nbsp; FORNO 2026</span>
+      </div>
+    </div>
+    <div class="concept-img-wrap reveal from-right">
+      <img class="concept-img"
+           src="https://images.pexels.com/photos/18771741/pexels-photo-18771741.jpeg"
+           alt="Sunset view of Naples cityscape with Mount Vesuvius — Alina Chernii on Pexels"
+           loading="lazy" />
+      <div class="concept-accent" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- ─── APPLICATION ──────────────────────────── -->
+  <section id="apply">
+    <div class="apply-atm" aria-hidden="true"></div>
+    <div class="apply-left">
+      <p class="apply-label reveal">Request Invitation</p>
+      <h2 class="apply-title reveal rd1">Claim<br/>Your<br/>Seat.</h2>
+      <p class="apply-body reveal rd2">
+        Applications are reviewed by a faculty committee. Acceptance is based on culinary
+        background, intention, and the irreducible evidence of passion.
+        The waiting list opens January 2026.
+      </p>
+      <div class="apply-details reveal rd3">
+        <div class="ad-row">
+          <span class="ad-label">Date</span>
+          <span class="ad-value">14 – 17 September 2026</span>
+        </div>
+        <div class="ad-row">
+          <span class="ad-label">Location</span>
+          <span class="ad-value">Napoli, Campania, Italia</span>
+        </div>
+        <div class="ad-row">
+          <span class="ad-label">Tuition</span>
+          <span class="ad-value">€ 8.400 · All Inclusive</span>
+        </div>
+        <div class="ad-row">
+          <span class="ad-label">Seats</span>
+          <span class="ad-value">XII · By invitation only</span>
+        </div>
+        <div class="ad-row">
+          <span class="ad-label">Language</span>
+          <span class="ad-value">Italian &amp; English</span>
+        </div>
+      </div>
+    </div>
+    <div class="apply-right">
+      <form class="apply-form reveal from-right" id="apply-form" onsubmit="handleSubmit(event)" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="f-first">First Name</label>
+            <input class="form-control" id="f-first" type="text" placeholder="Alessandro" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-last">Last Name</label>
+            <input class="form-control" id="f-last" type="text" placeholder="Ferrante" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-email">Email Address</label>
+          <input class="form-control" id="f-email" type="email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-country">Country of Residence</label>
+          <input class="form-control" id="f-country" type="text" placeholder="Italia" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-bg">Culinary Background</label>
+          <select class="form-control" id="f-bg">
+            <option value="">Select level</option>
+            <option>Home Cook — Passionate</option>
+            <option>Professional Chef</option>
+            <option>Restaurateur / F&amp;B Director</option>
+            <option>Food Writer / Critic</option>
+            <option>Culinary Student</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-why">Why FORNO?</label>
+          <textarea class="form-control" id="f-why" placeholder="What draws you to the oven…"></textarea>
+        </div>
+        <button type="submit" class="btn-submit" id="submit-btn">Submit Application</button>
+        <p class="form-note">
+          Applications are reviewed within 14 days. Only shortlisted candidates will be contacted
+          for a final conversation with the faculty committee. Your data is never shared with third parties.
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────── -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <span class="footer-logo">F<span class="dot">·</span>O<span class="dot">·</span>R<span class="dot">·</span>N<span class="dot">·</span>O</span>
+        <p class="footer-tagline">
+          The annual elite masterclass in the art and science of Neapolitan homemade pizza.
+          Once per year. Twelve seats. Napoli, Italia.
+        </p>
+      </div>
+      <div>
+        <p class="footer-col-head">Navigate</p>
+        <ul class="footer-links">
+          <li><a href="#manifesto">Manifesto</a></li>
+          <li><a href="#oven">The Oven</a></li>
+          <li><a href="#curriculum">Curriculum</a></li>
+          <li><a href="#arena">The Arena</a></li>
+          <li><a href="#apply">Apply</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-head">Programme</p>
+        <ul class="footer-links">
+          <li><a href="#">Faculty</a></li>
+          <li><a href="#">Location &amp; Logistics</a></li>
+          <li><a href="#">Alumni</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-head">Contact</p>
+        <ul class="footer-links">
+          <li><a href="mailto:info@forno.napoli.it">info@forno.napoli.it</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Newsletter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© FORNO MMXXVI · All rights reserved · Napoli, Italia</p>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─── SCRIPTS ───────────────────────────────── -->
+  <script>
+    // ─ SCROLL REVEAL ─────────────────────────────
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+    revealEls.forEach(el => revealObs.observe(el));
+
+    // Trigger hero elements immediately on load
+    window.addEventListener('load', () => {
+      document.querySelectorAll('#hero .reveal').forEach(el => {
+        setTimeout(() => el.classList.add('visible'), 200);
+      });
+    });
+
+    // ─ NAV SCROLL ────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    // ─ PARALLAX ──────────────────────────────────
+    const heroBg  = document.getElementById('hero-bg');
+    const ovenBg  = document.getElementById('oven-bg');
+    const ovenSec = document.getElementById('oven');
+
+    window.addEventListener('scroll', () => {
+      const sy = window.scrollY;
+      // Hero parallax
+      if (heroBg && sy < window.innerHeight * 1.5) {
+        heroBg.style.transform = `translateY(${sy * 0.3}px)`;
+      }
+      // Oven parallax
+      if (ovenBg && ovenSec) {
+        const rect = ovenSec.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          const offset = -rect.top * 0.22;
+          ovenBg.style.transform = `translateY(${offset}px)`;
+        }
+      }
+    }, { passive: true });
+
+    // ─ KINETIC HERO TITLE ────────────────────────
+    // Character-by-character entry for each line
+    (function animateHero() {
+      const titleEl = document.getElementById('hero-title');
+      if (!titleEl) return;
+      const lines = titleEl.querySelectorAll('.ht-line');
+      lines.forEach((line, li) => {
+        const text  = line.textContent.trim();
+        const isOrange = line.classList.contains('ht-orange');
+        line.textContent = '';
+        line.style.overflow = 'hidden';
+
+        [...text].forEach((char, ci) => {
+          const span = document.createElement('span');
+          span.textContent = char === ' ' ? '\u00a0' : char;
+          const baseDelay = li * 0.18 + ci * 0.038 + 0.35;
+          span.style.cssText = `
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(45px) skewY(4deg);
+            transition:
+              opacity   0.55s ease ${baseDelay}s,
+              transform 0.65s cubic-bezier(0.16,1,0.3,1) ${baseDelay}s;
+          `;
+          line.appendChild(span);
+          // Trigger
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            span.style.opacity   = '1';
+            span.style.transform = 'translateY(0) skewY(0deg)';
+          }));
+        });
+      });
+    })();
+
+    // ─ ARENA STAT PULSE on enter ─────────────────
+    let pulsed = false;
+    const arenaObs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !pulsed) {
+        pulsed = true;
+        document.querySelectorAll('.as-num').forEach((el, i) => {
+          setTimeout(() => {
+            el.style.transition = 'transform 0.4s cubic-bezier(0.16,1,0.3,1), color 0.4s ease';
+            el.style.transform  = 'scale(1.06)';
+            setTimeout(() => { el.style.transform = 'scale(1)'; }, 320);
+          }, i * 100);
+        });
+      }
+    }, { threshold: 0.35 });
+    arenaObs.observe(document.getElementById('arena'));
+
+    // ─ FORM SUBMISSION ────────────────────────────
+    function handleSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.textContent = '✓  Application Received';
+      btn.style.background    = '#1C1C1C';
+      btn.style.border        = '1px solid rgba(245,240,232,0.15)';
+      btn.style.letterSpacing = '0.12em';
+      btn.disabled = true;
+      e.target.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+    }
+  </script>
+</body>
+</html>
