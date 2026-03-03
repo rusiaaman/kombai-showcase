@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kombai — The AI Agent Built for Frontend Development</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════
+       DESIGN TOKENS — MARBLE & IRON SYSTEM
+    ═══════════════════════════════════════════════ */
+    :root {
+      --bg-void:       #111112;
+      --bg-base:       #1A1A1B;
+      --bg-surface:    #212123;
+      --bg-elevated:   #28282B;
+      --iron-line:     #2C2C2F;
+      --iron-mid:      #3A3A3E;
+      --iron-light:    #52525A;
+      --silver:        #848884;
+      --silver-light:  #ABABAB;
+      --white:         #F0F0EE;
+      --white-pure:    #FFFFFF;
+      --amber:         #C8840A;
+      --amber-bright:  #E09B1A;
+      --amber-glow:    rgba(200, 132, 10, 0.15);
+      --amber-border:  rgba(200, 132, 10, 0.4);
+
+      --font-mono:     'JetBrains Mono', 'Courier New', monospace;
+      --font-body:     'Inter', system-ui, sans-serif;
+
+      --space-1:  4px;
+      --space-2:  8px;
+      --space-3:  12px;
+      --space-4:  16px;
+      --space-6:  24px;
+      --space-8:  32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-16: 64px;
+      --space-20: 80px;
+      --space-24: 96px;
+      --space-32: 128px;
+
+      --radius-sm: 2px;
+      --radius-md: 4px;
+
+      --transition-snap: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      --transition-mech: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ═══════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--white);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ═══════════════════════════════════════════════
+       TYPOGRAPHY SYSTEM
+    ═══════════════════════════════════════════════ */
+    .t-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--silver);
+    }
+
+    .t-coord {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--iron-light);
+      letter-spacing: 0.1em;
+    }
+
+    .t-h1 {
+      font-family: var(--font-mono);
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--white);
+    }
+
+    .t-h2 {
+      font-family: var(--font-mono);
+      font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--white);
+    }
+
+    .t-h3 {
+      font-family: var(--font-mono);
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--white);
+    }
+
+    .t-body {
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--silver-light);
+      line-height: 1.7;
+    }
+
+    .t-accent { color: var(--amber); }
+    .t-muted  { color: var(--silver); }
+
+    /* ═══════════════════════════════════════════════
+       LAYOUT PRIMITIVES
+    ═══════════════════════════════════════════════ */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 var(--space-8);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--iron-line);
+    }
+
+    .section-frame {
+      border-top: 1px solid var(--iron-line);
+      position: relative;
+    }
+
+    /* Blueprint corner marks */
+    .blueprint-corner::before,
+    .blueprint-corner::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-color: var(--amber-border);
+      border-style: solid;
+      opacity: 0.6;
+    }
+    .blueprint-corner::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+    .blueprint-corner::after  { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+    /* ═══════════════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--transition-mech);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      transform: translateX(-101%);
+      transition: transform 0.25s var(--transition-mech);
+    }
+
+    .btn:hover::before { transform: translateX(0); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0) skewX(-1deg); }
+
+    .btn-primary {
+      background: var(--amber);
+      color: var(--bg-void);
+      border-color: var(--amber);
+    }
+
+    .btn-primary::before { background: var(--amber-bright); }
+    .btn-primary:hover { box-shadow: 0 8px 24px rgba(200,132,10,0.3); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border-color: var(--iron-mid);
+    }
+
+    .btn-outline::before { background: var(--iron-mid); }
+    .btn-outline:hover { border-color: var(--silver); }
+
+    /* ═══════════════════════════════════════════════
+       ENTRANCE ANIMATIONS — EARTHQUAKE SYSTEM
+    ═══════════════════════════════════════════════ */
+    .eq-enter {
+      opacity: 0;
+      transform: translateX(-24px) skewX(1.5deg);
+      transition: opacity 0.65s var(--transition-snap),
+                  transform 0.65s var(--transition-snap);
+    }
+
+    .eq-enter-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.6s var(--transition-snap),
+                  transform 0.6s var(--transition-snap);
+    }
+
+    .eq-enter-right {
+      opacity: 0;
+      transform: translateX(24px) skewX(-1.5deg);
+      transition: opacity 0.65s var(--transition-snap),
+                  transform 0.65s var(--transition-snap);
+    }
+
+    .eq-enter.revealed,
+    .eq-enter-up.revealed,
+    .eq-enter-right.revealed {
+      opacity: 1;
+      transform: none;
+    }
+
+    .eq-delay-1 { transition-delay: 0.1s; }
+    .eq-delay-2 { transition-delay: 0.2s; }
+    .eq-delay-3 { transition-delay: 0.3s; }
+    .eq-delay-4 { transition-delay: 0.45s; }
+
+    /* ═══════════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--iron-line);
+      background: rgba(26,26,27,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      height: 60px;
+      padding: 0 var(--space-8);
+      max-width: 1280px;
+      margin: 0 auto;
+      gap: var(--space-8);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+      color: var(--white);
+    }
+
+    .nav-logo-mark {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid var(--amber);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--amber);
+      font-family: var(--font-mono);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-8);
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--silver);
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--amber);
+      transition: width 0.25s var(--transition-mech);
+    }
+
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ═══════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      padding-top: 60px;
+      display: grid;
+      grid-template-columns: 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Blueprint grid background */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--iron-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--iron-line) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      min-height: calc(100vh - 60px);
+      position: relative;
+    }
+
+    .hero-left {
+      padding: var(--space-20) var(--space-8) var(--space-20) var(--space-8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--iron-line);
+      position: relative;
+    }
+
+    .hero-index {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+
+    .hero-index-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--amber);
+      border: 1px solid var(--amber-border);
+      padding: 2px 8px;
+    }
+
+    .hero-headline {
+      margin-bottom: var(--space-6);
+    }
+
+    .hero-headline .line-dim {
+      display: block;
+      color: var(--silver-light);
+    }
+
+    .hero-headline .line-amber {
+      display: block;
+      color: var(--amber);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--silver-light);
+      line-height: 1.75;
+      max-width: 520px;
+      margin-bottom: var(--space-10);
+    }
+
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-12);
+    }
+
+    .hero-support {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .support-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--silver);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .support-logos {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .tech-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--silver);
+      border: 1px solid var(--iron-mid);
+      padding: 3px 10px;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+
+    .tech-badge:hover {
+      border-color: var(--amber-border);
+      color: var(--amber);
+    }
+
+    /* Hero Right - Code Visual */
+    .hero-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-12) var(--space-8);
+      position: relative;
+    }
+
+    .code-block {
+      background: var(--bg-void);
+      border: 1px solid var(--iron-mid);
+      padding: var(--space-6);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.9;
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+    }
+
+    .code-block::before {
+      content: attr(data-label);
+      position: absolute;
+      top: -1px;
+      left: var(--space-4);
+      transform: translateY(-50%);
+      background: var(--bg-void);
+      padding: 0 var(--space-2);
+      font-size: 9px;
+      color: var(--amber);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .code-block .code-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--iron-line);
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-r { background: #FF5F57; }
+    .dot-y { background: #FEBC2E; }
+    .dot-g { background: #28C840; }
+
+    .code-line { display: flex; gap: var(--space-3); align-items: baseline; }
+    .ln { color: var(--iron-light); min-width: 20px; text-align: right; font-size: 10px; user-select: none; }
+    .kw  { color: #C792EA; }
+    .fn  { color: #82AAFF; }
+    .str { color: #C3E88D; }
+    .cmt { color: var(--iron-light); font-style: italic; }
+    .op  { color: var(--amber); }
+    .prop { color: #F78C6C; }
+
+    .floating-card {
+      position: absolute;
+      background: var(--bg-elevated);
+      border: 1px solid var(--iron-mid);
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .floating-card.card-tl {
+      top: var(--space-8);
+      left: -40px;
+      border-left: 3px solid var(--amber);
+    }
+
+    .floating-card.card-br {
+      bottom: var(--space-10);
+      right: 0;
+      border-top: 2px solid var(--amber);
+    }
+
+    .fc-label { color: var(--silver); font-size: 9px; letter-spacing: 0.1em; margin-bottom: 2px; }
+    .fc-val   { color: var(--white); font-weight: 600; }
+
+    /* Ruler marks */
+    .ruler-h, .ruler-v {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--iron-light);
+      letter-spacing: 0;
+      display: flex;
+      pointer-events: none;
+    }
+
+    .ruler-h { bottom: var(--space-4); left: var(--space-6); right: var(--space-6); justify-content: space-between; }
+    .ruler-v { top: var(--space-6); bottom: var(--space-6); flex-direction: column; justify-content: space-between; right: var(--space-4); }
+
+    /* ═══════════════════════════════════════════════
+       CAPABILITIES SECTION
+    ═══════════════════════════════════════════════ */
+    .capabilities {
+      background: var(--bg-void);
+      border-top: 1px solid var(--iron-line);
+      border-bottom: 1px solid var(--iron-line);
+    }
+
+    .cap-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--iron-line);
+    }
+
+    .cap-tab {
+      flex: 1;
+      padding: var(--space-6) var(--space-8);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--silver);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-right: 1px solid var(--iron-line);
+      transition: all 0.2s;
+      position: relative;
+      text-align: left;
+    }
+
+    .cap-tab:last-child { border-right: none; }
+    .cap-tab:hover { background: var(--bg-surface); color: var(--white); }
+
+    .cap-tab.active {
+      color: var(--amber);
+      background: var(--bg-surface);
+    }
+
+    .cap-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--amber);
+    }
+
+    .cap-tab .tab-num {
+      display: block;
+      font-size: 9px;
+      color: var(--iron-light);
+      margin-bottom: var(--space-1);
+    }
+
+    .cap-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 420px;
+    }
+
+    .cap-text {
+      padding: var(--space-12) var(--space-10);
+      border-right: 1px solid var(--iron-line);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .cap-panel { display: none; }
+    .cap-panel.active { display: contents; }
+
+    .cap-tag {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: var(--space-4);
+    }
+
+    .cap-title {
+      font-family: var(--font-mono);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: var(--space-6);
+    }
+
+    .cap-desc {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--silver-light);
+      line-height: 1.75;
+      max-width: 440px;
+    }
+
+    .cap-visual {
+      background: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 420px;
+    }
+
+    .cap-visual-inner {
+      width: 100%;
+      max-width: 420px;
+      padding: var(--space-8);
+    }
+
+    .mock-ui {
+      background: var(--bg-void);
+      border: 1px solid var(--iron-mid);
+      overflow: hidden;
+    }
+
+    .mock-header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--iron-line);
+      padding: var(--space-2) var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .mock-body {
+      padding: var(--space-4);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.9;
+    }
+
+    .mock-row {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-1) 0;
+      border-bottom: 1px solid rgba(44,44,47,0.5);
+    }
+
+    .mock-row:last-child { border-bottom: none; }
+
+    .mock-key { color: var(--silver); min-width: 120px; }
+    .mock-val-green { color: #C3E88D; }
+    .mock-val-blue  { color: #82AAFF; }
+    .mock-val-amber { color: var(--amber); }
+
+    /* ═══════════════════════════════════════════════
+       FEATURES
+    ═══════════════════════════════════════════════ */
+    .features { background: var(--bg-base); }
+
+    .feature-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--iron-line);
+      min-height: 480px;
+    }
+
+    .feature-block:last-child { border-bottom: none; }
+    .feature-block.reverse { direction: rtl; }
+    .feature-block.reverse > * { direction: ltr; }
+
+    .feature-text {
+      padding: var(--space-16) var(--space-10);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--iron-line);
+      position: relative;
+    }
+
+    .feature-block.reverse .feature-text {
+      border-right: none;
+      border-left: 1px solid var(--iron-line);
+    }
+
+    .feat-num {
+      font-family: var(--font-mono);
+      font-size: clamp(4rem, 8vw, 8rem);
+      font-weight: 800;
+      line-height: 1;
+      color: var(--iron-line);
+      position: absolute;
+      top: var(--space-8);
+      right: var(--space-8);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .feature-block.reverse .feat-num {
+      right: auto;
+      left: var(--space-8);
+    }
+
+    .feat-tag {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: var(--space-4);
+    }
+
+    .feat-title {
+      font-family: var(--font-mono);
+      font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: var(--space-6);
+      max-width: 380px;
+    }
+
+    .feat-desc {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--silver-light);
+      line-height: 1.75;
+      max-width: 420px;
+    }
+
+    .feature-visual {
+      background: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-10);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Visual: skills pills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .skill-pill {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 6px 10px;
+      border: 1px solid var(--iron-mid);
+      color: var(--silver-light);
+      text-align: center;
+      transition: all 0.25s;
+    }
+
+    .skill-pill:hover {
+      border-color: var(--amber-border);
+      color: var(--amber);
+      background: var(--amber-glow);
+    }
+
+    .skill-pill.highlight {
+      border-color: var(--amber-border);
+      color: var(--amber);
+      background: var(--amber-glow);
+    }
+
+    /* Visual: browser mock */
+    .browser-mock {
+      background: var(--bg-void);
+      border: 1px solid var(--iron-mid);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .browser-chrome {
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--iron-line);
+      padding: var(--space-2) var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .browser-url {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1px solid var(--iron-mid);
+      padding: 3px 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--silver);
+      border-radius: var(--radius-sm);
+    }
+
+    .browser-body {
+      padding: var(--space-4);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .browser-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--iron-line);
+      font-size: 10px;
+    }
+
+    .browser-row:last-child { border-bottom: none; }
+
+    .brow-icon {
+      width: 16px;
+      height: 16px;
+      background: var(--iron-mid);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .brow-text { color: var(--silver-light); }
+    .brow-badge {
+      margin-left: auto;
+      font-size: 8px;
+      padding: 1px 6px;
+      border: 1px solid var(--iron-mid);
+      color: var(--silver);
+    }
+
+    .brow-badge.active-badge {
+      border-color: var(--amber-border);
+      color: var(--amber);
+    }
+
+    /* Visual: repo understanding */
+    .repo-tree {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.9;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .tree-line {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 2px 0;
+    }
+
+    .tree-indent { color: var(--iron-light); user-select: none; }
+    .tree-file   { color: var(--silver-light); }
+    .tree-dir    { color: #82AAFF; font-weight: 600; }
+    .tree-matched { color: var(--amber); }
+    .tree-badge  {
+      margin-left: auto;
+      font-size: 8px;
+      padding: 1px 6px;
+      background: var(--amber-glow);
+      border: 1px solid var(--amber-border);
+      color: var(--amber);
+    }
+
+    /* ═══════════════════════════════════════════════
+       ENTERPRISE SECTION
+    ═══════════════════════════════════════════════ */
+    .enterprise {
+      background: var(--bg-void);
+      border-top: 1px solid var(--iron-line);
+      border-bottom: 1px solid var(--iron-line);
+    }
+
+    .enterprise-header {
+      padding: var(--space-16) var(--space-8) var(--space-10);
+      border-bottom: 1px solid var(--iron-line);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .enterprise-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .ent-card {
+      padding: var(--space-10) var(--space-8);
+      border-right: 1px solid var(--iron-line);
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .ent-card:last-child { border-right: none; }
+    .ent-card:hover { background: var(--bg-surface); }
+
+    .ent-icon {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--iron-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-6);
+      color: var(--amber);
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+
+    .ent-card:hover .ent-icon {
+      border-color: var(--amber-border);
+      background: var(--amber-glow);
+    }
+
+    .ent-title {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: var(--space-3);
+      letter-spacing: -0.01em;
+    }
+
+    .ent-desc {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--silver);
+      line-height: 1.7;
+    }
+
+    .ent-contact {
+      border-top: 1px solid var(--iron-line);
+      max-width: 1280px;
+      margin: 0 auto;
+      border-left: none;
+      border-right: none;
+      padding: var(--space-8);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* ═══════════════════════════════════════════════
+       TESTIMONIALS
+    ═══════════════════════════════════════════════ */
+    .testimonials {
+      background: var(--bg-base);
+      border-top: 1px solid var(--iron-line);
+    }
+
+    .testi-header {
+      padding: var(--space-16) var(--space-8) var(--space-10);
+      border-bottom: 1px solid var(--iron-line);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .testi-card {
+      padding: var(--space-8) var(--space-6);
+      border-right: 1px solid var(--iron-line);
+      border-bottom: 1px solid var(--iron-line);
+      position: relative;
+      transition: background 0.2s;
+      cursor: default;
+    }
+
+    .testi-card:nth-child(4n) { border-right: none; }
+
+    .testi-card:hover { background: var(--bg-surface); }
+
+    .testi-card.featured {
+      grid-column: span 2;
+      background: var(--bg-surface);
+      border-left: 3px solid var(--amber);
+    }
+
+    .testi-avatar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .testi-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--iron-mid);
+      object-fit: cover;
+    }
+
+    .testi-name {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .testi-handle {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--silver);
+      margin-top: 1px;
+    }
+
+    .testi-quote {
+      font-size: 13.5px;
+      font-weight: 300;
+      color: var(--silver-light);
+      line-height: 1.7;
+    }
+
+    .testi-card.featured .testi-quote {
+      font-size: 15px;
+      color: var(--white);
+    }
+
+    .testi-mark {
+      font-family: var(--font-mono);
+      font-size: 48px;
+      color: var(--iron-mid);
+      line-height: 1;
+      margin-bottom: var(--space-2);
+    }
+
+    /* ═══════════════════════════════════════════════
+       CTA SECTION
+    ═══════════════════════════════════════════════ */
+    .cta-section {
+      background: var(--bg-void);
+      border-top: 1px solid var(--iron-line);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--iron-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--iron-line) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.3;
+    }
+
+    .cta-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: var(--space-24) var(--space-8);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--space-12);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-text {}
+
+    .cta-pre {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--amber);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-4);
+    }
+
+    .cta-h {
+      font-family: var(--font-mono);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: var(--space-6);
+    }
+
+    .cta-sub {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--silver-light);
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--space-4);
+    }
+
+    /* ═══════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════ */
+    .footer {
+      background: var(--bg-void);
+      border-top: 1px solid var(--iron-line);
+    }
+
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      border-bottom: 1px solid var(--iron-line);
+    }
+
+    .footer-col {
+      padding: var(--space-10) var(--space-8);
+      border-right: 1px solid var(--iron-line);
+    }
+
+    .footer-col:last-child { border-right: none; }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .footer-tagline {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--silver);
+      line-height: 1.6;
+      margin-bottom: var(--space-6);
+    }
+
+    .footer-col-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--silver);
+      margin-bottom: var(--space-6);
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--silver);
+      transition: color 0.2s;
+      font-weight: 300;
+    }
+
+    .footer-links a:hover { color: var(--white); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-6) var(--space-8);
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--iron-light);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-social {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .social-link {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--iron-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--silver);
+      transition: all 0.2s;
+    }
+
+    .social-link:hover {
+      border-color: var(--amber-border);
+      color: var(--amber);
+    }
+
+    /* ═══════════════════════════════════════════════
+       SECTION HEADINGS
+    ═══════════════════════════════════════════════ */
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .eyebrow-line {
+      width: 32px;
+      height: 1px;
+      background: var(--amber);
+    }
+
+    /* ═══════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .cap-content { grid-template-columns: 1fr; }
+      .cap-visual { min-height: 260px; }
+      .feature-block { grid-template-columns: 1fr; min-height: auto; }
+      .feature-block.reverse { direction: ltr; }
+      .feature-text { border-right: none; border-bottom: 1px solid var(--iron-line); }
+      .feature-block.reverse .feature-text { border-left: none; border-bottom: 1px solid var(--iron-line); }
+      .enterprise-grid { grid-template-columns: 1fr; }
+      .ent-card { border-right: none; border-bottom: 1px solid var(--iron-line); }
+      .testi-grid { grid-template-columns: 1fr 1fr; }
+      .testi-card.featured { grid-column: span 2; }
+      .testi-card:nth-child(2n) { border-right: none; }
+      .testi-card:nth-child(4n) { border-right: 1px solid var(--iron-line); }
+      .cta-inner { grid-template-columns: 1fr; }
+      .cta-actions { align-items: flex-start; flex-direction: row; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .footer-col:nth-child(2n) { border-right: none; }
+      .footer-col:nth-child(n+3) { border-top: 1px solid var(--iron-line); }
+      .nav-links { display: none; }
+      .cap-tabs { flex-wrap: wrap; }
+    }
+
+    @media (max-width: 580px) {
+      .testi-grid { grid-template-columns: 1fr; }
+      .testi-card { border-right: none; }
+      .testi-card.featured { grid-column: span 1; }
+      .footer-top { grid-template-columns: 1fr; }
+      .footer-col { border-right: none; border-bottom: 1px solid var(--iron-line); }
+      .ent-contact { flex-direction: column; align-items: flex-start; gap: var(--space-6); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAV ═══ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="Kombai home">
+        <span class="nav-logo-mark">K</span>
+        Kombai
+      </a>
+      <ul class="nav-links">
+        <li><a href="/features/">Features</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+        <li><a href="https://docs.kombai.com/">Docs</a></li>
+        <li><a href="/guide/">Guides</a></li>
+        <li><a href="/support/">Support</a></li>
+      </ul>
+      <a href="/install/" class="btn btn-primary">Install Kombai</a>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-grid container" style="max-width:100%;padding:0;">
+      <!-- Left -->
+      <div class="hero-left" style="padding:var(--space-20) var(--space-16);">
+        <div class="hero-index eq-enter">
+          <span class="hero-index-num">[01]</span>
+          <span class="t-label">Frontend AI Agent</span>
+        </div>
+
+        <h1 class="t-h1 hero-headline eq-enter eq-delay-1">
+          <span class="line-dim">The AI Agent</span>
+          <span class="line-amber">Built for</span>
+          <span>Frontend.</span>
+        </h1>
+
+        <p class="hero-sub eq-enter eq-delay-2">
+          Kombai combines specialized frontend skills, deep browser access, and a dev-like understanding of your repo. Use it to build, refactor, test, and improve every part of your frontend.
+        </p>
+
+        <div class="hero-cta eq-enter eq-delay-3">
+          <a href="/install/" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7 1v8M4 6l3 3 3-3M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Install Kombai
+          </a>
+          <a href="/features/" class="btn btn-outline">Explore Features</a>
+        </div>
+
+        <div class="hero-support eq-enter eq-delay-4">
+          <span class="support-label">Supports</span>
+          <div class="support-logos">
+            <span class="tech-badge">React</span>
+            <span class="tech-badge">Next.js</span>
+            <span class="tech-badge">Svelte</span>
+            <span class="tech-badge">Vue</span>
+            <span class="tech-badge">Flutter</span>
+            <span class="tech-badge">+ 400 more</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Code Visual -->
+      <div class="hero-right">
+        <div style="position:relative;width:100%;max-width:500px;">
+          <div class="code-block blueprint-corner" data-label="kombai.agent // active">
+            <div class="code-bar">
+              <span class="dot dot-r"></span>
+              <span class="dot dot-y"></span>
+              <span class="dot dot-g"></span>
+              <span style="font-size:10px;color:var(--silver);margin-left:auto;letter-spacing:0.08em;">AGENT SESSION — 0x3F2A</span>
+            </div>
+            <div class="code-line"><span class="ln">01</span><span><span class="kw">import</span> { <span class="fn">KombaiAgent</span> } <span class="kw">from</span> <span class="str">'@kombai/core'</span></span></div>
+            <div class="code-line"><span class="ln">02</span><span></span></div>
+            <div class="code-line"><span class="ln">03</span><span><span class="cmt">// learns your stack automatically</span></span></div>
+            <div class="code-line"><span class="ln">04</span><span><span class="kw">const</span> <span class="prop">agent</span> = <span class="kw">new</span> <span class="fn">KombaiAgent</span>({</span></div>
+            <div class="code-line"><span class="ln">05</span><span>&nbsp;&nbsp;<span class="prop">repo</span>: <span class="str">'./your-frontend'</span>,</span></div>
+            <div class="code-line"><span class="ln">06</span><span>&nbsp;&nbsp;<span class="prop">stack</span>: <span class="str">'auto-detect'</span>,</span></div>
+            <div class="code-line"><span class="ln">07</span><span>&nbsp;&nbsp;<span class="prop">browser</span>: <span class="op">true</span>,</span></div>
+            <div class="code-line"><span class="ln">08</span><span>})</span></div>
+            <div class="code-line"><span class="ln">09</span><span></span></div>
+            <div class="code-line"><span class="ln">10</span><span><span class="op">await</span> <span class="prop">agent</span>.<span class="fn">build</span>(<span class="str">'Dashboard with MUI'</span>)</span></div>
+            <div class="code-line"><span class="ln">11</span><span><span class="cmt">// ✓ matched your design system</span></span></div>
+            <div class="code-line"><span class="ln">12</span><span><span class="cmt">// ✓ reused 14 existing components</span></span></div>
+            <div class="code-line"><span class="ln">13</span><span><span class="cmt">// ✓ production-ready output</span></span></div>
+          </div>
+
+          <div class="floating-card" style="position:absolute;top:-20px;right:-24px;border-left:2px solid var(--amber);min-width:160px;">
+            <div class="fc-label">COMPONENTS REUSED</div>
+            <div class="fc-val" style="font-size:22px;color:var(--amber);font-weight:800;letter-spacing:-0.02em;">14</div>
+          </div>
+
+          <div class="floating-card" style="position:absolute;bottom:-20px;left:-20px;border-top:2px solid var(--amber);min-width:180px;">
+            <div class="fc-label">STATUS</div>
+            <div class="fc-val" style="color:#C3E88D;">
+              <span style="display:inline-block;width:6px;height:6px;background:#C3E88D;border-radius:50%;margin-right:6px;vertical-align:middle;animation:pulse 1.5s infinite;"></span>
+              AGENT ACTIVE
+            </div>
+          </div>
+        </div>
+
+        <!-- Ruler marks -->
+        <div class="ruler-h" style="position:absolute;bottom:16px;left:40px;right:40px;">
+          <span>0</span><span>120</span><span>240</span><span>360</span><span>480px</span>
+        </div>
+        <div class="ruler-v" style="position:absolute;top:80px;bottom:40px;right:16px;">
+          <span>0</span><span>180</span><span>360px</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CAPABILITIES ═══ -->
+  <section class="capabilities section-frame" aria-label="Capabilities">
+    <div style="max-width:1280px;margin:0 auto;">
+      <div class="cap-tabs" role="tablist">
+        <button class="cap-tab active" role="tab" aria-selected="true" data-panel="extend" onclick="switchTab(this,'extend')">
+          <span class="tab-num">[01]</span>
+          Extend Complex Repos
+        </button>
+        <button class="cap-tab" role="tab" aria-selected="false" data-panel="ux" onclick="switchTab(this,'ux')">
+          <span class="tab-num">[02]</span>
+          Build Beautiful UX
+        </button>
+        <button class="cap-tab" role="tab" aria-selected="false" data-panel="figma" onclick="switchTab(this,'figma')">
+          <span class="tab-num">[03]</span>
+          Messy Figma → Code
+        </button>
+      </div>
+
+      <!-- Panel: Extend Complex Repos -->
+      <div class="cap-panel active" id="panel-extend">
+        <div class="cap-content">
+          <div class="cap-text">
+            <p class="cap-tag">Capability // 01</p>
+            <h2 class="cap-title">Navigate any codebase<br/>with precision.</h2>
+            <p class="cap-desc">Kombai understands your entire repo structure, component hierarchy, and design patterns. It extends complex frontends without breaking what already works.</p>
+          </div>
+          <div class="cap-visual">
+            <div class="cap-visual-inner">
+              <div class="mock-ui">
+                <div class="mock-header">
+                  <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+                  <span style="font-family:var(--font-mono);font-size:9px;color:var(--silver);margin-left:8px;">repo_analysis.log</span>
+                </div>
+                <div class="mock-body">
+                  <div class="mock-row"><span class="mock-key">stack_detected</span><span class="mock-val-green">Next.js 15 + MUI v7</span></div>
+                  <div class="mock-row"><span class="mock-key">components_indexed</span><span class="mock-val-amber">847</span></div>
+                  <div class="mock-row"><span class="mock-key">design_tokens_found</span><span class="mock-val-blue">true</span></div>
+                  <div class="mock-row"><span class="mock-key">patterns_learned</span><span class="mock-val-green">compound_components</span></div>
+                  <div class="mock-row"><span class="mock-key">output_quality</span><span class="mock-val-amber">production_ready</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Build UX -->
+      <div class="cap-panel" id="panel-ux" style="display:none;">
+        <div class="cap-content">
+          <div class="cap-text">
+            <p class="cap-tag">Capability // 02</p>
+            <h2 class="cap-title">Ship stunning UX with<br/>clean, efficient code.</h2>
+            <p class="cap-desc">Built-in skills for 400+ frontend libraries. Kombai automatically incorporates best practices and makes refined design choices that match your system.</p>
+          </div>
+          <div class="cap-visual">
+            <div class="cap-visual-inner">
+              <div class="skills-grid">
+                <div class="skill-pill highlight">MUI v7</div>
+                <div class="skill-pill highlight">Tailwind v4</div>
+                <div class="skill-pill">shadcn</div>
+                <div class="skill-pill">Chakra v3</div>
+                <div class="skill-pill highlight">Recharts</div>
+                <div class="skill-pill">AntD v5</div>
+                <div class="skill-pill">Framer</div>
+                <div class="skill-pill">Mantine</div>
+                <div class="skill-pill highlight">Radix UI</div>
+                <div class="skill-pill">D3.js</div>
+                <div class="skill-pill">React Query</div>
+                <div class="skill-pill">Zustand</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Figma → Code -->
+      <div class="cap-panel" id="panel-figma" style="display:none;">
+        <div class="cap-content">
+          <div class="cap-text">
+            <p class="cap-tag">Capability // 03</p>
+            <h2 class="cap-title">From messy Figma to<br/>production code.</h2>
+            <p class="cap-desc">Attach any Figma file and Kombai converts it into clean, component-aware code that matches your design system—no manual pixel-pushing required.</p>
+          </div>
+          <div class="cap-visual">
+            <div class="cap-visual-inner">
+              <div style="font-family:var(--font-mono);font-size:12px;">
+                <div style="display:flex;align-items:center;gap:var(--space-4);margin-bottom:var(--space-4);">
+                  <div style="flex:1;background:var(--bg-elevated);border:1px solid var(--iron-mid);padding:var(--space-3) var(--space-4);font-size:10px;color:var(--silver);">Figma Frame</div>
+                  <div style="color:var(--amber);font-size:16px;">→</div>
+                  <div style="flex:1;background:var(--amber-glow);border:1px solid var(--amber-border);padding:var(--space-3) var(--space-4);font-size:10px;color:var(--amber);">React Component</div>
+                </div>
+                <div style="background:var(--bg-void);border:1px solid var(--iron-mid);padding:var(--space-4);">
+                  <div class="code-line"><span class="ln">1</span><span><span class="kw">export</span> <span class="kw">const</span> <span class="fn">Dashboard</span> = () => {</span></div>
+                  <div class="code-line"><span class="ln">2</span><span>&nbsp;&nbsp;<span class="kw">return</span> &lt;<span class="prop">Box</span> <span class="fn">sx</span>={theme} /&gt;</span></div>
+                  <div class="code-line"><span class="ln">3</span><span>}</span></div>
+                </div>
+                <div style="margin-top:var(--space-3);font-size:10px;color:var(--iron-light);">// ✓ matched design tokens &nbsp; ✓ uses your components</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section class="features section-frame" aria-label="Core Features">
+    <div style="border-bottom:1px solid var(--iron-line);">
+      <div class="container" style="padding-top:var(--space-16);padding-bottom:var(--space-10);">
+        <div class="section-eyebrow eq-enter-up">
+          <span class="eyebrow-line"></span>
+          <span class="t-label">[02] — Core Capabilities</span>
+        </div>
+        <h2 class="t-h2 eq-enter-up eq-delay-1" style="max-width:560px;">Everything your<br/>frontend team needs.</h2>
+      </div>
+    </div>
+
+    <!-- Feature 01 -->
+    <div class="feature-block">
+      <div class="feature-text eq-enter">
+        <span class="feat-num" aria-hidden="true">01</span>
+        <p class="feat-tag">Built-in Skills</p>
+        <h3 class="feat-title">Built-in skills that build<br/>world-class frontend.</h3>
+        <p class="feat-desc">Ship stunning UX with clean, efficient code. Kombai automatically incorporates best practices from 400+ frontend libraries and makes refined design choices.</p>
+      </div>
+      <div class="feature-visual eq-enter-right">
+        <div class="skills-grid">
+          <div class="skill-pill highlight">MUI v7</div>
+          <div class="skill-pill">Next.js 15</div>
+          <div class="skill-pill highlight">Tailwind v4</div>
+          <div class="skill-pill">shadcn</div>
+          <div class="skill-pill highlight">Recharts</div>
+          <div class="skill-pill">Zustand</div>
+          <div class="skill-pill">Radix UI</div>
+          <div class="skill-pill highlight">Framer Motion</div>
+          <div class="skill-pill">AntD v5</div>
+          <div class="skill-pill">Mantine v8</div>
+          <div class="skill-pill">TanStack</div>
+          <div class="skill-pill highlight">Chakra v3</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 02 -->
+    <div class="feature-block reverse">
+      <div class="feature-text eq-enter-right">
+        <span class="feat-num" aria-hidden="true">02</span>
+        <p class="feat-tag">Browser Access</p>
+        <h3 class="feat-title">The browser engineered<br/>for AI + you.</h3>
+        <p class="feat-desc">Don't limit your agent to screenshots. Our browser combines agentic automation with deep, multi-tab data access and the precise controls you need to guide, debug, and audit.</p>
+      </div>
+      <div class="feature-visual eq-enter">
+        <div class="browser-mock">
+          <div class="browser-chrome">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <div class="browser-url">localhost:3000/dashboard</div>
+            <span style="font-family:var(--font-mono);font-size:9px;color:var(--amber);letter-spacing:0.08em;">AGENT</span>
+          </div>
+          <div class="browser-body">
+            <div class="browser-row">
+              <div class="brow-icon"></div>
+              <span class="brow-text">Inspect element</span>
+              <span class="brow-badge active-badge">ACTIVE</span>
+            </div>
+            <div class="browser-row">
+              <div class="brow-icon" style="background:var(--amber-glow);border:1px solid var(--amber-border);"></div>
+              <span class="brow-text">Accessibility audit</span>
+              <span class="brow-badge active-badge">PASS</span>
+            </div>
+            <div class="browser-row">
+              <div class="brow-icon"></div>
+              <span class="brow-text">Network trace</span>
+              <span class="brow-badge">TAB 2</span>
+            </div>
+            <div class="browser-row">
+              <div class="brow-icon"></div>
+              <span class="brow-text">Console errors</span>
+              <span class="brow-badge" style="color:#C3E88D;border-color:rgba(195,232,141,0.4);">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 03 -->
+    <div class="feature-block">
+      <div class="feature-text eq-enter">
+        <span class="feat-num" aria-hidden="true">03</span>
+        <p class="feat-tag">Repo Intelligence</p>
+        <h3 class="feat-title">Learns your stack.<br/>Reuses your components.</h3>
+        <p class="feat-desc">Kombai learns your stack, components, and patterns, then reuses them intelligently to generate code that fits cleanly into your repo.</p>
+      </div>
+      <div class="feature-visual eq-enter-right">
+        <div class="repo-tree">
+          <div class="tree-line"><span class="tree-dir">src/</span></div>
+          <div class="tree-line"><span class="tree-indent">├─</span><span class="tree-dir">components/</span></div>
+          <div class="tree-line"><span class="tree-indent">│ ├─</span><span class="tree-matched">Button.tsx</span><span class="tree-badge">REUSED</span></div>
+          <div class="tree-line"><span class="tree-indent">│ ├─</span><span class="tree-matched">DataTable.tsx</span><span class="tree-badge">REUSED</span></div>
+          <div class="tree-line"><span class="tree-indent">│ └─</span><span class="tree-file">Modal.tsx</span></div>
+          <div class="tree-line"><span class="tree-indent">├─</span><span class="tree-dir">theme/</span></div>
+          <div class="tree-line"><span class="tree-indent">│ └─</span><span class="tree-matched">tokens.ts</span><span class="tree-badge">INDEXED</span></div>
+          <div class="tree-line"><span class="tree-indent">├─</span><span class="tree-dir">hooks/</span></div>
+          <div class="tree-line"><span class="tree-indent">│ └─</span><span class="tree-matched">useAuth.ts</span><span class="tree-badge">REUSED</span></div>
+          <div class="tree-line"><span class="tree-indent">└─</span><span class="tree-file">App.tsx</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ENTERPRISE ═══ -->
+  <section class="enterprise" aria-label="Enterprise Features">
+    <div class="enterprise-header eq-enter-up">
+      <div class="section-eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="t-label">[03] — For Teams</span>
+      </div>
+      <h2 class="t-h2" style="max-width:500px;margin-top:var(--space-4);">Powering modern<br/>frontend teams.</h2>
+      <p class="t-body" style="margin-top:var(--space-4);max-width:440px;">Kombai works for frontend projects of all sizes and complexities.</p>
+    </div>
+
+    <div class="enterprise-grid">
+      <div class="ent-card eq-enter-up eq-delay-1">
+        <div class="ent-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="6" height="6" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="10" y="2" width="6" height="6" stroke="currentColor" stroke-width="1.5" opacity=".4"/>
+            <rect x="2" y="10" width="6" height="6" stroke="currentColor" stroke-width="1.5" opacity=".4"/>
+            <rect x="10" y="10" width="6" height="6" stroke="currentColor" stroke-width="1.5" opacity=".4"/>
+          </svg>
+        </div>
+        <h3 class="ent-title">Isolated to Frontend</h3>
+        <p class="ent-desc">Kombai won't mistakenly change your database or backend logic. It operates exclusively within your frontend boundary.</p>
+      </div>
+
+      <div class="ent-card eq-enter-up eq-delay-2">
+        <div class="ent-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M2 9h14M9 2c-2 2-3 4.5-3 7s1 5 3 7M9 2c2 2 3 4.5 3 7s-1 5-3 7" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 class="ent-title">Org-specific Context</h3>
+        <p class="ent-desc">For enterprise customers, we set up custom context-engines that accurately understand and use your complex, proprietary stacks.</p>
+      </div>
+
+      <div class="ent-card eq-enter-up eq-delay-3">
+        <div class="ent-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="8" width="14" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M6 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3 class="ent-title">Enterprise-grade Privacy</h3>
+        <p class="ent-desc">Kombai is SOC2 certified. It never uses your data for training or model improvements. Your IP stays yours.</p>
+      </div>
+    </div>
+
+    <div class="ent-contact" style="border-top:1px solid var(--iron-line);">
+      <div>
+        <p class="t-label" style="margin-bottom:var(--space-2);">Need enterprise features?</p>
+        <p class="t-body" style="font-size:13px;">Custom onboarding, dedicated support, and org-level context engines.</p>
+      </div>
+      <a href="/support/" class="btn btn-outline">Contact Us</a>
+    </div>
+  </section>
+
+  <!-- ═══ TESTIMONIALS ═══ -->
+  <section class="testimonials section-frame" aria-label="Developer Testimonials">
+    <div class="testi-header eq-enter-up">
+      <div class="section-eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="t-label">[04] — Developer Love</span>
+      </div>
+      <h2 class="t-h2" style="margin-top:var(--space-4);">Trusted by<br/>real developers.</h2>
+    </div>
+
+    <div class="testi-grid">
+      <!-- Featured -->
+      <div class="testi-card featured eq-enter-up">
+        <div class="testi-mark">"</div>
+        <p class="testi-quote" style="margin-bottom:var(--space-6);">It's focused on front end and front end only. And it does that one single job incredibly well. There is no hallucination, no backend drama, and the output is usable immediately. If you're working on a real product and care about code quality, Kombai is worth trying.</p>
+        <div class="testi-avatar">
+          <img class="testi-img" src="https://i.pravatar.cc/72?u=ivankv" alt="Shark Numbers avatar" width="36" height="36" />
+          <div>
+            <p class="testi-name">Shark Numbers</p>
+            <p class="testi-handle">@ivankv</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regular -->
+      <div class="testi-card eq-enter-up eq-delay-1">
+        <div class="testi-mark">"</div>
+        <p class="testi-quote" style="margin-bottom:var(--space-4);">The code quality is genuinely good. Not "AI good," actually good.</p>
+        <div class="testi-avatar">
+          <img class="testi-img" src="https://i.pravatar.cc/72?u=cess" alt="Cess avatar" width="36" height="36" />
+          <div>
+            <p class="testi-name">Cess</p>
+            <p class="testi-handle">@Cessss</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card eq-enter-up eq-delay-2">
+        <div class="testi-mark">"</div>
+        <p class="testi-quote" style="margin-bottom:var(--space-4);">I have tested a bunch of Figma to code tools over the years, and nothing comes close to Kombai.</p>
+        <div class="testi-avatar">
+          <img class="testi-img" src="https://i.pravatar.cc/72?u=astrokj" alt="Astro K Joseph avatar" width="36" height="36" />
+          <div>
+            <p class="testi-name">Astro K Joseph</p>
+            <p class="testi-handle">@AstroKJ</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card eq-enter-up eq-delay-3">
+        <div class="testi-mark">"</div>
+        <p class="testi-quote" style="margin-bottom:var(--space-4);">It just knows your stack really, really well. Kombai has built-in context tools for each supported front-end library.</p>
+        <div class="testi-avatar">
+          <img class="testi-img" src="https://i.pravatar.cc/72?u=devlogger" alt="The Dev Logger avatar" width="36" height="36" />
+          <div>
+            <p class="testi-name">The Dev Logger</p>
+            <p class="testi-handle">@TheDevLogger</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card eq-enter-up">
+        <div class="testi-mark">"</div>
+        <p class="testi-quote" style="margin-bottom:var(--space-4);">I turned Figma files into MVPs hundreds of times now. @kombaico is the secret weapon.</p>
+        <div class="testi-avatar">
+          <img class="testi-img" src="https://i.pravatar.cc/72?u=hartdrawss" alt="Harshil Tomar avatar" width="36" height="36" />
+          <div>
+            <p class="testi-name">Harshil Tomar</p>
+            <p class="testi-handle">@Hartdrawss</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card eq-enter-up eq-delay-1">
+        <div class="testi-mark">"</div>
+        <p class="testi-quote" style="margin-bottom:var(--space-4);">For frontend I use Kombai — understands my stack and existing components way better than general agents.</p>
+        <div class="testi-avatar">
+          <img class="testi-img" src="https://i.pravatar.cc/72?u=devloperVivek" alt="Vivek Chavan avatar" width="36" height="36" />
+          <div>
+            <p class="testi-name">Vivek Chavan</p>
+            <p class="testi-handle">@devloperVivek</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card eq-enter-up eq-delay-2">
+        <div class="testi-mark">"</div>
+        <p class="testi-quote" style="margin-bottom:var(--space-4);">I matched our MUI brand theme and conventions. I have spent the last few days testing Kombai but so far I am impressed.</p>
+        <div class="testi-avatar">
+          <img class="testi-img" src="https://i.pravatar.cc/72?u=berkant" alt="berkantay avatar" width="36" height="36" />
+          <div>
+            <p class="testi-name">berkantay</p>
+            <p class="testi-handle">@berkant_thedev</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card eq-enter-up eq-delay-3">
+        <div class="testi-mark">"</div>
+        <p class="testi-quote" style="margin-bottom:var(--space-4);">This is probably the best agent for front-end development that I have seen yet.</p>
+        <div class="testi-avatar">
+          <img class="testi-img" src="https://i.pravatar.cc/72?u=aicodekng" alt="AICodeKing avatar" width="36" height="36" />
+          <div>
+            <p class="testi-name">AICodeKing</p>
+            <p class="testi-handle">@AICodeKing</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section class="cta-section section-frame" aria-label="Call to action">
+    <div class="cta-inner">
+      <div class="cta-text eq-enter">
+        <p class="cta-pre">[05] — Get Started</p>
+        <h2 class="cta-h">Try Kombai Now.</h2>
+        <p class="cta-sub">From small components to full app UIs — Kombai generates frontend code right inside your IDE. Get clean, backend-agnostic output that fits your stack and repo.</p>
+      </div>
+      <div class="cta-actions eq-enter-right">
+        <a href="/install/" class="btn btn-primary" style="white-space:nowrap;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M7 1v8M4 6l3 3 3-3M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Install Kombai
+        </a>
+        <a href="/features/" class="btn btn-outline" style="white-space:nowrap;">Explore Features</a>
+        <p style="font-family:var(--font-mono);font-size:9px;color:var(--iron-light);letter-spacing:0.1em;text-align:right;margin-top:var(--space-2);">SOC2 CERTIFIED // PRIVACY-FIRST</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer" aria-label="Footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-col">
+          <div class="footer-brand">
+            <span class="nav-logo-mark">K</span>
+            <span style="font-family:var(--font-mono);font-weight:800;font-size:15px;">Kombai</span>
+          </div>
+          <p class="footer-tagline">The AI Agent Built for<br/>Frontend Development.</p>
+          <div class="footer-social">
+            <a href="#" class="social-link" aria-label="Twitter/X">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9.28 1H10.9L7.45 5.04 11.5 11H8.33L5.84 7.67 2.98 11H1.36L5.05 6.69 1.17 1H4.42L6.68 4.04 9.28 1ZM8.7 10.05H9.6L4.02 1.92H3.05L8.7 10.05Z"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="LinkedIn">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2.5 4H1V11H2.5V4ZM1.75 3.25A.875.875 0 1 0 1.75 1.5a.875.875 0 0 0 0 1.75ZM11 7.25C11 5.45 10.15 4 8.5 4c-.8 0-1.4.4-1.75 1V4H5.25V11H6.75V7.5c0-.83.55-1.5 1.25-1.5s1.25.67 1.25 1.5V11H11V7.25Z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <p class="footer-col-title">Resources</p>
+          <ul class="footer-links">
+            <li><a href="https://docs.kombai.com/">Docs</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/guide/">Guides</a></li>
+            <li><a href="/changelog/">Changelog</a></li>
+            <li><a href="/support/">Support</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <p class="footer-col-title">Library Docs</p>
+          <ul class="footer-links">
+            <li><a href="/mui/autocomplete/">Material UI</a></li>
+            <li><a href="/tailwind/introduction/">Tailwind CSS</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <p class="footer-col-title">Legal</p>
+          <ul class="footer-links">
+            <li><a href="/terms/">Terms &amp; Conditions</a></li>
+            <li><a href="/privacy/">Privacy Policy</a></li>
+            <li><a href="/usepolicy/">Acceptable Use Policy</a></li>
+            <li><a href="https://kombai.trust.site/">Trust Center</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 KOMBAI. ALL RIGHTS RESERVED.</span>
+        <span class="t-coord">GRID_REF: 48.123N / 11.456E // BUILD: 2026.03</span>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+  </style>
+
+  <script>
+    /* ──────────────────────────────────────────
+       TABS
+    ────────────────────────────────────────── */
+    function switchTab(btn, panelId) {
+      // Deactivate all tabs
+      document.querySelectorAll('.cap-tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      // Hide all panels
+      document.querySelectorAll('.cap-panel').forEach(p => {
+        p.style.display = 'none';
+        p.classList.remove('active');
+      });
+      // Activate selected
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      const panel = document.getElementById('panel-' + panelId);
+      if (panel) {
+        panel.style.display = 'contents';
+        panel.classList.add('active');
+      }
+    }
+
+    /* ──────────────────────────────────────────
+       EARTHQUAKE ENTRANCE ANIMATIONS
+    ────────────────────────────────────────── */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.eq-enter, .eq-enter-up, .eq-enter-right')
+      .forEach(el => observer.observe(el));
+
+    /* ──────────────────────────────────────────
+       NAV SCROLL STATE
+    ────────────────────────────────────────── */
+    const nav = document.querySelector('.nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) {
+        nav.style.borderBottomColor = 'var(--iron-mid)';
+      } else {
+        nav.style.borderBottomColor = 'var(--iron-line)';
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>
