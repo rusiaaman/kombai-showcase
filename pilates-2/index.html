@@ -1,0 +1,2163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Forma — Authentic Pilates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      --color-primary:    #2B2B2B;
+      --color-secondary:  #F5F0E8;
+      --color-accent:     #C4795B;
+      --color-highlight:  #A3B5A6;
+      --color-glass:      rgba(255,255,255,0.18);
+      --color-glass-border: rgba(255,255,255,0.30);
+      --color-glass-dark: rgba(43,43,43,0.45);
+
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans:  'DM Sans', system-ui, sans-serif;
+
+      --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-secondary);
+      color: var(--color-primary);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    img { display: block; width: 100%; }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ============================================================
+       CUSTOM CURSOR
+    ============================================================ */
+    .cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 12px; height: 12px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%,-50%);
+      transition: transform 0.1s var(--ease-smooth), width 0.3s, height 0.3s, opacity 0.3s;
+      mix-blend-mode: multiply;
+    }
+    .cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      border: 1.5px solid var(--color-accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.25s var(--ease-smooth), width 0.3s, height 0.3s, opacity 0.4s;
+      opacity: 0.6;
+    }
+    .cursor.expanded { width: 24px; height: 24px; }
+    .cursor-ring.expanded { width: 64px; height: 64px; opacity: 0.3; }
+
+    /* Ripple */
+    .ripple {
+      position: fixed;
+      border-radius: 50%;
+      border: 1px solid rgba(196,121,91,0.4);
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%,-50%) scale(0);
+      animation: rippleOut 1s var(--ease-smooth) forwards;
+    }
+    @keyframes rippleOut {
+      to { transform: translate(-50%,-50%) scale(1); opacity: 0; }
+    }
+
+    /* ============================================================
+       LOADING SCREEN
+    ============================================================ */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--color-primary);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      transition: opacity 0.8s var(--ease-smooth), visibility 0.8s;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader-logo {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      color: var(--color-secondary);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+    .loader-logo span {
+      color: var(--color-accent);
+      font-style: italic;
+    }
+    .loader-bar-track {
+      width: 240px;
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      left: 0; top: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--color-accent), var(--color-highlight));
+      transition: width 1.6s var(--ease-smooth);
+    }
+    .loader-bar-drop {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      box-shadow: 0 0 8px var(--color-accent);
+    }
+
+    /* ============================================================
+       SCROLL ANIMATIONS
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s var(--ease-smooth), transform 0.9s var(--ease-smooth);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-40px);
+      transition: opacity 0.9s var(--ease-smooth), transform 0.9s var(--ease-smooth);
+    }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity 0.9s var(--ease-smooth), transform 0.9s var(--ease-smooth);
+    }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    .delay-1 { transition-delay: 0.15s; }
+    .delay-2 { transition-delay: 0.3s; }
+    .delay-3 { transition-delay: 0.45s; }
+    .delay-4 { transition-delay: 0.6s; }
+    .delay-5 { transition-delay: 0.75s; }
+
+    /* ============================================================
+       NAV
+    ============================================================ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s, padding 0.4s, backdrop-filter 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(43,43,43,0.85);
+      backdrop-filter: blur(16px);
+      padding: 16px 48px;
+    }
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-secondary);
+      font-weight: 400;
+    }
+    .nav-logo em {
+      color: var(--color-accent);
+      font-style: italic;
+    }
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.8);
+      transition: color 0.3s;
+      font-weight: 300;
+    }
+    .nav-links a:hover { color: var(--color-accent); }
+    .nav-cta {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--color-accent);
+      color: var(--color-secondary);
+      padding: 10px 24px;
+      border-radius: 2px;
+      font-weight: 400;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--color-highlight); transform: translateY(-1px); }
+
+    /* ============================================================
+       SECTION 1 — HERO
+    ============================================================ */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.pexels.com/photos/31509822/pexels-photo-31509822.jpeg?auto=compress&cs=tinysrgb&w=1920&q=80');
+      background-size: cover;
+      background-position: center 30%;
+      transform: scale(1.05);
+      transition: transform 12s ease-out;
+      will-change: transform;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(43,43,43,0.62) 0%,
+        rgba(43,43,43,0.25) 55%,
+        rgba(43,43,43,0.08) 100%
+      );
+    }
+
+    .hero-glass {
+      position: relative;
+      z-index: 10;
+      margin-left: 8vw;
+      max-width: 580px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 4px;
+      padding: 52px 52px 44px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+      transition: transform 0.6s var(--ease-smooth), opacity 0.6s var(--ease-smooth);
+    }
+
+    .hero-tagline {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      line-height: 1.22;
+      color: var(--color-secondary);
+      font-weight: 400;
+      margin-bottom: 36px;
+    }
+    .hero-tagline .line1 { display: block; text-align: left; }
+    .hero-tagline .line2 { display: block; text-align: center; color: rgba(245,240,232,0.85); }
+    .hero-tagline .line3 { display: block; text-align: right; font-size: 0.78em; color: var(--color-highlight); }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--color-accent);
+      color: var(--color-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 16px 34px;
+      border-radius: 2px;
+      font-weight: 400;
+      border: none;
+      cursor: none;
+      transition: background 0.35s, transform 0.25s var(--ease-spring), box-shadow 0.35s;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-cta::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--color-highlight);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s var(--ease-smooth);
+    }
+    .hero-cta:hover::after { transform: scaleX(1); }
+    .hero-cta span { position: relative; z-index: 1; }
+    .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(196,121,91,0.4); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(245,240,232,0.6);
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, rgba(245,240,232,0.6), transparent);
+      animation: cascadeScroll 2s ease-in-out infinite;
+      position: relative;
+    }
+    .hero-scroll-drop {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: dropFall 2s ease-in-out infinite;
+    }
+    @keyframes dropFall {
+      0% { top: 0; opacity: 1; }
+      80% { top: 100%; opacity: 0.3; }
+      100% { top: 100%; opacity: 0; }
+    }
+    @keyframes cascadeScroll {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* ============================================================
+       SECTION 2 — PHILOSOPHY
+    ============================================================ */
+    #philosophy {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+      background: var(--color-secondary);
+      position: relative;
+    }
+    /* Grain texture overlay */
+    #philosophy::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .philosophy-image {
+      position: relative;
+      overflow: hidden;
+    }
+    .philosophy-image img {
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: grayscale(100%) contrast(1.1);
+      transition: transform 0.8s var(--ease-smooth);
+    }
+    .philosophy-image:hover img { transform: scale(1.03); }
+
+    .philosophy-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(48px, 8vw, 120px);
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      font-weight: 400;
+      margin-bottom: 28px;
+    }
+
+    .philosophy-text {
+      font-family: var(--font-serif);
+      font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+      line-height: 1.85;
+      color: var(--color-primary);
+      font-weight: 400;
+    }
+    .philosophy-text::first-letter {
+      font-size: 4.5em;
+      float: left;
+      line-height: 0.75;
+      padding-right: 14px;
+      padding-top: 10px;
+      color: var(--color-accent);
+      font-family: var(--font-serif);
+      font-weight: 700;
+    }
+
+    .philosophy-pull {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(1rem, 1.4vw, 1.15rem);
+      color: var(--color-highlight);
+      margin-top: 36px;
+      padding-left: 20px;
+      border-left: 2px solid var(--color-accent);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       SECTION 3 — EXPERIENCE (Parallax Gallery)
+    ============================================================ */
+    #experience {
+      min-height: 160vh;
+      background: var(--color-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .exp-headline {
+      position: sticky;
+      top: 0;
+      padding: 80px 8vw 40px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .exp-headline h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 6vw, 6rem);
+      color: var(--color-secondary);
+      font-weight: 400;
+      line-height: 1.05;
+      opacity: 0.1;
+      letter-spacing: -0.01em;
+    }
+
+    .exp-gallery {
+      position: relative;
+      padding: 0 8vw 120px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 24px;
+      z-index: 3;
+    }
+
+    .exp-img-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+    .exp-img-wrap:nth-child(1) { grid-column: 1 / 3; grid-row: 1; height: 520px; }
+    .exp-img-wrap:nth-child(2) { grid-column: 3; grid-row: 1; height: 520px; }
+    .exp-img-wrap:nth-child(3) { grid-column: 1; grid-row: 2; height: 400px; }
+    .exp-img-wrap:nth-child(4) { grid-column: 2 / 4; grid-row: 2; height: 400px; }
+
+    .exp-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      will-change: transform;
+      transition: transform 0.1s linear;
+    }
+
+    .exp-glass-card {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      background: rgba(255,255,255,0.13);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 3px;
+      padding: 16px 22px;
+      cursor: none;
+      transition: background 0.3s, transform 0.3s var(--ease-spring);
+    }
+    .exp-glass-card:hover { background: rgba(255,255,255,0.22); transform: translateY(-3px); }
+    .exp-glass-card-label {
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      font-weight: 400;
+    }
+    .exp-glass-card-title {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      color: var(--color-secondary);
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       SECTION 4 — SCHEDULE & BOOKING
+    ============================================================ */
+    #schedule {
+      background: var(--color-secondary);
+      padding: 120px 8vw;
+      position: relative;
+    }
+    #schedule::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .schedule-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .schedule-h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.1;
+    }
+    .schedule-h2 em { font-style: italic; color: var(--color-accent); }
+
+    .next-class-card {
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(196,121,91,0.25);
+      border-radius: 4px;
+      padding: 24px 32px;
+      min-width: 260px;
+    }
+    .next-class-label {
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: 6px;
+    }
+    .next-class-name {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+    .countdown {
+      display: flex;
+      gap: 12px;
+    }
+    .countdown-unit {
+      text-align: center;
+    }
+    .countdown-num {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      display: block;
+      line-height: 1;
+    }
+    .countdown-lbl {
+      font-family: var(--font-sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(43,43,43,0.5);
+    }
+    .countdown-sep {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: var(--color-accent);
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+
+    /* Schedule Grid */
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: auto repeat(7, 1fr);
+      gap: 0;
+      border: 1px solid rgba(43,43,43,0.12);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+    .sched-header-cell {
+      background: var(--color-primary);
+      color: var(--color-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 14px 8px;
+      text-align: center;
+      font-weight: 300;
+    }
+    .sched-time-cell {
+      background: rgba(43,43,43,0.04);
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      color: rgba(43,43,43,0.5);
+      padding: 18px 14px;
+      border-top: 1px solid rgba(43,43,43,0.08);
+      white-space: nowrap;
+    }
+    .sched-class-cell {
+      border-top: 1px solid rgba(43,43,43,0.08);
+      border-left: 1px solid rgba(43,43,43,0.08);
+      padding: 10px 8px;
+      vertical-align: middle;
+      transition: background 0.25s;
+    }
+    .sched-class-cell:hover { background: rgba(196,121,91,0.06); }
+    .sched-class {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sched-class-icon {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+    .sched-class-icon svg { width: 12px; height: 12px; color: var(--color-accent); }
+    .sched-class-type {
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--color-primary);
+    }
+    .sched-class-instructor {
+      font-family: var(--font-sans);
+      font-size: 0.6rem;
+      color: rgba(43,43,43,0.5);
+    }
+    .sched-empty { border-top: 1px solid rgba(43,43,43,0.08); border-left: 1px solid rgba(43,43,43,0.08); }
+
+    .book-cta-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    .btn-book {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--color-accent);
+      color: var(--color-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 20px 52px;
+      border-radius: 2px;
+      font-weight: 400;
+      cursor: none;
+      transition: background 0.3s, transform 0.25s var(--ease-spring), box-shadow 0.3s;
+      animation: gentlePulse 3s ease-in-out infinite;
+    }
+    .btn-book:hover {
+      background: var(--color-highlight);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(163,181,166,0.4);
+      animation: none;
+    }
+    @keyframes gentlePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(196,121,91,0.4); }
+      50% { box-shadow: 0 0 0 12px rgba(196,121,91,0); }
+    }
+
+    /* ============================================================
+       SECTION 5 — BY THE NUMBERS
+    ============================================================ */
+    #numbers {
+      background: var(--color-primary);
+      padding: 100px 0;
+      overflow: hidden;
+    }
+
+    .numbers-label {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .numbers-scroll {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 0 8vw;
+      scroll-snap-type: x mandatory;
+    }
+    .numbers-scroll::-webkit-scrollbar { display: none; }
+
+    .stat-item {
+      flex: 0 0 340px;
+      scroll-snap-align: start;
+      padding: 0 40px 40px 0;
+      border-right: 1px solid rgba(245,240,232,0.1);
+      margin-right: 40px;
+    }
+    .stat-item:last-child { border-right: none; }
+
+    .stat-number {
+      font-family: var(--font-serif);
+      font-size: clamp(4rem, 8vw, 8rem);
+      font-weight: 700;
+      color: var(--color-secondary);
+      line-height: 1;
+      display: block;
+      position: relative;
+    }
+    .stat-number::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: var(--color-accent);
+      margin-top: 16px;
+    }
+    .stat-label {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      color: rgba(245,240,232,0.5);
+      margin-top: 14px;
+      font-weight: 300;
+      text-transform: uppercase;
+    }
+
+    /* ============================================================
+       SECTION 6 — FOUNDER
+    ============================================================ */
+    #founder {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      min-height: 100vh;
+      background: var(--color-highlight);
+    }
+
+    .founder-image {
+      position: relative;
+      overflow: hidden;
+    }
+    .founder-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .founder-cred-card {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 4px;
+      padding: 20px 26px;
+    }
+    .cred-title {
+      font-family: var(--font-sans);
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      opacity: 0.6;
+      margin-bottom: 10px;
+    }
+    .cred-item {
+      font-family: var(--font-sans);
+      font-size: 0.74rem;
+      color: var(--color-primary);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cred-item::before {
+      content: '·';
+      color: var(--color-accent);
+      font-size: 1.2em;
+    }
+
+    .founder-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(48px, 7vw, 96px);
+    }
+    .founder-letter {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(1rem, 1.4vw, 1.2rem);
+      line-height: 1.85;
+      color: var(--color-primary);
+      margin-bottom: 40px;
+    }
+    .founder-name {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: var(--color-primary);
+      font-style: italic;
+      font-weight: 700;
+    }
+    .founder-title {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(43,43,43,0.55);
+      margin-top: 4px;
+    }
+    .founder-sig {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 2.2rem;
+      color: var(--color-accent);
+      margin-top: 24px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    /* ============================================================
+       SECTION 7 — TESTIMONIALS
+    ============================================================ */
+    #testimonials {
+      background: var(--color-secondary);
+      padding: 120px 8vw;
+      position: relative;
+    }
+    #testimonials::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+    .testimonials-h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.1;
+    }
+    .testimonials-h2 em { font-style: italic; color: var(--color-accent); }
+
+    .testimonials-grid {
+      columns: 3;
+      column-gap: 24px;
+      margin-bottom: 64px;
+    }
+    .testimonial-card {
+      break-inside: avoid;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(196,121,91,0.15);
+      border-radius: 4px;
+      padding: 28px;
+      margin-bottom: 24px;
+      position: relative;
+      transition: transform 0.35s var(--ease-spring), box-shadow 0.35s;
+    }
+    .testimonial-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(43,43,43,0.1);
+    }
+    .stars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 14px;
+    }
+    .stars svg { width: 13px; height: 13px; fill: var(--color-accent); color: var(--color-accent); }
+    .testimonial-quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--color-primary);
+      margin-bottom: 20px;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .testimonial-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .testimonial-author-name {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--color-primary);
+    }
+    .testimonial-author-role {
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      color: rgba(43,43,43,0.5);
+      margin-top: 1px;
+    }
+    .testimonial-share {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: transparent;
+      border: 1px solid rgba(196,121,91,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .testimonial-share:hover { background: var(--color-accent); border-color: var(--color-accent); }
+    .testimonial-share:hover svg { color: white; }
+    .testimonial-share svg { width: 12px; height: 12px; color: var(--color-accent); }
+
+    .refer-banner {
+      background: var(--color-accent);
+      border-radius: 4px;
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 64px;
+    }
+    .refer-text {
+      font-family: var(--font-serif);
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      color: var(--color-secondary);
+      font-style: italic;
+    }
+    .refer-sub {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      color: rgba(245,240,232,0.75);
+      margin-top: 4px;
+      letter-spacing: 0.06em;
+    }
+    .refer-btn {
+      background: var(--color-secondary);
+      color: var(--color-accent);
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 2px;
+      font-weight: 500;
+      cursor: none;
+      white-space: nowrap;
+      transition: transform 0.25s var(--ease-spring), box-shadow 0.25s;
+    }
+    .refer-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+
+    .instagram-strip {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .instagram-strip::-webkit-scrollbar { display: none; }
+    .insta-cell {
+      flex: 0 0 180px;
+      height: 180px;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .insta-cell img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s var(--ease-smooth);
+    }
+    .insta-cell:hover img { transform: scale(1.08); }
+    .insta-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(43,43,43,0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+    .insta-cell:hover .insta-overlay { background: rgba(43,43,43,0.4); }
+    .insta-overlay svg { color: white; opacity: 0; transition: opacity 0.3s; width: 24px; height: 24px; }
+    .insta-cell:hover .insta-overlay svg { opacity: 1; }
+    .hashtag-prompt {
+      text-align: center;
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--color-accent);
+      font-size: 1rem;
+      margin-top: 20px;
+    }
+
+    /* ============================================================
+       SECTION 8 — GRATITUDE
+    ============================================================ */
+    #gratitude {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      text-align: center;
+      padding: 80px 8vw;
+    }
+
+    .gratitude-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.pexels.com/photos/18499500/pexels-photo-18499500.png?auto=compress&cs=tinysrgb&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.25) saturate(0.4);
+    }
+
+    .gratitude-content {
+      position: relative;
+      z-index: 2;
+    }
+    .gratitude-quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 4.5vw, 4rem);
+      font-style: italic;
+      color: var(--color-secondary);
+      line-height: 1.25;
+      font-weight: 400;
+      margin-bottom: 52px;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .gratitude-quote em {
+      color: var(--color-accent);
+    }
+
+    .inner-circle-card {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      padding: 32px 52px;
+    }
+    .inner-circle-title {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      color: var(--color-secondary);
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+    .inner-circle-sub {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      color: rgba(245,240,232,0.6);
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+    }
+    .btn-circle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid var(--color-accent);
+      color: var(--color-accent);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 13px 30px;
+      border-radius: 2px;
+      cursor: none;
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+    }
+    .btn-circle:hover { background: var(--color-accent); color: var(--color-secondary); transform: translateY(-2px); }
+
+    /* ============================================================
+       FINAL CTA BANNER
+    ============================================================ */
+    .final-cta-banner {
+      background: var(--color-accent);
+      padding: 64px 8vw;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .final-cta-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4) 50%, transparent);
+      animation: waterLine 3s ease-in-out infinite;
+    }
+    @keyframes waterLine {
+      0%, 100% { transform: scaleX(0.3); opacity: 0.4; }
+      50% { transform: scaleX(1); opacity: 1; }
+    }
+    .final-cta-text {
+      font-family: var(--font-serif);
+      font-size: clamp(1.4rem, 3vw, 2.6rem);
+      font-style: italic;
+      color: var(--color-secondary);
+      margin-bottom: 28px;
+    }
+    .btn-final {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--color-secondary);
+      color: var(--color-accent);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 18px 48px;
+      border-radius: 2px;
+      font-weight: 500;
+      cursor: none;
+      transition: transform 0.25s var(--ease-spring), box-shadow 0.25s;
+    }
+    .btn-final:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+
+    /* ============================================================
+       SECTION 9 — FOOTER
+    ============================================================ */
+    footer {
+      background: var(--color-primary);
+      padding: 80px 8vw 48px;
+      position: relative;
+    }
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-accent) 30%, var(--color-highlight) 70%, transparent);
+      animation: footerWater 4s ease-in-out infinite;
+    }
+    @keyframes footerWater {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .footer-logo {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--color-secondary);
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .footer-logo em { color: var(--color-accent); font-style: italic; }
+
+    .footer-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+      margin-bottom: 56px;
+    }
+    .footer-col-label {
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: 20px;
+    }
+    .footer-col p,
+    .footer-col address {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      color: rgba(245,240,232,0.5);
+      font-style: normal;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-links a {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      color: rgba(245,240,232,0.5);
+      font-weight: 300;
+      transition: color 0.25s;
+    }
+    .footer-links a:hover { color: var(--color-accent); }
+
+    .footer-socials {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .social-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(245,240,232,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    }
+    .social-icon svg { width: 16px; height: 16px; color: rgba(245,240,232,0.5); transition: color 0.25s; }
+    .social-icon:hover { background: var(--color-accent); border-color: var(--color-accent); transform: translateY(-2px); }
+    .social-icon:hover svg { color: white; }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(245,240,232,0.08);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom p {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      color: rgba(245,240,232,0.25);
+      font-weight: 300;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 1024px) {
+      #philosophy { grid-template-columns: 1fr; }
+      .philosophy-image { height: 55vw; min-height: 320px; }
+      .philosophy-image img { height: 100%; }
+      #founder { grid-template-columns: 1fr; }
+      .founder-image { height: 70vw; min-height: 400px; }
+      .testimonials-grid { columns: 2; }
+      .footer-columns { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
+      .nav-links { display: none; }
+
+      .hero-glass { margin-left: 5vw; margin-right: 5vw; max-width: 100%; padding: 36px 28px; }
+      .hero-tagline { font-size: clamp(1.4rem, 5.5vw, 2rem); }
+
+      #philosophy { grid-template-columns: 1fr; }
+      .philosophy-image { height: 60vw; }
+      .philosophy-content { padding: 48px 24px; }
+
+      .exp-gallery { grid-template-columns: 1fr; padding: 0 24px 80px; }
+      .exp-img-wrap:nth-child(1),
+      .exp-img-wrap:nth-child(2),
+      .exp-img-wrap:nth-child(3),
+      .exp-img-wrap:nth-child(4) {
+        grid-column: 1; grid-row: auto; height: 260px;
+      }
+
+      #schedule { padding: 80px 24px; }
+      .schedule-grid { grid-template-columns: auto repeat(3, 1fr); overflow-x: auto; }
+
+      .testimonials-grid { columns: 1; }
+      .footer-columns { grid-template-columns: 1fr; }
+
+      #founder { grid-template-columns: 1fr; }
+      .founder-image { height: 60vw; min-height: 300px; }
+      .founder-content { padding: 48px 24px; }
+
+      #numbers { padding: 80px 0; }
+      .numbers-scroll { padding: 0 24px; }
+      .stat-item { flex: 0 0 260px; }
+
+      .refer-banner { padding: 24px; flex-direction: column; text-align: center; }
+
+      .cursor, .cursor-ring { display: none; }
+      body { cursor: auto; }
+      .hero-cta, .btn-book, .btn-final, .btn-circle, .refer-btn, .social-icon, .testimonial-share { cursor: pointer; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-tagline { font-size: 1.3rem; }
+      .stat-item { flex: 0 0 220px; }
+      .insta-cell { flex: 0 0 140px; height: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- LOADING SCREEN -->
+  <div id="loader">
+    <div class="loader-logo">Studio <span>Forma</span></div>
+    <div class="loader-bar-track">
+      <div class="loader-bar-fill" id="loaderFill">
+        <div class="loader-bar-drop"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav id="nav">
+    <div class="nav-logo">Studio <em>Forma</em></div>
+    <ul class="nav-links">
+      <li><a href="#philosophy">Philosophy</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#schedule">Classes</a></li>
+      <li><a href="#founder">Our Story</a></li>
+      <li><a href="#testimonials">Community</a></li>
+    </ul>
+    <a href="#schedule" class="nav-cta">Book Now</a>
+  </nav>
+
+  <!-- ============================================================
+       SECTION 1 — HERO
+  ============================================================ -->
+  <section id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-glass" id="heroGlass">
+      <p class="hero-tagline">
+        <span class="line1">Experience Pilates,</span>
+        <span class="line2">the most authentic way</span>
+        <span class="line3">at our one-of-a-kind studio.</span>
+      </p>
+      <a href="#schedule" class="hero-cta">
+        <span>Book Your First Class</span>
+        <i data-lucide="arrow-right" style="width:16px;height:16px;position:relative;z-index:1;"></i>
+      </a>
+    </div>
+
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="hero-scroll-line">
+        <div class="hero-scroll-drop"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 2 — PHILOSOPHY
+  ============================================================ -->
+  <section id="philosophy">
+    <div class="philosophy-image">
+      <img
+        src="https://images.pexels.com/photos/7293400/pexels-photo-7293400.jpeg?auto=compress&cs=tinysrgb&w=900&q=80"
+        alt="Close up detail of pilates reformer equipment - Fez Brook on Pexels"
+        loading="lazy"
+      />
+    </div>
+    <div class="philosophy-content">
+      <p class="section-label reveal">The Philosophy</p>
+      <p class="philosophy-text reveal delay-1">
+        We believe movement is a language. Every stretch, every breath, every 
+        controlled motion speaks a truth about who you are becoming. Our studio 
+        was built not as a gym, but as a sanctuary — where the ancient wisdom 
+        of Joseph Pilates meets the unhurried rituals of modern life.
+      </p>
+      <blockquote class="philosophy-pull reveal delay-2">
+        "Patience and persistence are vital qualities in the ultimate successful
+        accomplishment of any worthwhile endeavor."<br>
+        <cite style="font-size:0.75em;color:rgba(43,43,43,0.5);font-style:normal;">— Joseph Pilates</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 3 — EXPERIENCE
+  ============================================================ -->
+  <section id="experience">
+    <div class="exp-headline">
+      <h2>The<br>Experience</h2>
+    </div>
+
+    <div class="exp-gallery" id="expGallery">
+      <div class="exp-img-wrap" data-parallax="0.12">
+        <img
+          src="https://images.pexels.com/photos/18499500/pexels-photo-18499500.png?auto=compress&cs=tinysrgb&w=1400&q=80"
+          alt="Spacious minimalist pilates studio with wooden reformers - Lê Đức on Pexels"
+          loading="lazy"
+        />
+        <div class="exp-glass-card">
+          <div class="exp-glass-card-label">Session Type</div>
+          <div class="exp-glass-card-title">Reformer Flow</div>
+        </div>
+      </div>
+      <div class="exp-img-wrap" data-parallax="-0.08">
+        <img
+          src="https://images.pexels.com/photos/31509822/pexels-photo-31509822.jpeg?auto=compress&cs=tinysrgb&w=700&q=80"
+          alt="Woman performing Pilates on reformer machine in minimalist studio - Flexity Yoga & Pilates on Pexels"
+          loading="lazy"
+        />
+        <div class="exp-glass-card">
+          <div class="exp-glass-card-label">Session Type</div>
+          <div class="exp-glass-card-title">Mat Flow</div>
+        </div>
+      </div>
+      <div class="exp-img-wrap" data-parallax="0.06">
+        <img
+          src="https://images.pexels.com/photos/5992858/pexels-photo-5992858.jpeg?auto=compress&cs=tinysrgb&w=700&q=80"
+          alt="Pilates instructor helping a client with exercise posture - Kampus Production on Pexels"
+          loading="lazy"
+        />
+        <div class="exp-glass-card">
+          <div class="exp-glass-card-label">Session Type</div>
+          <div class="exp-glass-card-title">Private Sessions</div>
+        </div>
+      </div>
+      <div class="exp-img-wrap" data-parallax="-0.1">
+        <img
+          src="https://images.pexels.com/photos/8769175/pexels-photo-8769175.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80"
+          alt="Two women practicing Pilates on reformer equipment with guidance - Gustavo Fring on Pexels"
+          loading="lazy"
+        />
+        <div class="exp-glass-card">
+          <div class="exp-glass-card-label">Session Type</div>
+          <div class="exp-glass-card-title">Duet Training</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 4 — SCHEDULE
+  ============================================================ -->
+  <section id="schedule">
+    <div class="schedule-header">
+      <div>
+        <p class="section-label reveal">Classes & Booking</p>
+        <h2 class="schedule-h2 reveal delay-1">Find Your<br><em>Flow</em></h2>
+      </div>
+      <div class="next-class-card reveal delay-2">
+        <div class="next-class-label">Next Available Class</div>
+        <div class="next-class-name">Reformer Foundations</div>
+        <div class="countdown" id="countdown">
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-h">00</span>
+            <span class="countdown-lbl">Hrs</span>
+          </div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-m">00</span>
+            <span class="countdown-lbl">Min</span>
+          </div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-s">00</span>
+            <span class="countdown-lbl">Sec</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="schedule-grid reveal">
+      <!-- Header row -->
+      <div class="sched-header-cell" style="background:rgba(43,43,43,0.06);color:var(--color-primary);"></div>
+      <div class="sched-header-cell">Mon</div>
+      <div class="sched-header-cell">Tue</div>
+      <div class="sched-header-cell">Wed</div>
+      <div class="sched-header-cell">Thu</div>
+      <div class="sched-header-cell">Fri</div>
+      <div class="sched-header-cell">Sat</div>
+      <div class="sched-header-cell">Sun</div>
+
+      <!-- 7:00 AM -->
+      <div class="sched-time-cell">7:00 AM</div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="dumbbell"></i><span class="sched-class-type">Reformer</span></div>
+          <div class="sched-class-instructor">with Elena</div>
+        </div>
+      </div>
+      <div class="sched-empty"></div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="activity"></i><span class="sched-class-type">Mat Flow</span></div>
+          <div class="sched-class-instructor">with Sofia</div>
+        </div>
+      </div>
+      <div class="sched-empty"></div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="dumbbell"></i><span class="sched-class-type">Reformer</span></div>
+          <div class="sched-class-instructor">with Elena</div>
+        </div>
+      </div>
+      <div class="sched-empty"></div>
+      <div class="sched-empty"></div>
+
+      <!-- 9:00 AM -->
+      <div class="sched-time-cell">9:00 AM</div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="activity"></i><span class="sched-class-type">Mat Flow</span></div>
+          <div class="sched-class-instructor">with Mia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="dumbbell"></i><span class="sched-class-type">Reformer</span></div>
+          <div class="sched-class-instructor">with Elena</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="heart-pulse"></i><span class="sched-class-type">Barre Fusion</span></div>
+          <div class="sched-class-instructor">with Nadia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="activity"></i><span class="sched-class-type">Mat Flow</span></div>
+          <div class="sched-class-instructor">with Sofia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="heart-pulse"></i><span class="sched-class-type">Barre Fusion</span></div>
+          <div class="sched-class-instructor">with Nadia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="dumbbell"></i><span class="sched-class-type">Reformer</span></div>
+          <div class="sched-class-instructor">with Mia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="activity"></i><span class="sched-class-type">Mat Flow</span></div>
+          <div class="sched-class-instructor">with Elena</div>
+        </div>
+      </div>
+
+      <!-- 11:00 AM -->
+      <div class="sched-time-cell">11:00 AM</div>
+      <div class="sched-empty"></div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="user"></i><span class="sched-class-type">Private</span></div>
+          <div class="sched-class-instructor">with Elena</div>
+        </div>
+      </div>
+      <div class="sched-empty"></div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="dumbbell"></i><span class="sched-class-type">Reformer</span></div>
+          <div class="sched-class-instructor">with Nadia</div>
+        </div>
+      </div>
+      <div class="sched-empty"></div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="heart-pulse"></i><span class="sched-class-type">Barre Fusion</span></div>
+          <div class="sched-class-instructor">with Mia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="user"></i><span class="sched-class-type">Private</span></div>
+          <div class="sched-class-instructor">with Sofia</div>
+        </div>
+      </div>
+
+      <!-- 6:00 PM -->
+      <div class="sched-time-cell">6:00 PM</div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="dumbbell"></i><span class="sched-class-type">Reformer</span></div>
+          <div class="sched-class-instructor">with Sofia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="heart-pulse"></i><span class="sched-class-type">Barre Fusion</span></div>
+          <div class="sched-class-instructor">with Nadia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="dumbbell"></i><span class="sched-class-type">Reformer</span></div>
+          <div class="sched-class-instructor">with Elena</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="activity"></i><span class="sched-class-type">Mat Flow</span></div>
+          <div class="sched-class-instructor">with Mia</div>
+        </div>
+      </div>
+      <div class="sched-class-cell">
+        <div class="sched-class">
+          <div class="sched-class-icon"><i data-lucide="dumbbell"></i><span class="sched-class-type">Reformer</span></div>
+          <div class="sched-class-instructor">with Sofia</div>
+        </div>
+      </div>
+      <div class="sched-empty"></div>
+      <div class="sched-empty"></div>
+    </div>
+
+    <div class="book-cta-wrap reveal">
+      <a href="#" class="btn-book">
+        <i data-lucide="calendar-check" style="width:18px;height:18px;"></i>
+        Book Now
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 5 — BY THE NUMBERS
+  ============================================================ -->
+  <section id="numbers">
+    <p class="numbers-label reveal">By the Numbers</p>
+    <div class="numbers-scroll">
+      <div class="stat-item reveal">
+        <span class="stat-number" data-target="2400" data-suffix="+">0</span>
+        <div class="stat-label">Members &amp; Counting</div>
+      </div>
+      <div class="stat-item reveal delay-1">
+        <span class="stat-number" data-target="15000" data-suffix="+">0</span>
+        <div class="stat-label">Classes Taught</div>
+      </div>
+      <div class="stat-item reveal delay-2">
+        <span class="stat-number" data-target="98" data-suffix="%">0</span>
+        <div class="stat-label">Client Retention Rate</div>
+      </div>
+      <div class="stat-item reveal delay-3">
+        <span class="stat-number" data-target="7" data-suffix="">0</span>
+        <div class="stat-label">Years of Authentic Practice</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 6 — FOUNDER
+  ============================================================ -->
+  <section id="founder">
+    <div class="founder-image">
+      <img
+        src="https://images.pexels.com/photos/7704215/pexels-photo-7704215.jpeg?auto=compress&cs=tinysrgb&w=900&q=80"
+        alt="Studio founder, relaxed and joyful in studio - Sinitta Leunen on Pexels"
+        loading="lazy"
+      />
+      <div class="founder-cred-card reveal">
+        <div class="cred-title">Certifications</div>
+        <div class="cred-item">STOTT Pilates Certified, Level III</div>
+        <div class="cred-item">Body Arts & Science International</div>
+        <div class="cred-item">PMA Certified Instructor</div>
+        <div class="cred-item">15+ Years of Practice</div>
+      </div>
+    </div>
+    <div class="founder-content">
+      <p class="section-label reveal">Meet the Founder</p>
+      <p class="founder-letter reveal delay-1">
+        I started this studio because I couldn't find what I was looking for —
+        a place that honoured both the discipline and the grace of Pilates.
+        Not a trendy workout, not a spa retreat, but something in between:
+        a space where precision meets warmth, and where every body is treated
+        as a work in progress, not a problem to fix.
+        <br><br>
+        Seven years later, this studio is still my life's most intentional work.
+        I am grateful beyond measure for every single person who walks through 
+        our doors and trusts us with their body, their time, and their journey.
+      </p>
+      <div class="reveal delay-2">
+        <div class="founder-sig">Elena Vasari</div>
+        <div class="founder-title">Founder & Lead Instructor, Studio Forma</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 7 — TESTIMONIALS
+  ============================================================ -->
+  <section id="testimonials">
+    <div class="testimonials-header">
+      <p class="section-label reveal">Community</p>
+      <h2 class="testimonials-h2 reveal delay-1">Voices of the<br><em>Movement</em></h2>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <button class="testimonial-share" aria-label="Share"><i data-lucide="share-2"></i></button>
+        <div class="stars">
+          <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+        </div>
+        <p class="testimonial-quote">"Studio Forma changed the way I live in my body. Elena's attention to alignment is unlike any Pilates class I've taken in 10 years."</p>
+        <div class="testimonial-author">
+          <img class="testimonial-avatar" src="https://i.pravatar.cc/80?u=sarah-m" alt="Sarah M." />
+          <div>
+            <div class="testimonial-author-name">Sarah M.</div>
+            <div class="testimonial-author-role">Member since 2021</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal delay-1">
+        <button class="testimonial-share" aria-label="Share"><i data-lucide="share-2"></i></button>
+        <div class="stars">
+          <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+        </div>
+        <p class="testimonial-quote">"I've tried every reformer studio in the city. Nothing comes close. The space itself is beautiful — calm, intentional, considered. A true sanctuary."</p>
+        <div class="testimonial-author">
+          <img class="testimonial-avatar" src="https://i.pravatar.cc/80?u=james-k" alt="James K." />
+          <div>
+            <div class="testimonial-author-name">James K.</div>
+            <div class="testimonial-author-role">Member since 2020</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal delay-2">
+        <button class="testimonial-share" aria-label="Share"><i data-lucide="share-2"></i></button>
+        <div class="stars">
+          <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+        </div>
+        <p class="testimonial-quote">"After my back surgery, I was terrified to exercise. Elena worked with my physio and designed a programme that genuinely healed me. I am forever grateful."</p>
+        <div class="testimonial-author">
+          <img class="testimonial-avatar" src="https://i.pravatar.cc/80?u=lisa-t" alt="Lisa T." />
+          <div>
+            <div class="testimonial-author-name">Lisa T.</div>
+            <div class="testimonial-author-role">Member since 2022</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal">
+        <button class="testimonial-share" aria-label="Share"><i data-lucide="share-2"></i></button>
+        <div class="stars">
+          <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+        </div>
+        <p class="testimonial-quote">"The barre fusion class is addictive. I leave every session feeling taller, lighter, and completely centred. Highly recommend the early morning sessions."</p>
+        <div class="testimonial-author">
+          <img class="testimonial-avatar" src="https://i.pravatar.cc/80?u=amara-o" alt="Amara O." />
+          <div>
+            <div class="testimonial-author-name">Amara O.</div>
+            <div class="testimonial-author-role">Member since 2023</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal delay-1">
+        <button class="testimonial-share" aria-label="Share"><i data-lucide="share-2"></i></button>
+        <div class="stars">
+          <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+        </div>
+        <p class="testimonial-quote">"My posture transformed in 8 weeks. I stand differently. I move differently. People keep asking me what I've changed. The answer is always Studio Forma."</p>
+        <div class="testimonial-author">
+          <img class="testimonial-avatar" src="https://i.pravatar.cc/80?u=priya-s" alt="Priya S." />
+          <div>
+            <div class="testimonial-author-name">Priya S.</div>
+            <div class="testimonial-author-role">Member since 2022</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal delay-2">
+        <button class="testimonial-share" aria-label="Share"><i data-lucide="share-2"></i></button>
+        <div class="stars">
+          <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+        </div>
+        <p class="testimonial-quote">"I brought three friends and all three of them became members. There is something magnetic about this place. It's not just a studio — it's a community."</p>
+        <div class="testimonial-author">
+          <img class="testimonial-avatar" src="https://i.pravatar.cc/80?u=rachel-w" alt="Rachel W." />
+          <div>
+            <div class="testimonial-author-name">Rachel W.</div>
+            <div class="testimonial-author-role">Member since 2019</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refer Banner -->
+    <div class="refer-banner reveal">
+      <div>
+        <div class="refer-text">Share the Movement.</div>
+        <div class="refer-sub">Give a friend their first class free — because wellness is better together.</div>
+      </div>
+      <a href="#" class="refer-btn">Refer a Friend</a>
+    </div>
+
+    <!-- Instagram Strip -->
+    <div class="instagram-strip reveal">
+      <div class="insta-cell">
+        <img src="https://images.pexels.com/photos/33360219/pexels-photo-33360219.jpeg?auto=compress&cs=tinysrgb&w=400&q=80" alt="Studio Forma pilates class - Ahmet Kurt on Pexels" loading="lazy" />
+        <div class="insta-overlay"><i data-lucide="instagram"></i></div>
+      </div>
+      <div class="insta-cell">
+        <img src="https://images.pexels.com/photos/25596895/pexels-photo-25596895.jpeg?auto=compress&cs=tinysrgb&w=400&q=80" alt="Bright pilates studio with plants - Ahmet Kurt on Pexels" loading="lazy" />
+        <div class="insta-overlay"><i data-lucide="instagram"></i></div>
+      </div>
+      <div class="insta-cell">
+        <img src="https://images.pexels.com/photos/9288101/pexels-photo-9288101.jpeg?auto=compress&cs=tinysrgb&w=400&q=80" alt="Women engaging in reformer Pilates - Nicholas Fu on Pexels" loading="lazy" />
+        <div class="insta-overlay"><i data-lucide="instagram"></i></div>
+      </div>
+      <div class="insta-cell">
+        <img src="https://images.pexels.com/photos/33360223/pexels-photo-33360223.jpeg?auto=compress&cs=tinysrgb&w=400&q=80" alt="Fitness enthusiast practicing Pilates - Ahmet Kurt on Pexels" loading="lazy" />
+        <div class="insta-overlay"><i data-lucide="instagram"></i></div>
+      </div>
+      <div class="insta-cell">
+        <img src="https://images.pexels.com/photos/18075025/pexels-photo-18075025.jpeg?auto=compress&cs=tinysrgb&w=400&q=80" alt="Spacious Pilates studio wooden reformers - Lê Đức on Pexels" loading="lazy" />
+        <div class="insta-overlay"><i data-lucide="instagram"></i></div>
+      </div>
+      <div class="insta-cell">
+        <img src="https://images.pexels.com/photos/6111610/pexels-photo-6111610.jpeg?auto=compress&cs=tinysrgb&w=400&q=80" alt="Female trainer assists a client with stretching - Kampus Production on Pexels" loading="lazy" />
+        <div class="insta-overlay"><i data-lucide="instagram"></i></div>
+      </div>
+      <div class="insta-cell">
+        <img src="https://images.pexels.com/photos/25599829/pexels-photo-25599829.jpeg?auto=compress&cs=tinysrgb&w=400&q=80" alt="Bright spacious Pilates studio - Ahmet Kurt on Pexels" loading="lazy" />
+        <div class="insta-overlay"><i data-lucide="instagram"></i></div>
+      </div>
+    </div>
+    <p class="hashtag-prompt reveal" style="margin-top:16px;">#MovementAtItsCore</p>
+  </section>
+
+  <!-- ============================================================
+       SECTION 8 — GRATITUDE
+  ============================================================ -->
+  <section id="gratitude">
+    <div class="gratitude-bg"></div>
+    <div class="gratitude-content">
+      <p class="gratitude-quote reveal">
+        "Thank you for being part of<br>
+        <em>this movement.</em>"
+      </p>
+      <div class="inner-circle-card reveal delay-1">
+        <div class="inner-circle-title">Join the Inner Circle</div>
+        <div class="inner-circle-sub">Exclusive rewards, early booking & member-only events</div>
+        <a href="#" class="btn-circle">
+          <i data-lucide="gem" style="width:15px;height:15px;"></i>
+          Become a Member
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA BANNER -->
+  <div class="final-cta-banner">
+    <p class="final-cta-text reveal">"Your journey starts with one class."</p>
+    <a href="#schedule" class="btn-final reveal delay-1">
+      Book Now
+      <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+    </a>
+  </div>
+
+  <!-- ============================================================
+       SECTION 9 — FOOTER
+  ============================================================ -->
+  <footer>
+    <div class="footer-logo">Studio <em>Forma</em></div>
+    <div class="footer-columns">
+      <div class="footer-col">
+        <div class="footer-col-label">Visit Us</div>
+        <address>
+          12 Meridian Lane, Studio 3<br>
+          Notting Hill, London W11 4PP<br><br>
+          hello@studioforma.co<br>
+          +44 20 7946 0831
+        </address>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-label">Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="#experience">Classes</a></li>
+          <li><a href="#schedule">Schedule</a></li>
+          <li><a href="#founder">About Elena</a></li>
+          <li><a href="#testimonials">Community</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Gift Cards</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-label">Follow Along</div>
+        <div class="footer-socials">
+          <a href="#" class="social-icon" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+          <a href="#" class="social-icon" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+          <a href="#" class="social-icon" aria-label="YouTube"><i data-lucide="youtube"></i></a>
+          <a href="#" class="social-icon" aria-label="Pinterest"><i data-lucide="pin"></i></a>
+        </div>
+        <p style="margin-top:20px;font-family:var(--font-serif);font-style:italic;color:rgba(245,240,232,0.35);font-size:0.88rem;line-height:1.7;">
+          "A body free from nervous tension<br>and fatigue is the ideal shelter."<br>
+          <span style="font-size:0.75em;color:rgba(245,240,232,0.2);">— Joseph Pilates</span>
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Studio Forma. All rights reserved.</p>
+      <p>Privacy Policy · Terms of Service</p>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+    // Init Lucide icons
+    lucide.createIcons();
+
+    /* ── LOADER ────────────────────────────────────────────── */
+    const loader     = document.getElementById('loader');
+    const loaderFill = document.getElementById('loaderFill');
+    const heroBg     = document.getElementById('heroBg');
+
+    window.addEventListener('load', () => {
+      loaderFill.style.width = '100%';
+      setTimeout(() => {
+        loader.classList.add('hidden');
+        heroBg.classList.add('loaded');
+      }, 1800);
+    });
+    // Start fill immediately
+    requestAnimationFrame(() => { loaderFill.style.width = '60%'; });
+
+    /* ── CUSTOM CURSOR ─────────────────────────────────────── */
+    const cursor     = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursorRing');
+
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top  = mouseY + 'px';
+    });
+
+    // Smooth ring follow
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      cursorRing.style.left = ringX + 'px';
+      cursorRing.style.top  = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Ripple on hero hover
+    const hero = document.getElementById('hero');
+    hero.addEventListener('mousemove', (e) => {
+      if (Math.random() > 0.94) {
+        const rip = document.createElement('div');
+        rip.className = 'ripple';
+        const size = 40 + Math.random() * 60;
+        rip.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px;`;
+        document.body.appendChild(rip);
+        setTimeout(() => rip.remove(), 1000);
+      }
+    });
+
+    // Expand cursor on interactive elements
+    document.querySelectorAll('a, button, .exp-glass-card, .insta-cell, .social-icon').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.classList.add('expanded');
+        cursorRing.classList.add('expanded');
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.classList.remove('expanded');
+        cursorRing.classList.remove('expanded');
+      });
+    });
+
+    /* ── NAV SCROLL ────────────────────────────────────────── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 80);
+    }, { passive: true });
+
+    /* ── HERO PARALLAX (glass panel) ───────────────────────── */
+    const heroGlass = document.getElementById('heroGlass');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const viewH    = window.innerHeight;
+      if (scrolled < viewH) {
+        const progress = scrolled / viewH;
+        heroGlass.style.transform = `translateY(${progress * -80}px)`;
+        heroGlass.style.opacity   = 1 - progress * 1.4;
+      }
+    }, { passive: true });
+
+    /* ── GALLERY PARALLAX ──────────────────────────────────── */
+    const expImgs = document.querySelectorAll('.exp-img-wrap');
+    window.addEventListener('scroll', () => {
+      expImgs.forEach(wrap => {
+        const rect   = wrap.getBoundingClientRect();
+        const factor = parseFloat(wrap.dataset.parallax || 0);
+        const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+        wrap.querySelector('img').style.transform = `translateY(${center * factor}px)`;
+      });
+    }, { passive: true });
+
+    /* ── EXPERIENCE BG COLOR SHIFT ─────────────────────────── */
+    // Already handled by the dark bg of #experience
+
+    /* ── INTERSECTION OBSERVER (reveal) ─────────────────────── */
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObs.observe(el));
+
+    /* ── COUNTER ANIMATION ─────────────────────────────────── */
+    const counterEls = document.querySelectorAll('.stat-number[data-target]');
+    const counterObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el     = entry.target;
+          const target = parseInt(el.dataset.target);
+          const suffix = el.dataset.suffix || '';
+          const duration = 2000;
+          const step   = 16;
+          const steps  = duration / step;
+          const increment = target / steps;
+          let current = 0;
+
+          const tick = () => {
+            current = Math.min(current + increment, target);
+            const display = target >= 1000
+              ? Math.floor(current).toLocaleString()
+              : Math.floor(current);
+            el.textContent = display + suffix;
+            if (current < target) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+          counterObs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.4 });
+    counterEls.forEach(el => counterObs.observe(el));
+
+    /* ── COUNTDOWN TIMER ───────────────────────────────────── */
+    function updateCountdown() {
+      const now    = new Date();
+      // Next class: next occurrence of 9:00 AM
+      const target = new Date(now);
+      target.setHours(9, 0, 0, 0);
+      if (now >= target) target.setDate(target.getDate() + 1);
+
+      const diff = target - now;
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+
+      document.getElementById('cd-h').textContent = String(h).padStart(2, '0');
+      document.getElementById('cd-m').textContent = String(m).padStart(2, '0');
+      document.getElementById('cd-s').textContent = String(s).padStart(2, '0');
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    /* ── TESTIMONIAL SHARE (copy link) ─────────────────────── */
+    document.querySelectorAll('.testimonial-share').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(window.location.href).catch(() => {});
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i data-lucide="check" style="width:12px;height:12px;"></i>';
+        lucide.createIcons();
+        setTimeout(() => { btn.innerHTML = orig; lucide.createIcons(); }, 1500);
+      });
+    });
+
+    /* ── SMOOTH SECTION ENTRANCE ─────────────────────────────── */
+    // Experience headline opacity on scroll
+    const expSection  = document.getElementById('experience');
+    const expHeadline = expSection.querySelector('.exp-headline h2');
+    window.addEventListener('scroll', () => {
+      const rect    = expSection.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, -rect.top / (rect.height * 0.4)));
+      expHeadline.style.opacity = progress * 0.1;
+    }, { passive: true });
+  </script>
+</body>
+</html>
