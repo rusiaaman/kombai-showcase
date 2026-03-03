@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter & Cup — A Literary Café</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&display=swap" rel="stylesheet" />
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* ========== DESIGN TOKENS ========== */
+    :root {
+      --ivory:    #FAF3E0;
+      --ivory-dark: #F0E6CC;
+      --burgundy: #5C1A1B;
+      --burgundy-light: #7A2425;
+      --gold:     #C5975B;
+      --gold-light: #D4A96A;
+      --charcoal: #2C2C2C;
+      --charcoal-soft: #444444;
+      --white:    #FFFFFF;
+      --overlay:  rgba(28, 10, 10, 0.55);
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'Source Serif 4', 'Georgia', serif;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+
+      --shadow-warm: 0 8px 32px rgba(92, 26, 27, 0.12);
+      --shadow-gold: 0 4px 20px rgba(197, 151, 91, 0.25);
+
+      --section-pad: clamp(4rem, 8vw, 8rem);
+      --content-max: 1200px;
+    }
+
+    /* ========== RESET ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ivory);
+      color: var(--charcoal);
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ========== TYPOGRAPHY ========== */
+    .t-eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .t-display {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      color: var(--ivory);
+    }
+    .t-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--charcoal);
+    }
+    .t-subhead {
+      font-family: var(--font-display);
+      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--charcoal);
+    }
+    .t-body {
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.8;
+      color: var(--charcoal-soft);
+    }
+
+    /* ========== LAYOUT UTILS ========== */
+    .container {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 3rem);
+    }
+    .section-pad { padding: var(--section-pad) 0; }
+
+    /* ========== PAGE-TURN SECTION WRAPPER ========== */
+    .page-section {
+      position: relative;
+      transform-origin: top center;
+      will-change: transform, opacity;
+    }
+
+    /* ========== DECORATIVE RULE ========== */
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .ornament::before, .ornament::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .ornament::after { background: linear-gradient(to left, transparent, var(--gold)); }
+    .ornament-text {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    /* =============================================
+       SECTION 1 — HERO
+    ============================================= */
+    #hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 600px;
+      overflow: hidden;
+    }
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      transform: scale(1.07);
+      will-change: transform;
+    }
+    .hero-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      filter: sepia(0.2) contrast(1.05);
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(28, 8, 8, 0.72) 0%,
+        rgba(92, 26, 27, 0.5) 50%,
+        rgba(10, 5, 5, 0.8) 100%
+      );
+    }
+    .hero-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 0 clamp(1.5rem, 8vw, 9rem);
+    }
+    .hero-tag {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 0.35rem 1rem;
+      margin-bottom: 1.75rem;
+      opacity: 0;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 9vw, 7.5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      color: var(--ivory);
+      max-width: 14ch;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .hero-sub {
+      font-family: var(--font-body);
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: rgba(250,243,224,0.85);
+      max-width: 44ch;
+      line-height: 1.7;
+      margin-bottom: 2.25rem;
+      opacity: 0;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--gold);
+      color: var(--charcoal);
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      border-radius: var(--radius-sm);
+      transition: background 0.3s, color 0.3s;
+      opacity: 0;
+    }
+    .hero-cta:hover { background: var(--ivory); color: var(--burgundy); }
+    .hero-cta svg { width: 14px; height: 14px; }
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(250,243,224,0.6);
+      font-size: 0.6875rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, rgba(197,151,91,0.8), transparent);
+      animation: scrollDrop 2s ease-in-out infinite;
+    }
+    @keyframes scrollDrop {
+      0%,100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(0.4); opacity: 0.4; }
+    }
+
+    /* =============================================
+       SECTION 2 — MAGAZINE LAYOUT
+    ============================================= */
+    #magazine {
+      background: var(--ivory);
+      position: relative;
+    }
+    #magazine::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--burgundy), var(--gold), var(--burgundy));
+    }
+    .magazine-label {
+      text-align: center;
+      padding: var(--section-pad) 0 3rem;
+    }
+    .mag-grid {
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      gap: 0 3rem;
+      align-items: start;
+    }
+    .mag-divider {
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+      width: 1px;
+      min-height: 420px;
+      align-self: stretch;
+    }
+    .mag-col { padding: 0 1rem; }
+    .mag-col-img {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.75rem;
+      height: 320px;
+      box-shadow: var(--shadow-warm);
+    }
+    .mag-col-img img { transition: transform 0.6s ease; }
+    .mag-col-img:hover img { transform: scale(1.04); }
+    .mag-col-img .img-badge {
+      position: absolute;
+      top: 1rem; left: 1rem;
+      background: var(--burgundy);
+      color: var(--gold);
+      font-family: var(--font-body);
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 2px;
+    }
+    .mag-rating {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 0.75rem;
+      color: var(--gold);
+      font-size: 0.875rem;
+    }
+    .mag-meta {
+      font-size: 0.8125rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .mag-col h3 {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 0.75rem;
+      line-height: 1.25;
+    }
+    .mag-col p {
+      color: var(--charcoal-soft);
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 1.25rem;
+    }
+    .mag-tag-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .mag-tag {
+      background: var(--ivory-dark);
+      border: 1px solid rgba(197,151,91,0.3);
+      color: var(--charcoal-soft);
+      font-size: 0.6875rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 2px;
+    }
+    .mag-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--burgundy);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .mag-link:hover { color: var(--gold); }
+    .drink-flavor-notes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .flavor-note {
+      background: var(--ivory-dark);
+      border-top: 2px solid var(--gold);
+      padding: 0.75rem;
+      text-align: center;
+      border-radius: var(--radius-sm);
+    }
+    .flavor-note-name {
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--charcoal-soft);
+      display: block;
+      margin-top: 0.25rem;
+    }
+    .flavor-note-emoji { font-size: 1.25rem; display: block; }
+    .mag-price {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--burgundy);
+      margin-bottom: 0.75rem;
+    }
+
+    /* =============================================
+       SECTION 3 — MASONRY GRID
+    ============================================= */
+    #gallery {
+      background: var(--charcoal);
+      color: var(--ivory);
+      padding: var(--section-pad) 0;
+    }
+    .gallery-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .gallery-header .t-headline { color: var(--ivory); }
+    .gallery-header .t-body { color: rgba(250,243,224,0.7); margin-top: 0.75rem; }
+    .masonry-grid {
+      columns: 3 280px;
+      column-gap: 1rem;
+    }
+    .masonry-item {
+      break-inside: avoid;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .masonry-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .masonry-item:hover img { transform: scale(1.08); }
+    .masonry-caption {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(28,8,8,0.85) 0%, transparent 55%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.25rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .masonry-item:hover .masonry-caption { opacity: 1; }
+    .masonry-caption h4 {
+      font-family: var(--font-display);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--ivory);
+      margin-bottom: 0.2rem;
+    }
+    .masonry-caption span {
+      font-size: 0.75rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* =============================================
+       SECTION 4 — EVENTS TIMELINE
+    ============================================= */
+    #events {
+      background: var(--ivory);
+      padding: var(--section-pad) 0;
+      position: relative;
+    }
+    .events-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .timeline {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--gold) 8%, var(--gold) 92%, transparent);
+      transform: translateX(-50%);
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr;
+      align-items: start;
+      gap: 0;
+      margin-bottom: 3.5rem;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .timeline-item:nth-child(odd) .timeline-content { grid-column: 1; text-align: right; padding-right: 2.5rem; }
+    .timeline-item:nth-child(odd) .timeline-center { grid-column: 2; }
+    .timeline-item:nth-child(odd) .timeline-empty { grid-column: 3; }
+    .timeline-item:nth-child(even) .timeline-content { grid-column: 3; text-align: left; padding-left: 2.5rem; }
+    .timeline-item:nth-child(even) .timeline-center { grid-column: 2; }
+    .timeline-item:nth-child(even) .timeline-empty { grid-column: 1; }
+    .timeline-center {
+      display: flex;
+      justify-content: center;
+      padding-top: 0.25rem;
+    }
+    .timeline-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 3px solid var(--ivory);
+      box-shadow: 0 0 0 2px var(--gold);
+      flex-shrink: 0;
+    }
+    .event-date {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .event-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+    .event-desc {
+      font-size: 0.9375rem;
+      color: var(--charcoal-soft);
+      line-height: 1.7;
+    }
+    .event-type {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+    }
+    .event-type.reading { background: rgba(92,26,27,0.1); color: var(--burgundy); border: 1px solid rgba(92,26,27,0.2); }
+    .event-type.signing { background: rgba(197,151,91,0.15); color: var(--charcoal); border: 1px solid rgba(197,151,91,0.3); }
+    .event-type.open-mic { background: rgba(44,44,44,0.08); color: var(--charcoal); border: 1px solid rgba(44,44,44,0.15); }
+
+    /* =============================================
+       SECTION 5 — NEWSLETTER
+    ============================================= */
+    #newsletter {
+      background: var(--burgundy);
+      padding: var(--section-pad) 0;
+      position: relative;
+      overflow: hidden;
+    }
+    #newsletter::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 10% 50%, rgba(197,151,91,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 90% 20%, rgba(197,151,91,0.08) 0%, transparent 40%);
+    }
+    .newsletter-inner {
+      position: relative;
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .quill-icon {
+      display: inline-block;
+      width: 56px;
+      height: 56px;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+    .quill-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+    .newsletter-inner .t-eyebrow { color: rgba(197,151,91,0.8); margin-bottom: 0.75rem; }
+    .newsletter-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.25rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--ivory);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .newsletter-sub {
+      font-size: 1.0625rem;
+      color: rgba(250,243,224,0.75);
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+    }
+    .newsletter-form {
+      display: flex;
+      gap: 0;
+      max-width: 480px;
+      margin: 0 auto 1.25rem;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .newsletter-form input {
+      flex: 1;
+      padding: 1rem 1.25rem;
+      border: none;
+      background: var(--ivory);
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      color: var(--charcoal);
+      outline: none;
+    }
+    .newsletter-form input::placeholder { color: rgba(44,44,44,0.45); }
+    .newsletter-form button {
+      background: var(--gold);
+      color: var(--charcoal);
+      border: none;
+      padding: 1rem 1.75rem;
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.3s;
+      white-space: nowrap;
+    }
+    .newsletter-form button:hover { background: var(--gold-light); }
+    .newsletter-note {
+      font-size: 0.8125rem;
+      color: rgba(250,243,224,0.45);
+      letter-spacing: 0.04em;
+    }
+
+    /* ========== QUILL ANIMATION ========== */
+    @keyframes quillWrite {
+      0%   { transform: rotate(-15deg) translateY(0); }
+      20%  { transform: rotate(-10deg) translateY(-4px) translateX(3px); }
+      40%  { transform: rotate(-18deg) translateY(2px) translateX(-2px); }
+      60%  { transform: rotate(-12deg) translateY(-3px) translateX(4px); }
+      80%  { transform: rotate(-16deg) translateY(1px) translateX(-1px); }
+      100% { transform: rotate(-15deg) translateY(0); }
+    }
+    @keyframes inkGlow {
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(197,151,91,0.4)); }
+      50%       { filter: drop-shadow(0 0 12px rgba(197,151,91,0.9)); }
+    }
+    .quill-icon {
+      animation: quillWrite 3s ease-in-out infinite, inkGlow 2.5s ease-in-out infinite;
+      transform-origin: bottom right;
+    }
+
+    /* ========== FOOTER STRIP ========== */
+    footer {
+      background: var(--charcoal);
+      color: rgba(250,243,224,0.5);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8125rem;
+      letter-spacing: 0.04em;
+    }
+    footer span { color: var(--gold); }
+
+    /* ========== NAV ========== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem clamp(1.25rem, 5vw, 3rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.4s, backdrop-filter 0.4s, padding 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(28, 10, 10, 0.88);
+      backdrop-filter: blur(12px);
+      padding-top: 0.85rem;
+      padding-bottom: 0.85rem;
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ivory);
+      letter-spacing: 0.02em;
+    }
+    .nav-logo em { font-style: italic; color: var(--gold); }
+    .nav-links {
+      display: flex;
+      gap: 2.25rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(250,243,224,0.75);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .mag-grid { grid-template-columns: 1fr; }
+      .mag-divider { display: none; }
+      .masonry-grid { columns: 2 180px; }
+      .nav-links { display: none; }
+      .timeline::before { left: 20px; }
+      .timeline-item {
+        grid-template-columns: 40px 1fr;
+        grid-template-rows: auto;
+      }
+      .timeline-item:nth-child(odd) .timeline-content,
+      .timeline-item:nth-child(even) .timeline-content {
+        grid-column: 2;
+        text-align: left;
+        padding: 0 0 0 1.25rem;
+      }
+      .timeline-item:nth-child(odd) .timeline-center,
+      .timeline-item:nth-child(even) .timeline-center {
+        grid-column: 1;
+        grid-row: 1;
+        justify-content: flex-start;
+        padding-left: 13px;
+      }
+      .timeline-item:nth-child(odd) .timeline-empty,
+      .timeline-item:nth-child(even) .timeline-empty { display: none; }
+      .newsletter-form { flex-direction: column; border-radius: var(--radius-md); }
+      .newsletter-form input, .newsletter-form button { border-radius: 0; }
+    }
+    @media (max-width: 480px) {
+      .masonry-grid { columns: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav id="main-nav">
+    <div class="nav-logo">Chapter <em>&amp;</em> Cup</div>
+    <ul class="nav-links">
+      <li><a href="#magazine">This Month</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#events">Events</a></li>
+      <li><a href="#newsletter">Subscribe</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== SECTION 1: HERO ===== -->
+  <section id="hero" class="page-section">
+    <div class="hero-img">
+      <img
+        src="https://images.pexels.com/photos/2310785/pexels-photo-2310785.jpeg?auto=compress&cs=tinysrgb&w=1920"
+        alt="Espresso coffee cup beside open book on wooden table, Engin Akyurt on Pexels"
+      />
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-tag">Est. 2019 · Midtown Literary District</span>
+      <h1 class="hero-title">Every Cup<br /><em>Tells a</em><br />Story.</h1>
+      <p class="hero-sub">Pull up a stool. Let the espresso steep, the pages turn, and the afternoon dissolve. This is Chapter &amp; Cup — where every visit begins a new chapter.</p>
+      <a href="#magazine" class="hero-cta">
+        This Month's Read
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </a>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 2: MAGAZINE LAYOUT ===== -->
+  <section id="magazine" class="page-section">
+    <div class="container">
+      <div class="magazine-label">
+        <p class="t-eyebrow">March 2026 · Editorial</p>
+        <h2 class="t-headline" style="text-align:center; margin-top:0.5rem;">The Reading Table</h2>
+      </div>
+      <div class="mag-grid">
+
+        <!-- LEFT: Book Pick -->
+        <div class="mag-col">
+          <div class="mag-col-img">
+            <img
+              src="https://images.pexels.com/photos/531876/pexels-photo-531876.jpeg?auto=compress&cs=tinysrgb&w=800"
+              alt="Cappuccino and open book on wooden table, Pixabay on Pexels"
+            />
+            <span class="img-badge">Staff Pick</span>
+          </div>
+          <p class="mag-meta">This Month's Pick · Fiction</p>
+          <h3>The Midnight Library</h3>
+          <div class="mag-rating">★★★★★</div>
+          <p>A breathtaking meditation on regret, possibility, and the lives we almost lived. Matt Haig's masterwork asks: what if one library held the key to every path not taken?</p>
+          <p style="font-style:italic; color: var(--charcoal-soft); font-size:0.9375rem;">"Between life and death there is a library… the special books made her feel there was hope after all."</p>
+          <div class="mag-tag-row">
+            <span class="mag-tag">Fiction</span>
+            <span class="mag-tag">Philosophy</span>
+            <span class="mag-tag">Uplifting</span>
+          </div>
+          <a href="#" class="mag-link">Read curator's note →</a>
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="mag-divider"></div>
+
+        <!-- RIGHT: Drink Pairing -->
+        <div class="mag-col">
+          <div class="mag-col-img">
+            <img
+              src="https://images.pexels.com/photos/15801058/pexels-photo-15801058.jpeg?auto=compress&cs=tinysrgb&w=800"
+              alt="Barista pouring latte art, Arya Bajra on Pexels"
+            />
+            <span class="img-badge" style="background:var(--gold); color:var(--charcoal);">Paired Drink</span>
+          </div>
+          <p class="mag-meta">Drink Pairing · Signature Blend</p>
+          <h3>The Librarian's Latte</h3>
+          <p>A double-shot oat milk latte kissed with cardamom and dark honey — deep, considered, and quietly extraordinary. Our baristas pull it slow, just like a good story deserves.</p>
+          <div class="drink-flavor-notes">
+            <div class="flavor-note">
+              <span class="flavor-note-emoji">🍫</span>
+              <span class="flavor-note-name">Dark Cocoa</span>
+            </div>
+            <div class="flavor-note">
+              <span class="flavor-note-emoji">🌿</span>
+              <span class="flavor-note-name">Cardamom</span>
+            </div>
+            <div class="flavor-note">
+              <span class="flavor-note-emoji">🍯</span>
+              <span class="flavor-note-name">Dark Honey</span>
+            </div>
+          </div>
+          <span class="mag-price">£5.40</span>
+          <p style="font-size:0.875rem; color: var(--charcoal-soft);">Available all day · Ask for it iced in summer</p>
+          <br/>
+          <a href="#" class="mag-link" style="color:var(--gold); border-color:var(--burgundy);">Order ahead →</a>
+        </div>
+
+      </div>
+    </div>
+    <div style="height: var(--section-pad);"></div>
+  </section>
+
+  <!-- ===== SECTION 3: MASONRY GALLERY ===== -->
+  <section id="gallery" class="page-section">
+    <div class="container">
+      <div class="gallery-header">
+        <p class="t-eyebrow" style="color:var(--gold);">Our Space · #ChapterAndCup</p>
+        <h2 class="t-headline">Life Between the Shelves</h2>
+        <p class="t-body">Every corner holds a story. Every morning, a ritual. Hover to explore.</p>
+      </div>
+      <div class="masonry-grid">
+
+        <div class="masonry-item">
+          <img
+            src="https://images.pexels.com/photos/2079452/pexels-photo-2079452.jpeg?auto=compress&cs=tinysrgb&w=700"
+            alt="Warm cafe interior with wooden bookshelves, Emre Can Acer on Pexels"
+            style="height:320px"
+          />
+          <div class="masonry-caption">
+            <h4>The Reading Room</h4>
+            <span>First Floor · Est. Favourites</span>
+          </div>
+        </div>
+
+        <div class="masonry-item">
+          <img
+            src="https://images.pexels.com/photos/9823550/pexels-photo-9823550.jpeg?auto=compress&cs=tinysrgb&w=700"
+            alt="Barista pouring latte art, Ксения Маркова on Pexels"
+            style="height:220px"
+          />
+          <div class="masonry-caption">
+            <h4>The Morning Pour</h4>
+            <span>Craft Coffee · Daily 7am</span>
+          </div>
+        </div>
+
+        <div class="masonry-item">
+          <img
+            src="https://images.pexels.com/photos/9665958/pexels-photo-9665958.jpeg?auto=compress&cs=tinysrgb&w=700"
+            alt="Woman reading in bookstore window nook, Pırıl Şahin on Pexels"
+            style="height:370px"
+          />
+          <div class="masonry-caption">
+            <h4>The Window Nook</h4>
+            <span>Reserved · Ask at the bar</span>
+          </div>
+        </div>
+
+        <div class="masonry-item">
+          <img
+            src="https://images.pexels.com/photos/7736771/pexels-photo-7736771.jpeg?auto=compress&cs=tinysrgb&w=700"
+            alt="Espresso flowing from machine, Kei Scampa on Pexels"
+            style="height:260px"
+          />
+          <div class="masonry-caption">
+            <h4>The Perfect Pull</h4>
+            <span>Single Origin · Ethiopia Yirgacheffe</span>
+          </div>
+        </div>
+
+        <div class="masonry-item">
+          <img
+            src="https://images.pexels.com/photos/877971/pexels-photo-877971.jpeg?auto=compress&cs=tinysrgb&w=700"
+            alt="Warmly lit home library with books, Juan Pablo Serrano on Pexels"
+            style="height:300px"
+          />
+          <div class="masonry-caption">
+            <h4>Stacks &amp; Stories</h4>
+            <span>2,400+ titles · Free to browse</span>
+          </div>
+        </div>
+
+        <div class="masonry-item">
+          <img
+            src="https://images.pexels.com/photos/29764356/pexels-photo-29764356.jpeg?auto=compress&cs=tinysrgb&w=700"
+            alt="Coffee cup with open book and dried flowers, Nur Tok on Pexels"
+            style="height:230px"
+          />
+          <div class="masonry-caption">
+            <h4>Sunday Mornings</h4>
+            <span>Slow brunch · 10am – 1pm</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 4: EVENTS TIMELINE ===== -->
+  <section id="events" class="page-section">
+    <div class="container">
+      <div class="events-header">
+        <p class="t-eyebrow">March – April 2026</p>
+        <h2 class="t-headline">Upcoming Events</h2>
+        <p class="t-body" style="margin-top:0.5rem; max-width:48ch; margin-left:auto; margin-right:auto;">From quiet readings to lively open mics — there's always something worth showing up for.</p>
+      </div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-empty"></div>
+          <div class="timeline-center"><div class="timeline-dot"></div></div>
+          <div class="timeline-content">
+            <p class="event-date">Sat 8 March · 6:30 pm</p>
+            <h3 class="event-title">An Evening with<br/>Elif Shafak</h3>
+            <p class="event-desc">Join us for an intimate reading from <em>The Island of Missing Trees</em>, followed by a curated Q&amp;A and book signing.</p>
+            <span class="event-type signing">Author Signing</span>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <p class="event-date">Wed 12 March · 7:00 pm</p>
+            <h3 class="event-title">Open Mic Night:<br/>First Lines</h3>
+            <p class="event-desc">Take the floor with your first chapter, a poem, or a spoken word piece. All voices welcome. Espresso provided.</p>
+            <span class="event-type open-mic">Open Mic</span>
+          </div>
+          <div class="timeline-center"><div class="timeline-dot"></div></div>
+          <div class="timeline-empty"></div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-empty"></div>
+          <div class="timeline-center"><div class="timeline-dot"></div></div>
+          <div class="timeline-content">
+            <p class="event-date">Sun 23 March · 4:00 pm</p>
+            <h3 class="event-title">Sunday Reading Circle:<br/>Short Fiction</h3>
+            <p class="event-desc">This month we unpack Borges, Carver, and Chekhov over slow-drip coffee and almond cake.</p>
+            <span class="event-type reading">Book Reading</span>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <p class="event-date">Fri 4 April · 7:30 pm</p>
+            <h3 class="event-title">Debut Night: New Voices<br/>in Contemporary Fiction</h3>
+            <p class="event-desc">Three debut authors. Three opening chapters. One cosy evening. Doors open at 7pm, readings from 7:30.</p>
+            <span class="event-type reading">Book Reading</span>
+          </div>
+          <div class="timeline-center"><div class="timeline-dot"></div></div>
+          <div class="timeline-empty"></div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-empty"></div>
+          <div class="timeline-center"><div class="timeline-dot"></div></div>
+          <div class="timeline-content">
+            <p class="event-date">Sat 19 April · 6:00 pm</p>
+            <h3 class="event-title">Poetry &amp; Espresso:<br/>An Anthology Evening</h3>
+            <p class="event-desc">Readers and writers gather to share favourite poems, sip our signature Ethiopian blend, and linger longer.</p>
+            <span class="event-type open-mic">Open Mic</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5: NEWSLETTER ===== -->
+  <section id="newsletter" class="page-section">
+    <div class="container">
+      <div class="newsletter-inner">
+        <div class="quill-icon">
+          <!-- Feather / Quill SVG (Phosphor) -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
+            <path d="M236 80a60 60 0 0 0-102.41-42.44l-70.07 69.27a11.9 11.9 0 0 0-3.52 8.48v75l-30.83 30.86a4 4 0 0 0 5.66 5.66L65.66 196h75a12 12 0 0 0 8.48-3.51L218 122.83l.4-.4A59.63 59.63 0 0 0 236 80m-96.77-36.77A52 52 0 0 1 213.5 116h-67.84l41.17-41.17a4 4 0 1 0-5.66-5.66L116 134.34V66.19ZM68 115.31a4 4 0 0 1 1.16-2.81L108 74.1v68.24l-40 40Zm75.51 71.52a4 4 0 0 1-2.82 1.17h-67l64-64h68Z"/>
+          </svg>
+        </div>
+        <p class="t-eyebrow">Newsletter · Monthly</p>
+        <h2 class="newsletter-title">Subscribe to<br />Our Next Chapter</h2>
+        <p class="newsletter-sub">Once a month — a curated read, a new blend, and a reason to return. No noise, just stories worth telling.</p>
+        <form class="newsletter-form" onsubmit="handleSubmit(event)">
+          <input type="email" placeholder="your@email.com" required aria-label="Email address"/>
+          <button type="submit">Subscribe</button>
+        </form>
+        <p class="newsletter-note">No spam · Unsubscribe at any time · Read by 3,200 book lovers</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>© 2026 <span>Chapter &amp; Cup</span> · Midtown Literary District · Mon–Sun 7am – 9pm</p>
+    <p style="margin-top:0.4rem;">Crafted with care &amp; good coffee.</p>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ---- NAV scroll behaviour ---- */
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    /* ---- HERO entrance animations ---- */
+    const heroTl = gsap.timeline({ delay: 0.2 });
+    heroTl
+      .to('.hero-tag', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' })
+      .to('.hero-title', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.3')
+      .to('.hero-sub', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
+      .to('.hero-cta', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4');
+
+    /* ---- HERO parallax on scroll ---- */
+    gsap.to('.hero-img', {
+      yPercent: 25,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true
+      }
+    });
+
+    /* ---- PAGE-TURN section reveals ---- */
+    // Each section slides in with a subtle perspective "page turn" feel
+    const sections = document.querySelectorAll('.page-section:not(#hero)');
+    sections.forEach((section) => {
+      gsap.fromTo(section,
+        { opacity: 0, rotateX: 6, y: 60, transformPerspective: 1200 },
+        {
+          opacity: 1, rotateX: 0, y: 0,
+          duration: 1.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 85%',
+            toggleActions: 'play none none none'
+          }
+        }
+      );
+    });
+
+    /* ---- MAGAZINE section decorative elements ---- */
+    gsap.from('.mag-col', {
+      opacity: 0, y: 40,
+      duration: 0.9,
+      stagger: 0.25,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#magazine',
+        start: 'top 70%'
+      }
+    });
+
+    /* ---- MASONRY items stagger reveal ---- */
+    gsap.from('.masonry-item', {
+      opacity: 0, y: 50, scale: 0.96,
+      duration: 0.7,
+      stagger: 0.12,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#gallery',
+        start: 'top 75%'
+      }
+    });
+
+    /* ---- TIMELINE items fade in on scroll ---- */
+    document.querySelectorAll('.timeline-item').forEach((item) => {
+      gsap.to(item, {
+        opacity: 1, y: 0,
+        duration: 0.75,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: item,
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
+      });
+    });
+
+    /* ---- NEWSLETTER entrance ---- */
+    gsap.from('.newsletter-inner > *', {
+      opacity: 0, y: 30,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#newsletter',
+        start: 'top 75%'
+      }
+    });
+
+    /* ---- Form submit ---- */
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const btn = form.querySelector('button');
+      btn.textContent = '✓ You\'re in!';
+      btn.style.background = '#5C1A1B';
+      btn.style.color = '#FAF3E0';
+      form.querySelector('input').value = '';
+      setTimeout(() => {
+        btn.textContent = 'Subscribe';
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 3000);
+    }
+  </script>
+
+</body>
+</html>
