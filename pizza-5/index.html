@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Napoli Nero — The Cooking Elite Class</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700;1,6..96,900&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── DESIGN TOKENS ─────────────────────────────────────────── */
+    :root {
+      --obsidian:       #0A0A0A;
+      --obsidian-mid:   #111111;
+      --obsidian-lift:  #191919;
+      --bone:           #F0E8D8;
+      --bone-dim:       #6A6050;
+      --bone-faint:     #2A2520;
+      --accent:         #8C1200;
+      --accent-glow:    #B01800;
+      --font-display:   'Bodoni Moda', Georgia, serif;
+      --font-body:      'Raleway', sans-serif;
+    }
+
+    /* ─── RESET & BASE ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--obsidian);
+      color: var(--bone);
+      font-family: var(--font-body);
+      font-weight: 200;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ─── FILM GRAIN OVERLAY ────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.055;
+      pointer-events: none;
+      z-index: 9000;
+      mix-blend-mode: overlay;
+    }
+
+    /* ─── TYPOGRAPHY UTILITIES ──────────────────────────────────── */
+    .font-display     { font-family: var(--font-display); }
+    .font-body        { font-family: var(--font-body); }
+    .text-bone        { color: var(--bone); }
+    .text-bone-dim    { color: var(--bone-dim); }
+    .text-accent      { color: var(--accent); }
+    .italic           { font-style: italic; }
+    .weight-200       { font-weight: 200; }
+    .weight-300       { font-weight: 300; }
+    .weight-900       { font-weight: 900; }
+    .uppercase        { text-transform: uppercase; }
+    .tracking-wide    { letter-spacing: 0.25em; }
+    .tracking-widest  { letter-spacing: 0.55em; }
+
+    /* ─── NAV ───────────────────────────────────────────────────── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 8000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 3rem;
+      background: var(--obsidian);
+      border-bottom: 1px solid var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .nav.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--bone);
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+    }
+    .nav-edition {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+    }
+    .nav-cta {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.4em;
+      color: var(--bone);
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--bone-dim);
+      padding: 0.55rem 1.5rem;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .nav-cta:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ─── HERO ──────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--obsidian);
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.pexels.com/photos/9587183/pexels-photo-9587183.jpeg');
+      background-size: cover;
+      background-position: center 40%;
+      opacity: 0.28;
+      transform: scale(1.08);
+      transition: transform 20s ease;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        var(--obsidian) 0%,
+        transparent 30%,
+        transparent 60%,
+        var(--obsidian) 100%
+      );
+    }
+    .hero-top-meta {
+      position: absolute;
+      top: 2.5rem;
+      right: 3rem;
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+      z-index: 10;
+    }
+    .hero-accent-rule {
+      position: absolute;
+      top: 0;
+      left: 5rem;
+      width: 1px;
+      height: 35vh;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+    .hero-title-wrap {
+      position: relative;
+      z-index: 10;
+      padding: 0 2.5rem;
+      display: flex;
+      flex-direction: column;
+      transform-origin: center center;
+    }
+    .hero-title-napoli {
+      font-family: var(--font-display);
+      font-size: clamp(14vw, 18vw, 22vw);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 0.85;
+      letter-spacing: -0.02em;
+      color: var(--bone);
+      text-align: left;
+      white-space: nowrap;
+    }
+    .hero-title-nero {
+      font-family: var(--font-display);
+      font-size: clamp(14vw, 18vw, 22vw);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 0.85;
+      letter-spacing: -0.02em;
+      color: var(--bone);
+      text-align: right;
+      white-space: nowrap;
+      position: relative;
+    }
+    .hero-title-nero::before {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: -0.06em;
+      width: 40%;
+      height: 2px;
+      background: var(--accent);
+    }
+    .hero-bottom {
+      position: absolute;
+      bottom: 3rem;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 3rem;
+      z-index: 10;
+    }
+    .hero-tagline {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+    }
+    .hero-scroll {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      font-weight: 200;
+      letter-spacing: 0.4em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 3.5rem;
+      background: var(--bone-dim);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50%       { opacity: 1;   transform: scaleY(1.15); }
+    }
+
+    /* ─── SECTION BASE ──────────────────────────────────────────── */
+    section { position: relative; }
+
+    .section-pad {
+      padding: 10rem 3rem;
+    }
+    .section-pad-lg {
+      padding: 14rem 3rem;
+    }
+
+    /* ─── MANIFESTO (01) ────────────────────────────────────────── */
+    .manifesto {
+      background: var(--obsidian);
+      overflow: hidden;
+    }
+    .manifesto-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      align-items: start;
+      padding: 10rem 0 6rem;
+    }
+    .manifesto-number {
+      font-family: var(--font-display);
+      font-size: clamp(20vw, 26vw, 380px);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 0.8;
+      color: var(--bone-faint);
+      margin-left: -0.12em;
+      user-select: none;
+      pointer-events: none;
+    }
+    .manifesto-content {
+      padding-top: 4rem;
+      padding-right: 6rem;
+    }
+    .manifesto-label {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+      display: block;
+    }
+    .manifesto-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 2.2vw, 2rem);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--bone);
+      margin-bottom: 3rem;
+    }
+    .manifesto-attribution {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+    }
+    .manifesto-photo {
+      position: relative;
+      height: 65vh;
+      overflow: hidden;
+      margin: 0;
+    }
+    .manifesto-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: grayscale(30%) contrast(1.1);
+      display: block;
+    }
+    .manifesto-photo-caption {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 3rem;
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 200;
+      letter-spacing: 0.4em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+    }
+    .manifesto-photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, var(--obsidian) 0%, transparent 25%, transparent 80%, var(--obsidian) 100%);
+    }
+
+    /* ─── FIRE SECTION ──────────────────────────────────────────── */
+    .fire-section {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fire-bg {
+      position: absolute;
+      inset: 0;
+    }
+    .fire-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: contrast(1.15) saturate(0.8);
+    }
+    .fire-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10,10,10,0.55);
+    }
+    .fire-text {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+    }
+    .fire-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3vw, 5vw, 5.5rem);
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+      color: var(--bone);
+    }
+    .fire-headline span {
+      display: block;
+    }
+    .fire-headline .fire-dot {
+      color: var(--accent);
+    }
+    .fire-sub {
+      margin-top: 2.5rem;
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      font-weight: 200;
+      letter-spacing: 0.6em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+    }
+
+    /* ─── RITUAL / PROCESS ──────────────────────────────────────── */
+    .ritual {
+      background: var(--obsidian-mid);
+    }
+    .ritual-header {
+      display: flex;
+      align-items: baseline;
+      gap: 2rem;
+      margin-bottom: 8rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--bone-faint);
+    }
+    .ritual-header-num {
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .ritual-header-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 5rem);
+      font-weight: 900;
+      font-style: italic;
+      color: var(--bone);
+      line-height: 1;
+    }
+    .ritual-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+    }
+    .ritual-step {
+      padding: 0 4rem 4rem 0;
+      border-right: 1px solid var(--bone-faint);
+      padding-left: 2rem;
+    }
+    .ritual-step:first-child {
+      padding-left: 0;
+    }
+    .ritual-step:last-child {
+      border-right: none;
+    }
+    .ritual-step-num {
+      font-family: var(--font-display);
+      font-size: 6rem;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+    .ritual-step-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--bone);
+      margin-bottom: 1.2rem;
+    }
+    .ritual-step-body {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 200;
+      line-height: 1.9;
+      color: var(--bone-dim);
+    }
+
+    /* ─── DOUGH INTERLUDE ───────────────────────────────────────── */
+    .dough-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 80vh;
+    }
+    .dough-image {
+      position: relative;
+      overflow: hidden;
+    }
+    .dough-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: grayscale(20%) contrast(1.1);
+      display: block;
+    }
+    .dough-image-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, transparent 70%, var(--obsidian) 100%);
+    }
+    .dough-text-panel {
+      background: var(--obsidian);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 5rem 6rem 5rem;
+    }
+    .dough-label {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+    .dough-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3.5vw, 3.5rem);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 1.15;
+      color: var(--bone);
+      margin-bottom: 2rem;
+    }
+    .dough-body {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 200;
+      line-height: 2;
+      color: var(--bone-dim);
+      max-width: 38ch;
+    }
+
+    /* ─── DETAILS ───────────────────────────────────────────────── */
+    .details {
+      background: var(--obsidian);
+    }
+    .details-label {
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 300;
+      letter-spacing: 0.6em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 5rem;
+      display: block;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+    }
+    .details-col {
+      padding: 0 4rem 4rem 0;
+      border-right: 1px solid var(--bone-faint);
+    }
+    .details-col:first-child {
+      border-left: 3px solid var(--accent);
+      padding-left: 2rem;
+    }
+    .details-col:last-child {
+      border-right: none;
+      padding-left: 4rem;
+    }
+    .details-col:nth-child(2) {
+      padding-left: 4rem;
+    }
+    .details-col-head {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 900;
+      font-style: italic;
+      color: var(--bone);
+      line-height: 1;
+      margin-bottom: 2.5rem;
+    }
+    .details-item {
+      margin-bottom: 1.4rem;
+    }
+    .details-item-label {
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 300;
+      letter-spacing: 0.4em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .details-item-value {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--bone);
+      display: block;
+      line-height: 1.4;
+    }
+
+    /* ─── APPLICATION SECTION ───────────────────────────────────── */
+    .apply {
+      background: var(--obsidian-mid);
+    }
+    .apply-inner {
+      max-width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10rem;
+      align-items: start;
+    }
+    .apply-left {
+      padding-top: 2rem;
+    }
+    .apply-section-num {
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      display: block;
+    }
+    .apply-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6vw, 7rem);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 0.9;
+      color: var(--bone);
+      margin-bottom: 3rem;
+    }
+    .apply-note {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.4em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+      border-left: 2px solid var(--accent);
+      padding-left: 1.5rem;
+      line-height: 1.8;
+    }
+    .apply-form {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--bone-faint);
+      padding-bottom: 1.5rem;
+    }
+    .form-field label {
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 300;
+      letter-spacing: 0.45em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+    }
+    .form-field input,
+    .form-field textarea {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--bone);
+      resize: none;
+      line-height: 1.6;
+      width: 100%;
+    }
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: var(--bone-faint);
+    }
+    .form-field textarea {
+      min-height: 6rem;
+    }
+    .form-submit {
+      margin-top: 1rem;
+      align-self: flex-start;
+      background: transparent;
+      border: 1px solid var(--bone);
+      color: var(--bone);
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 0.55em;
+      text-transform: uppercase;
+      padding: 1.2rem 3.5rem;
+      cursor: crosshair;
+      transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+    }
+    .form-submit:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bone);
+    }
+
+    /* ─── FOOTER ────────────────────────────────────────────────── */
+    .footer {
+      background: var(--obsidian);
+      border-top: 1px solid var(--accent);
+      padding: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-brand {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      font-style: italic;
+      letter-spacing: 0.2em;
+      color: var(--bone);
+    }
+    .footer-center {
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 200;
+      letter-spacing: 0.4em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+    }
+    .footer-right {
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 200;
+      letter-spacing: 0.35em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+    }
+
+    /* ─── REVEAL ANIMATION BASE STATE ──────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(55px);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(40px);
+    }
+    .parallax-img {
+      will-change: transform;
+    }
+
+    /* ─── HORIZONTAL DIVIDER ────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--bone-faint);
+      margin: 0 3rem;
+    }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .manifesto-inner       { grid-template-columns: 1fr; }
+      .manifesto-number      { font-size: 40vw; }
+      .manifesto-content     { padding: 2rem 3rem; }
+      .ritual-steps          { grid-template-columns: 1fr; }
+      .ritual-step           { border-right: none; border-bottom: 1px solid var(--bone-faint); padding: 2rem 0; }
+      .dough-section         { grid-template-columns: 1fr; height: auto; }
+      .dough-image           { height: 55vw; }
+      .details-grid          { grid-template-columns: 1fr; gap: 3rem; }
+      .details-col           { border-right: none; border-bottom: 1px solid var(--bone-faint); padding: 0 0 2rem 0; }
+      .details-col:first-child { padding-left: 2rem; }
+      .details-col:nth-child(2) { padding-left: 0; }
+      .details-col:last-child   { padding-left: 0; }
+      .apply-inner           { grid-template-columns: 1fr; gap: 4rem; }
+      .footer                { flex-direction: column; gap: 1.5rem; text-align: center; }
+      .hero-title-napoli,
+      .hero-title-nero       { font-size: clamp(18vw, 22vw, 22vw); }
+      .nav                   { padding: 1.5rem 1.5rem; }
+      .section-pad           { padding: 7rem 1.5rem; }
+      .section-pad-lg        { padding: 9rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ──────────────────────────────────────────────────────── -->
+  <nav class="nav" id="main-nav" aria-label="Main navigation">
+    <span class="nav-logo">Napoli Nero</span>
+    <div class="nav-right">
+      <span class="nav-edition">XII Edition — 2026</span>
+      <a href="#apply" class="nav-cta">Apply</a>
+    </div>
+  </nav>
+
+  <!-- ── HERO ─────────────────────────────────────────────────────── -->
+  <section class="hero" id="hero" aria-label="Hero">
+    <div class="hero-bg parallax-img" id="hero-bg"></div>
+    <span class="hero-accent-rule" aria-hidden="true"></span>
+    <span class="hero-top-meta" aria-label="Edition">Napoli — 2026 — XII Edition</span>
+
+    <div class="hero-title-wrap" id="hero-title-wrap">
+      <h1>
+        <span class="hero-title-napoli" aria-label="Napoli">NAPOLI</span>
+        <span class="hero-title-nero" aria-label="Nero">NERO</span>
+      </h1>
+    </div>
+
+    <div class="hero-bottom" id="hero-bottom">
+      <p class="hero-tagline" id="hero-tagline">Once. Every Year. By Application Only.</p>
+      <div class="hero-scroll" id="hero-scroll" aria-hidden="true">
+        <span class="hero-scroll-line"></span>
+        <span>Scroll</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MANIFESTO ────────────────────────────────────────────────── -->
+  <section class="manifesto" aria-labelledby="manifesto-heading">
+    <div class="manifesto-inner section-pad">
+      <div class="manifesto-number reveal-left" aria-hidden="true">01</div>
+      <div class="manifesto-content">
+        <span class="manifesto-label reveal">Manifesto</span>
+        <blockquote class="manifesto-quote reveal" id="manifesto-heading">
+          "We do not teach pizza.<br />
+          We teach fire, patience,<br />
+          and the right to fail<br />
+          seventeen times."
+        </blockquote>
+        <p class="manifesto-attribution reveal">— Master Enzo Ferrara, Napoli 2026</p>
+      </div>
+    </div>
+    <div class="manifesto-photo">
+      <img
+        class="parallax-img"
+        src="https://images.pexels.com/photos/14334059/pexels-photo-14334059.jpeg"
+        alt="Close-up of hands kneading dough on a floured surface — Augustinus Martinus Noppé on Pexels"
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="manifesto-photo-overlay" aria-hidden="true"></div>
+      <span class="manifesto-photo-caption">Napoli, Italy — The Art of Touch</span>
+    </div>
+  </section>
+
+  <!-- ── FIRE SECTION ──────────────────────────────────────────────── -->
+  <section class="fire-section" aria-label="Fire">
+    <div class="fire-bg">
+      <img
+        class="parallax-img"
+        src="https://images.pexels.com/photos/33471841/pexels-photo-33471841.jpeg"
+        alt="Roaring fire inside a traditional wood-fired oven — Eyüp Karabacak on Pexels"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+    <div class="fire-overlay" aria-hidden="true"></div>
+    <div class="fire-text">
+      <h2 class="fire-headline reveal">
+        <span>Twelve Hands<span class="fire-dot">.</span></span>
+        <span>One Fire<span class="fire-dot">.</span></span>
+        <span>One Year<span class="fire-dot">.</span></span>
+      </h2>
+      <p class="fire-sub reveal">The only class of its kind in the world</p>
+    </div>
+  </section>
+
+  <!-- ── RITUAL / PROCESS ──────────────────────────────────────────── -->
+  <section class="ritual section-pad" aria-labelledby="ritual-heading">
+    <div class="ritual-header reveal">
+      <span class="ritual-header-num">02</span>
+      <h2 class="ritual-header-title" id="ritual-heading">The Ritual</h2>
+    </div>
+    <div class="ritual-steps">
+      <div class="ritual-step">
+        <span class="ritual-step-num reveal">I</span>
+        <h3 class="ritual-step-title reveal">The Flour</h3>
+        <p class="ritual-step-body reveal">
+          Six days begin with grain. You will mill your own flour by hand,
+          learning to read its texture before any water is added. There are
+          no shortcuts here — only repetition and humility.
+        </p>
+      </div>
+      <div class="ritual-step">
+        <span class="ritual-step-num reveal">II</span>
+        <h3 class="ritual-step-title reveal">The Dough</h3>
+        <p class="ritual-step-body reveal">
+          Hydration is philosophy. We work at 72% — a margin that forgives
+          nothing and rewards everything. Your hands will remember before
+          your mind catches up.
+        </p>
+      </div>
+      <div class="ritual-step">
+        <span class="ritual-step-num reveal">III</span>
+        <h3 class="ritual-step-title reveal">The Fire</h3>
+        <p class="ritual-step-body reveal">
+          The oven reaches 485°C. A Neapolitan pizza cooks in 60 seconds
+          or it does not cook at all. You will learn to read fire the way
+          a sailor reads wind — with absolute calm.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider" aria-hidden="true"></div>
+
+  <!-- ── DOUGH INTERLUDE ──────────────────────────────────────────── -->
+  <section class="dough-section" aria-label="The Craft">
+    <div class="dough-image">
+      <img
+        class="parallax-img"
+        src="https://images.pexels.com/photos/4234507/pexels-photo-4234507.jpeg"
+        alt="Close-up of hands dusting flour over dough — Bruno Bomtempo on Pexels"
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="dough-image-overlay" aria-hidden="true"></div>
+    </div>
+    <div class="dough-text-panel">
+      <span class="dough-label reveal">The Philosophy</span>
+      <h2 class="dough-headline reveal">
+        A craft built<br />on centuries<br />of silence.
+      </h2>
+      <p class="dough-body reveal">
+        Napoli Nero is not a cooking class. It is a confrontation with your
+        own hands, your patience, and your idea of what a perfect thing can be.
+        You will leave changed — or you will leave early.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── DETAILS ───────────────────────────────────────────────────── -->
+  <section class="details section-pad-lg" aria-labelledby="details-heading">
+    <span class="details-label reveal" id="details-heading">03 — Program Details</span>
+    <div class="details-grid">
+      <div class="details-col">
+        <h3 class="details-col-head reveal">When</h3>
+        <div class="details-item">
+          <span class="details-item-label">Dates</span>
+          <span class="details-item-value reveal">October 14–19, 2026</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Duration</span>
+          <span class="details-item-value reveal">6 days</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Schedule</span>
+          <span class="details-item-value reveal">06:00 — 22:00 daily</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Edition</span>
+          <span class="details-item-value reveal">XII — The Obsidian</span>
+        </div>
+      </div>
+      <div class="details-col">
+        <h3 class="details-col-head reveal">Where</h3>
+        <div class="details-item">
+          <span class="details-item-label">Location</span>
+          <span class="details-item-value reveal">Via dei Tribunali, Napoli</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Venue</span>
+          <span class="details-item-value reveal">Private estate kitchen</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Accommodation</span>
+          <span class="details-item-value reveal">Provided on-site</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Language</span>
+          <span class="details-item-value reveal">Italian / English</span>
+        </div>
+      </div>
+      <div class="details-col">
+        <h3 class="details-col-head reveal">Who</h3>
+        <div class="details-item">
+          <span class="details-item-label">Participants</span>
+          <span class="details-item-value reveal">12. No exceptions.</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Investment</span>
+          <span class="details-item-value reveal">On request</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Selection</span>
+          <span class="details-item-value reveal">By written application</span>
+        </div>
+        <div class="details-item">
+          <span class="details-item-label">Experience required</span>
+          <span class="details-item-value reveal">Irrelevant. Passion required.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── APPLY ─────────────────────────────────────────────────────── -->
+  <section class="apply section-pad" id="apply" aria-labelledby="apply-heading">
+    <div class="apply-inner">
+      <div class="apply-left">
+        <span class="apply-section-num reveal">04 — Application</span>
+        <h2 class="apply-headline reveal" id="apply-heading">Apply<span style="color:var(--accent)">.</span></h2>
+        <p class="apply-note reveal">
+          We read every letter.<br />
+          We respond to none<br />
+          unless we want you<br />
+          in the room.
+        </p>
+      </div>
+      <form class="apply-form reveal" novalidate aria-label="Application form">
+        <div class="form-field">
+          <label for="name">Your Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Your name"
+            autocomplete="name"
+            required
+          />
+        </div>
+        <div class="form-field">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="your@email.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+        <div class="form-field">
+          <label for="statement">Why You Deserve to Be in the Room</label>
+          <textarea
+            id="statement"
+            name="statement"
+            rows="5"
+            placeholder="Tell us why you deserve to be in the room. (200 words max)"
+            maxlength="1400"
+          ></textarea>
+        </div>
+        <button type="submit" class="form-submit">Send Your Application</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────────────────── -->
+  <footer class="footer" role="contentinfo">
+    <span class="footer-brand">Napoli Nero</span>
+    <span class="footer-center">A private culinary experience — Napoli, Italy</span>
+    <span class="footer-right">© 2026 — All rights reserved</span>
+  </footer>
+
+  <!-- ── GSAP ─────────────────────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ── HERO ENTRANCE ─────────────────────────────────────────── */
+    const heroEntrance = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    heroEntrance
+      .from('.hero-accent-rule',     { scaleY: 0, transformOrigin: 'top', duration: 1.4 })
+      .from('.hero-top-meta',        { opacity: 0, y: -10, duration: 0.7 }, '-=0.8')
+      .from('.hero-title-napoli',    { opacity: 0, y: 60, duration: 1.1 }, '-=0.5')
+      .from('.hero-title-nero',      { opacity: 0, y: 60, duration: 1.1 }, '-=0.85')
+      .from('#hero-bottom',          { opacity: 0, y: 20, duration: 0.8 }, '-=0.4');
+
+    /* ── HERO BG SLOW ZOOM ─────────────────────────────────────── */
+    gsap.to('#hero-bg', {
+      backgroundSize: '110%',
+      duration: 18,
+      ease: 'none',
+    });
+
+    /* ── HERO PIN + TITLE SHRINK → NAV ────────────────────────── */
+    const heroShrink = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: '+=90%',
+        pin: true,
+        scrub: 1.2,
+        onLeave: ()      => document.getElementById('main-nav').classList.add('visible'),
+        onEnterBack: ()  => document.getElementById('main-nav').classList.remove('visible'),
+      }
+    });
+
+    heroShrink
+      .to('#hero-title-wrap', {
+        scale:    0.062,
+        x:        '-40vw',
+        y:        '-44vh',
+        ease:     'none',
+      }, 0)
+      .to('#hero-tagline',    { opacity: 0, y: -15, ease: 'none' }, 0)
+      .to('#hero-scroll',     { opacity: 0, ease: 'none' }, 0)
+      .to('.hero-top-meta',   { opacity: 0, ease: 'none' }, 0)
+      .to('.hero-accent-rule',{ opacity: 0, ease: 'none' }, 0)
+      .to('#hero-bg',         { opacity: 0.08, ease: 'none' }, 0);
+
+    /* ── SECTION REVEALS ───────────────────────────────────────── */
+    gsap.utils.toArray('.reveal').forEach(el => {
+      gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: el,
+          start:   'top 85%',
+        }
+      });
+    });
+
+    gsap.utils.toArray('.reveal-left').forEach(el => {
+      gsap.to(el, {
+        opacity: 1,
+        x: 0,
+        duration: 1.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: el,
+          start:   'top 85%',
+        }
+      });
+    });
+
+    gsap.utils.toArray('.reveal-right').forEach(el => {
+      gsap.to(el, {
+        opacity: 1,
+        x: 0,
+        duration: 1.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: el,
+          start:   'top 85%',
+        }
+      });
+    });
+
+    /* ── IMAGE PARALLAX ────────────────────────────────────────── */
+    gsap.utils.toArray('.parallax-img').forEach(img => {
+      const parent = img.parentElement;
+      gsap.fromTo(img,
+        { yPercent: -8 },
+        {
+          yPercent: 8,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: parent,
+            start:   'top bottom',
+            end:     'bottom top',
+            scrub:   true,
+          }
+        }
+      );
+    });
+
+    /* ── FIRE HEADLINE CHAR STAGGER ────────────────────────────── */
+    ScrollTrigger.create({
+      trigger: '.fire-section',
+      start: 'top 60%',
+      once: true,
+      onEnter: () => {
+        gsap.from('.fire-headline span', {
+          opacity: 0,
+          y: 40,
+          stagger: 0.18,
+          duration: 0.9,
+          ease: 'power2.out',
+        });
+      }
+    });
+
+    /* ── RITUAL NUMBERS COUNT UP FEEL ─────────────────────────── */
+    ScrollTrigger.create({
+      trigger: '.ritual-steps',
+      start: 'top 75%',
+      once: true,
+      onEnter: () => {
+        gsap.from('.ritual-step-num', {
+          opacity: 0,
+          x: -30,
+          stagger: 0.25,
+          duration: 0.9,
+          ease: 'power2.out',
+        });
+      }
+    });
+
+    /* ── DETAILS COLUMN STAGGER ────────────────────────────────── */
+    ScrollTrigger.create({
+      trigger: '.details-grid',
+      start: 'top 80%',
+      once: true,
+      onEnter: () => {
+        gsap.from('.details-col', {
+          opacity: 0,
+          y: 40,
+          stagger: 0.2,
+          duration: 1,
+          ease: 'power2.out',
+        });
+      }
+    });
+
+    /* ── FORM FIELD HOVER ACCENT ─────────────────────────────── */
+    document.querySelectorAll('.form-field').forEach(field => {
+      field.addEventListener('focusin', () => {
+        gsap.to(field, { borderBottomColor: 'var(--accent)', duration: 0.3 });
+      });
+      field.addEventListener('focusout', () => {
+        gsap.to(field, { borderBottomColor: 'var(--bone-faint)', duration: 0.3 });
+      });
+    });
+
+    /* ── CURSOR TRAIL GLOW ─────────────────────────────────────── */
+    const glow = document.createElement('div');
+    glow.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 6px; height: 6px;
+      background: var(--accent); border-radius: 50%; pointer-events: none;
+      z-index: 9999; transform: translate(-50%,-50%); opacity: 0;
+      mix-blend-mode: normal; transition: opacity 0.3s;
+    `;
+    document.body.appendChild(glow);
+
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      glow.style.opacity = '0.9';
+      gsap.to(glow, { x: mouseX, y: mouseY, duration: 0.15, ease: 'power1.out' });
+    });
+    document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
+
+    /* ── PREVENT DEFAULT FORM ────────────────────────────────── */
+    document.querySelector('.apply-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const btn = e.target.querySelector('.form-submit');
+      btn.textContent = 'Letter Received.';
+      btn.style.borderColor = 'var(--accent)';
+      btn.style.color = 'var(--accent)';
+      btn.disabled = true;
+    });
+  </script>
+</body>
+</html>
