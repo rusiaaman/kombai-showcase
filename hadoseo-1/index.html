@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hadoseo — Make Your App Visible Everywhere</title>
+  <meta name="description" content="Fix SEO for Lovable, Base44, Bolt.new and Replit apps. Add server-side rendering with one simple DNS record. Zero code changes." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,600;1,9..144,700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── DESIGN TOKENS ──────────────────────────────────────────────── */
+    :root {
+      --color-bg:        #F6F3EC;
+      --color-mist:      #E8E4DB;
+      --color-mist-dark: #EDEADE;
+      --color-ink:       #1A1A18;
+      --color-ink-muted: #6B6860;
+      --color-green:     #3B6B3A;
+      --color-red:       #C9463D;
+      --color-gold:      #D4A843;
+      --color-cream:     #F6F3EC;
+
+      --font-serif:  'Fraunces', Georgia, serif;
+      --font-sans:   'Inter', system-ui, sans-serif;
+      --font-mono:   'JetBrains Mono', 'Courier New', monospace;
+
+      --radius-btn:  6px;
+      --radius-card: 12px;
+
+      --shadow-sm:   0 1px 3px rgba(26,26,24,.06);
+      --shadow-md:   0 4px 16px rgba(26,26,24,.10);
+      --shadow-lg:   0 12px 40px rgba(26,26,24,.14);
+
+      --transition: .25s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-ink);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+    img, svg { display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+
+    /* ─── UTILITIES ──────────────────────────────────────────────────── */
+    .container  { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+    .center     { text-align: center; }
+    .mono       { font-family: var(--font-mono); }
+    .serif      { font-family: var(--font-serif); }
+    .label      { font-family: var(--font-mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--color-ink-muted); }
+    .section-pad { padding: 120px 0; }
+
+    /* Raise animation */
+    .raise {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .raise.visible { opacity: 1; transform: translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .raise { opacity: 1 !important; transform: none !important; transition: none !important; }
+      * { animation: none !important; transition: none !important; }
+    }
+
+    /* ─── NAVIGATION ─────────────────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 24px 0;
+      transition: background var(--transition), backdrop-filter var(--transition), box-shadow var(--transition);
+    }
+    .nav.scrolled {
+      background: rgba(246,243,236,.88);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(26,26,24,.06);
+    }
+    .nav__inner {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav__logo {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav__logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--color-green);
+      animation: pulse-dot 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { box-shadow: 0 0 0 0 rgba(59,107,58,.5); }
+      50%      { box-shadow: 0 0 0 5px rgba(59,107,58,0); }
+    }
+    .nav__links {
+      display: flex; align-items: center; gap: 36px;
+      list-style: none;
+    }
+    .nav__links a {
+      font-size: 14px; color: var(--color-ink-muted);
+      transition: color var(--transition);
+    }
+    .nav__links a:hover { color: var(--color-ink); }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--color-ink); color: var(--color-cream);
+      font-size: 14px; font-weight: 500;
+      padding: 10px 22px;
+      border-radius: var(--radius-btn);
+      transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(26,26,24,.22);
+    }
+    .btn-primary:active { transform: translateY(-1px); }
+    .btn-large {
+      padding: 16px 36px;
+      font-size: 16px;
+      border-radius: var(--radius-btn);
+    }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--color-ink);
+      font-size: 16px; font-weight: 500;
+      padding: 14px 34px;
+      border-radius: var(--radius-btn);
+      border: 1.5px solid var(--color-ink);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .btn-outline:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+    /* ─── HERO ───────────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 140px 32px 100px;
+      position: relative; overflow: hidden;
+    }
+    .hero__bg {
+      position: absolute; inset: 0; z-index: 0;
+      opacity: .13;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800'%3E%3Cpath d='M0 400 Q200 320 400 400 Q600 480 800 400' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 360 Q200 280 400 360 Q600 440 800 360' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 440 Q200 360 400 440 Q600 520 800 440' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 320 Q200 240 400 320 Q600 400 800 320' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 480 Q200 400 400 480 Q600 560 800 480' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 280 Q200 200 400 280 Q600 360 800 280' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 520 Q200 440 400 520 Q600 600 800 520' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 240 Q200 160 400 240 Q600 320 800 240' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 560 Q200 480 400 560 Q600 640 800 560' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 200 Q200 120 400 200 Q600 280 800 200' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 600 Q200 520 400 600 Q600 680 800 600' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 160 Q200 80 400 160 Q600 240 800 160' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M0 640 Q200 560 400 640 Q600 720 800 640' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M400 0 Q320 200 400 400 Q480 600 400 800' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M360 0 Q280 200 360 400 Q440 600 360 800' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M440 0 Q360 200 440 400 Q520 600 440 800' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M320 0 Q240 200 320 400 Q400 600 320 800' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M480 0 Q400 200 480 400 Q560 600 480 800' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M280 0 Q200 200 280 400 Q360 600 280 800' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3Cpath d='M520 0 Q440 200 520 400 Q600 600 520 800' stroke='%231A1A18' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+      background-size: cover;
+      will-change: transform;
+      transition: none;
+    }
+    .hero__content {
+      position: relative; z-index: 1;
+      max-width: 720px;
+      display: flex; flex-direction: column; align-items: center; gap: 28px;
+      text-align: center;
+    }
+    .hero__badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1.5px solid var(--color-gold);
+      color: var(--color-ink); font-size: 13px; font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 20px;
+      animation: float-badge 4s ease-in-out infinite;
+    }
+    .hero__badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-gold); }
+    @keyframes float-badge {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-4px); }
+    }
+    .hero__headline {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .hero__line1 {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: clamp(40px, 7vw, 80px);
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--color-ink);
+    }
+    .hero__line2 {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-style: italic;
+      font-size: clamp(44px, 7.5vw, 88px);
+      line-height: 1.05;
+      letter-spacing: -.03em;
+      color: var(--color-green);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero__line2::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--color-bg);
+      transform-origin: left;
+      animation: scrape-reveal 1.1s cubic-bezier(.77,0,.18,1) .3s forwards;
+    }
+    @keyframes scrape-reveal {
+      0%   { transform: scaleX(1); }
+      100% { transform: scaleX(0); }
+    }
+    .hero__squiggle {
+      position: absolute; bottom: -8px; left: 0; right: 0;
+      height: 10px;
+    }
+    .hero__sub {
+      font-size: 20px; color: var(--color-ink-muted);
+      line-height: 1.5;
+    }
+    .hero__sub .mono { font-weight: 500; color: var(--color-ink); }
+    .hero__body {
+      font-size: 18px; color: var(--color-ink-muted);
+      max-width: 540px; line-height: 1.7;
+    }
+    .hero__cta {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .hero__cta-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center; }
+    .hero__link {
+      font-size: 15px; color: var(--color-ink-muted);
+      display: inline-flex; align-items: center; gap: 4px;
+      transition: color var(--transition);
+    }
+    .hero__link:hover { color: var(--color-ink); }
+    .hero__reassure { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-muted); }
+
+    /* ─── LOGOS STRIP ────────────────────────────────────────────────── */
+    .logos-strip {
+      background: var(--color-mist);
+      padding: 32px 0;
+      border-top: 1px solid rgba(26,26,24,.06);
+      border-bottom: 1px solid rgba(26,26,24,.06);
+    }
+    .logos-strip__inner {
+      display: flex; align-items: center; justify-content: center;
+      gap: 56px; flex-wrap: wrap;
+    }
+    .logos-strip__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--color-ink-muted); }
+    .logos-strip__apps { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; justify-content: center; }
+    .app-logo {
+      font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+      color: var(--color-ink); opacity: .45;
+      transition: opacity var(--transition);
+    }
+    .app-logo:hover { opacity: 1; }
+
+    /* ─── PROBLEM / SICKNESS ─────────────────────────────────────────── */
+    .problem { background: var(--color-mist-dark); }
+    .problem__grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .problem__chart-wrap {
+      background: white; border-radius: var(--radius-card);
+      padding: 32px;
+      box-shadow: var(--shadow-md);
+    }
+    .problem__chart-title { font-size: 13px; color: var(--color-ink-muted); margin-bottom: 20px; font-family: var(--font-mono); }
+    #problem-chart { width: 100%; }
+    .problem__console {
+      margin-top: 20px;
+      background: #1A1A18; border-radius: 8px; padding: 20px 24px;
+      font-family: var(--font-mono); font-size: 13px;
+    }
+    .problem__console-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .problem__console-key { color: #888; }
+    .problem__console-val { color: var(--color-red); font-weight: 600; }
+    .problem__items { display: flex; flex-direction: column; gap: 36px; }
+    .problem__item { display: flex; gap: 18px; align-items: flex-start; }
+    .problem__x {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(201,70,61,.1);
+      color: var(--color-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+    }
+    .problem__item-title { font-weight: 600; font-size: 17px; margin-bottom: 6px; }
+    .problem__item-body { font-size: 15px; color: var(--color-ink-muted); line-height: 1.6; }
+
+    /* ─── BRIDGE ─────────────────────────────────────────────────────── */
+    .bridge {
+      padding: 100px 0;
+      overflow: hidden;
+    }
+    .bridge__line-wrap {
+      position: relative; height: 4px;
+      background: var(--color-mist);
+      margin: 60px 0;
+    }
+    .bridge__line-fill {
+      position: absolute; left: 0; top: 0; height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--color-red), var(--color-gold), var(--color-green));
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+    .bridge__dot {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid white;
+    }
+    .bridge__dot-left  { left: 0;   background: var(--color-red); }
+    .bridge__dot-right { right: 0;  background: var(--color-green); }
+    .bridge__dot-mid {
+      left: 50%; transform: translate(-50%,-50%);
+      background: var(--color-green);
+      animation: pulse-dot 2.4s ease-in-out infinite;
+      z-index: 2;
+    }
+    .bridge__text {
+      text-align: center;
+    }
+    .bridge__headline {
+      font-family: var(--font-serif); font-size: clamp(36px, 5vw, 64px);
+      font-weight: 700; line-height: 1.1; letter-spacing: -.02em;
+    }
+    .bridge__headline em { font-style: italic; color: var(--color-green); }
+    .bridge__sub { font-size: 18px; color: var(--color-ink-muted); margin-top: 16px; }
+
+    /* ─── HOW IT WORKS ───────────────────────────────────────────────── */
+    .hiw { background: var(--color-bg); }
+    .hiw__steps { max-width: 680px; margin: 72px auto 0; position: relative; }
+    .hiw__connector {
+      position: absolute; left: 27px; top: 60px; bottom: 60px; width: 1px;
+      border-left: 2px dashed rgba(26,26,24,.12);
+      z-index: 0;
+    }
+    .hiw__step { display: flex; gap: 32px; margin-bottom: 72px; position: relative; z-index: 1; }
+    .hiw__step:last-child { margin-bottom: 0; }
+    .hiw__num {
+      font-family: var(--font-serif); font-size: 48px; font-weight: 700;
+      color: var(--color-gold); line-height: 1; flex-shrink: 0; width: 56px;
+    }
+    .hiw__body-title { font-size: 22px; font-weight: 600; margin-bottom: 10px; }
+    .hiw__body-desc { font-size: 15px; color: var(--color-ink-muted); margin-bottom: 20px; line-height: 1.65; }
+
+    /* Code block */
+    .code-card {
+      background: var(--color-ink); border-radius: 10px;
+      padding: 20px 24px; position: relative;
+    }
+    .code-card__bar {
+      display: flex; gap: 6px; margin-bottom: 16px;
+    }
+    .code-card__dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-card__dot:nth-child(1) { background: #FF5F56; }
+    .code-card__dot:nth-child(2) { background: #FFBD2E; }
+    .code-card__dot:nth-child(3) { background: #27C93F; }
+    .code-line {
+      font-family: var(--font-mono); font-size: 13px; line-height: 1.8;
+    }
+    .code-key   { color: #7CB8FF; }
+    .code-val   { color: #A8FF78; }
+    .code-arrow { color: #888; }
+    .code-cursor {
+      display: inline-block; width: 2px; height: 1em;
+      background: #A8FF78; margin-left: 2px; vertical-align: text-bottom;
+      animation: blink-cursor .9s steps(1) infinite;
+    }
+    @keyframes blink-cursor { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+    .code-tooltip {
+      display: inline-block;
+      background: var(--color-gold); color: var(--color-ink);
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 4px; margin-top: 12px;
+    }
+
+    /* Flow diagram */
+    .flow-diagram {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .flow-node {
+      background: var(--color-mist); border-radius: 8px;
+      padding: 10px 16px; font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .flow-node__icon { font-size: 18px; }
+    .flow-arrow {
+      color: var(--color-ink-muted); font-size: 18px;
+      position: relative;
+    }
+    .flow-node.flow-node--hado {
+      background: var(--color-green); color: white;
+    }
+    .flow-particles {
+      display: flex; flex-direction: column; gap: 3px; align-items: center;
+    }
+    .flow-particle {
+      width: 4px; height: 4px; border-radius: 50%; background: var(--color-green);
+      animation: shower-particle 1.8s linear infinite;
+      opacity: 0;
+    }
+    .flow-particle:nth-child(2) { animation-delay: .6s; }
+    .flow-particle:nth-child(3) { animation-delay: 1.2s; }
+    @keyframes shower-particle {
+      0%   { opacity: 0; transform: translateY(-6px); }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { opacity: 0; transform: translateY(6px); }
+    }
+
+    /* Google result mockup */
+    .google-result {
+      background: white; border-radius: 10px; padding: 20px 24px;
+      box-shadow: var(--shadow-md); font-size: 14px;
+    }
+    .google-result__url { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-muted); margin-bottom: 4px; }
+    .google-result__title { font-size: 18px; color: #1a0dab; font-weight: 500; margin-bottom: 6px; }
+    .google-result__desc { color: #4d5156; line-height: 1.5; }
+    .google-result__badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(59,107,58,.1); color: var(--color-green);
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 4px; margin-top: 12px;
+      animation: float-badge 3s ease-in-out infinite;
+    }
+
+    /* ─── BEFORE / AFTER ─────────────────────────────────────────────── */
+    .beforeafter { background: var(--color-mist-dark); }
+    .beforeafter__slider-wrap {
+      position: relative; overflow: hidden; border-radius: var(--radius-card);
+      box-shadow: var(--shadow-lg); max-width: 960px; margin: 64px auto 0;
+      user-select: none; cursor: col-resize;
+    }
+    .beforeafter__panels {
+      display: flex; height: 440px;
+    }
+    .ba-panel {
+      flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; overflow: hidden;
+    }
+    .ba-panel--before { background: #fff8f8; }
+    .ba-panel--after  { background: #f4faf4; }
+    .ba-label {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+      letter-spacing: .08em; padding: 5px 14px; border-radius: 4px;
+      display: inline-block; margin-bottom: 24px;
+    }
+    .ba-panel--before .ba-label { background: rgba(201,70,61,.1); color: var(--color-red); }
+    .ba-panel--after  .ba-label { background: rgba(59,107,58,.1);  color: var(--color-green); }
+    .ba-code {
+      font-family: var(--font-mono); font-size: 12px; line-height: 1.8;
+      flex: 1;
+    }
+    .ba-code .bad  { color: var(--color-red); }
+    .ba-code .good { color: var(--color-green); }
+    .ba-code .dim  { color: #aaa; }
+    .ba-metrics { margin-top: 24px; }
+    .ba-metric { font-family: var(--font-mono); font-size: 13px; margin-bottom: 6px; }
+    .ba-metric .bad  { color: var(--color-red); font-weight: 600; }
+    .ba-metric .good { color: var(--color-green); font-weight: 600; }
+
+    .ba-divider {
+      position: absolute; top: 0; bottom: 0;
+      left: 50%; transform: translateX(-50%);
+      width: 3px; background: white; z-index: 10;
+      transition: left .05s;
+    }
+    .ba-handle {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 40px; height: 40px; border-radius: 50%;
+      background: white; box-shadow: var(--shadow-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--color-ink-muted);
+      z-index: 11;
+    }
+    .ba-overlay {
+      position: absolute; top: 0; bottom: 0; right: 0;
+      background: rgba(201,70,61,.04);
+      pointer-events: none; z-index: 5;
+      transition: width .05s;
+    }
+
+    /* ─── TESTIMONIALS ───────────────────────────────────────────────── */
+    .testimonials { background: var(--color-bg); }
+    .testimonials__carousel { max-width: 720px; margin: 64px auto 0; text-align: center; }
+    .testimonial { display: none; flex-direction: column; align-items: center; gap: 20px; }
+    .testimonial.active { display: flex; }
+    .testimonial__quote-mark {
+      font-family: var(--font-serif); font-size: 120px; line-height: .7;
+      color: var(--color-gold); opacity: .6; align-self: flex-start;
+    }
+    .testimonial__text {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(18px, 2.5vw, 24px); line-height: 1.55; color: var(--color-ink);
+    }
+    .testimonial__author {
+      font-family: var(--font-mono); font-size: 13px; color: var(--color-ink-muted);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .testimonial__avatar {
+      width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    }
+    .testimonials__dots {
+      display: flex; justify-content: center; gap: 8px; margin-top: 40px;
+    }
+    .testi-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--color-mist);
+      border: none; cursor: pointer; transition: background var(--transition);
+    }
+    .testi-dot.active { background: var(--color-ink); }
+
+    /* ─── PRICING ────────────────────────────────────────────────────── */
+    .pricing { background: var(--color-bg); }
+    .pricing__inner { max-width: 800px; margin: 0 auto; }
+    .pricing__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 64px; }
+    .pricing-card {
+      border-radius: var(--radius-card);
+      padding: 48px 40px;
+      background: white;
+      box-shadow: var(--shadow-sm);
+    }
+    .pricing-card--pro {
+      border: 1.5px solid rgba(212,168,67,.4);
+      box-shadow: 0 0 0 4px rgba(212,168,67,.06), var(--shadow-md);
+    }
+    .pricing-card__eyebrow { margin-bottom: 28px; }
+    .pricing-card__title-serif {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 32px; margin-bottom: 8px;
+    }
+    .pricing-card__title-sans { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+    .pricing-card__price {
+      font-family: var(--font-serif); font-size: 52px; font-weight: 700;
+      line-height: 1; margin-bottom: 4px;
+    }
+    .pricing-card__price-sub { font-size: 14px; color: var(--color-ink-muted); }
+    .pricing-card__features { font-size: 15px; color: var(--color-ink-muted); line-height: 1.9; margin: 28px 0; }
+    .pricing-card__features strong { color: var(--color-ink); }
+    .pricing-card__note { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-muted); margin-top: 16px; }
+    .pill-gold {
+      display: inline-block;
+      background: rgba(212,168,67,.15); color: #9A7220;
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      padding: 3px 12px; border-radius: 20px; letter-spacing: .04em;
+      margin-bottom: 12px;
+    }
+
+    /* ─── TECHNICAL / THINKER ────────────────────────────────────────── */
+    .tech { background: var(--color-mist-dark); }
+    .tech__inner { max-width: 640px; margin: 0 auto; }
+    .tech__desc {
+      font-size: 17px; color: var(--color-ink-muted); line-height: 1.75; margin-top: 40px;
+    }
+    .tech__desc code {
+      font-family: var(--font-mono); font-size: 14px;
+      background: rgba(26,26,24,.07); padding: 2px 7px; border-radius: 4px;
+      color: var(--color-ink);
+    }
+    .tech__diagram {
+      background: white; border-radius: var(--radius-card); padding: 32px;
+      box-shadow: var(--shadow-sm); margin: 36px 0; display: flex; align-items: center;
+      gap: 16px; flex-wrap: wrap; justify-content: center;
+    }
+    .tech-node {
+      background: var(--color-mist); border-radius: 8px;
+      padding: 10px 18px; font-size: 13px; font-family: var(--font-mono);
+      text-align: center;
+    }
+    .tech-node span { display: block; font-size: 11px; color: var(--color-ink-muted); margin-top: 2px; }
+    .tech-arrow { color: var(--color-ink-muted); font-size: 20px; }
+
+    /* FAQ accordion */
+    .faq { margin-top: 56px; }
+    .faq-item { border-bottom: 1px solid rgba(26,26,24,.1); }
+    .faq-q {
+      width: 100%; text-align: left; padding: 22px 0;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 16px; font-weight: 500; cursor: pointer;
+      transition: color var(--transition);
+    }
+    .faq-q:hover { color: var(--color-green); }
+    .faq-icon { font-size: 20px; color: var(--color-ink-muted); transition: transform var(--transition); }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-a {
+      overflow: hidden; max-height: 0; transition: max-height .4s cubic-bezier(.4,0,.2,1);
+    }
+    .faq-a-inner { padding: 0 0 22px; font-size: 15px; color: var(--color-ink-muted); line-height: 1.7; }
+
+    /* ─── FINAL CTA ──────────────────────────────────────────────────── */
+    .final-cta {
+      background: var(--color-ink);
+      padding: 140px 32px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .final-cta__particles { position: absolute; inset: 0; pointer-events: none; }
+    .particle {
+      position: absolute; border-radius: 50%;
+      background: var(--color-gold);
+      opacity: .18;
+      animation: shower-fall linear infinite;
+    }
+    @keyframes shower-fall {
+      0%   { transform: translateY(-20px); opacity: 0; }
+      10%  { opacity: .18; }
+      90%  { opacity: .18; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+    .final-cta__content { position: relative; z-index: 1; }
+    .final-cta__headline {
+      font-family: var(--font-serif); font-weight: 700;
+      font-size: clamp(36px, 5.5vw, 72px);
+      color: var(--color-cream); line-height: 1.1; letter-spacing: -.02em;
+      margin-bottom: 20px;
+    }
+    .final-cta__sub { font-size: 18px; color: rgba(246,243,236,.65); margin-bottom: 48px; font-family: var(--font-mono); }
+    .btn-cta-final {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--color-cream); color: var(--color-ink);
+      font-size: 17px; font-weight: 600;
+      padding: 20px 48px; border-radius: var(--radius-btn);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .btn-cta-final:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(246,243,236,.25);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────────────── */
+    .footer {
+      background: var(--color-ink);
+      border-top: 1px solid rgba(246,243,236,.08);
+      padding: 56px 0 40px;
+    }
+    .footer__inner {
+      display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center;
+    }
+    .footer__logo { font-family: var(--font-mono); font-size: 16px; font-weight: 600; color: var(--color-cream); display: flex; align-items: center; gap: 8px; }
+    .footer__links { display: flex; gap: 32px; flex-wrap: wrap; justify-content: center; }
+    .footer__links a { font-size: 14px; color: rgba(246,243,236,.5); transition: color var(--transition); }
+    .footer__links a:hover { color: var(--color-cream); }
+    .footer__status {
+      font-size: 14px; color: rgba(246,243,236,.5);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--color-green);
+      animation: pulse-dot 2.4s ease-in-out infinite;
+    }
+    .footer__tagline { font-family: var(--font-mono); font-size: 12px; color: rgba(246,243,236,.35); }
+    .footer__copy { font-size: 12px; color: rgba(246,243,236,.3); }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .problem__grid { grid-template-columns: 1fr; gap: 48px; }
+      .pricing__grid { grid-template-columns: 1fr; }
+      .nav__links { display: none; }
+      .beforeafter__panels { flex-direction: column; height: auto; }
+      .ba-divider, .ba-overlay, .ba-handle { display: none; }
+    }
+    @media (max-width: 600px) {
+      .section-pad { padding: 80px 0; }
+      .hero { padding: 120px 24px 80px; }
+      .hero__bg { display: none; }
+      .container { padding: 0 20px; }
+      .flow-diagram { justify-content: center; }
+      .pricing-card { padding: 36px 28px; }
+      .final-cta { padding: 100px 24px; }
+      .logos-strip__inner { flex-direction: column; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─────────────────────────────────────────────────────────── -->
+  <nav class="nav" id="nav">
+    <div class="container">
+      <div class="nav__inner">
+        <div class="nav__logo">
+          <div class="nav__logo-dot"></div>
+          hadoseo
+        </div>
+        <ul class="nav__links">
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#tech">Docs</a></li>
+        </ul>
+        <a href="#pricing" class="btn-primary">Fix Your SEO</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero__bg" id="hero-bg"></div>
+    <div class="hero__content">
+      <div class="hero__badge">
+        <div class="hero__badge-dot"></div>
+        For AI-built apps
+      </div>
+
+      <div class="hero__headline">
+        <span class="hero__line1">Make your app</span>
+        <span class="hero__line2" style="position:relative">
+          visible everywhere
+          <svg class="hero__squiggle" viewBox="0 0 300 10" preserveAspectRatio="none">
+            <path d="M0 8 Q37.5 2 75 6 Q112.5 10 150 6 Q187.5 2 225 6 Q262.5 10 300 6" stroke="#3B6B3A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </div>
+
+      <p class="hero__sub">
+        Fix SEO for <span class="mono">Lovable</span>, <span class="mono">Base44</span>,
+        <span class="mono">Bolt.new</span>, and <span class="mono">Replit</span> apps
+      </p>
+
+      <p class="hero__body">
+        Your AI-built app isn't ranking on Google? We fix that.
+        Add server-side rendering with one simple DNS record.
+        Zero code changes. Zero framework migrations.
+      </p>
+
+      <div class="hero__cta">
+        <div class="hero__cta-row">
+          <a href="#pricing" class="btn-primary btn-large">Start for Free</a>
+          <a href="#how-it-works" class="hero__link">See how it works ↓</a>
+        </div>
+        <p class="hero__reassure">~ 3 min setup &nbsp;·&nbsp; No code changes &nbsp;·&nbsp; Cancel anytime</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── LOGOS STRIP ───────────────────────────────────────────────────── -->
+  <div class="logos-strip">
+    <div class="container">
+      <div class="logos-strip__inner">
+        <span class="logos-strip__label">Works with</span>
+        <div class="logos-strip__apps">
+          <span class="app-logo">Lovable</span>
+          <span class="app-logo">Base44</span>
+          <span class="app-logo">Bolt.new</span>
+          <span class="app-logo">Replit</span>
+          <span class="app-logo">v0.dev</span>
+          <span class="app-logo">Cursor</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PROBLEM ───────────────────────────────────────────────────────── -->
+  <section class="problem section-pad">
+    <div class="container">
+      <p class="label center raise">T H E &nbsp; P R O B L E M</p>
+      <h2 class="serif center raise" style="font-size:clamp(32px,4vw,52px);font-weight:700;margin:16px 0 56px;letter-spacing:-.02em;line-height:1.15">
+        Your app is invisible.<br>And you don't even know it.
+      </h2>
+      <div class="problem__grid">
+        <div class="raise">
+          <div class="problem__chart-wrap">
+            <p class="problem__chart-title">Organic Search Traffic — Last 6 months</p>
+            <svg id="problem-chart" viewBox="0 0 360 160" xmlns="http://www.w3.org/2000/svg">
+              <!-- Grid lines -->
+              <line x1="40" y1="20" x2="340" y2="20" stroke="#eee" stroke-width="1"/>
+              <line x1="40" y1="60" x2="340" y2="60" stroke="#eee" stroke-width="1"/>
+              <line x1="40" y1="100" x2="340" y2="100" stroke="#eee" stroke-width="1"/>
+              <line x1="40" y1="140" x2="340" y2="140" stroke="#eee" stroke-width="1"/>
+              <!-- Axis labels -->
+              <text x="36" y="24" text-anchor="end" font-size="9" fill="#aaa" font-family="monospace">100</text>
+              <text x="36" y="64" text-anchor="end" font-size="9" fill="#aaa" font-family="monospace">75</text>
+              <text x="36" y="104" text-anchor="end" font-size="9" fill="#aaa" font-family="monospace">50</text>
+              <text x="36" y="144" text-anchor="end" font-size="9" fill="#aaa" font-family="monospace">0</text>
+              <!-- X labels -->
+              <text x="90"  y="155" text-anchor="middle" font-size="9" fill="#aaa" font-family="monospace">Sep</text>
+              <text x="140" y="155" text-anchor="middle" font-size="9" fill="#aaa" font-family="monospace">Oct</text>
+              <text x="190" y="155" text-anchor="middle" font-size="9" fill="#aaa" font-family="monospace">Nov</text>
+              <text x="240" y="155" text-anchor="middle" font-size="9" fill="#aaa" font-family="monospace">Dec</text>
+              <text x="290" y="155" text-anchor="middle" font-size="9" fill="#aaa" font-family="monospace">Jan</text>
+              <text x="330" y="155" text-anchor="middle" font-size="9" fill="#aaa" font-family="monospace">Feb</text>
+              <!-- Decreasing line (drawn via animation) -->
+              <path id="sick-path" d="M90,30 C110,35 125,50 140,60 C155,70 165,85 190,95 C210,103 225,112 250,118 C268,123 295,130 330,138"
+                stroke="#C9463D" stroke-width="2.5" fill="none" stroke-linecap="round"
+                stroke-dasharray="400" stroke-dashoffset="400"/>
+              <!-- Dots -->
+              <circle cx="90"  cy="30"  r="4" fill="#C9463D" opacity="0" id="d0"/>
+              <circle cx="140" cy="60"  r="4" fill="#C9463D" opacity="0" id="d1"/>
+              <circle cx="190" cy="95"  r="4" fill="#C9463D" opacity="0" id="d2"/>
+              <circle cx="250" cy="118" r="4" fill="#C9463D" opacity="0" id="d3"/>
+              <circle cx="330" cy="138" r="4" fill="#C9463D" opacity="0" id="d4"/>
+            </svg>
+            <div class="problem__console">
+              <div class="problem__console-row">
+                <span class="problem__console-key">Total Clicks</span>
+                <span class="problem__console-val">0</span>
+              </div>
+              <div class="problem__console-row">
+                <span class="problem__console-key">Impressions</span>
+                <span class="problem__console-val">0</span>
+              </div>
+              <div class="problem__console-row" style="margin-bottom:0">
+                <span class="problem__console-key">Indexed Pages</span>
+                <span class="problem__console-val">0 / 48</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="problem__items">
+          <div class="problem__item raise">
+            <div class="problem__x">×</div>
+            <div>
+              <p class="problem__item-title">Invisible to crawlers</p>
+              <p class="problem__item-body">SPA apps render client-side. Google sees an empty shell — just a <code style="font-family:var(--font-mono);background:rgba(26,26,24,.07);padding:2px 6px;border-radius:3px;font-size:13px">&lt;div id="root"&gt;&lt;/div&gt;</code> — and moves on.</p>
+            </div>
+          </div>
+          <div class="problem__item raise" style="transition-delay:.1s">
+            <div class="problem__x">×</div>
+            <div>
+              <p class="problem__item-title">No meta, no mercy</p>
+              <p class="problem__item-body">Dynamic meta tags don't exist without SSR. Every page looks identical to search engines. No titles, no descriptions, no rich snippets.</p>
+            </div>
+          </div>
+          <div class="problem__item raise" style="transition-delay:.2s">
+            <div class="problem__x">×</div>
+            <div>
+              <p class="problem__item-title">Frameworks weren't built for this</p>
+              <p class="problem__item-body">Lovable, Bolt, and Replit optimize for speed of creation — not discoverability. SEO was never part of the equation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── BRIDGE ────────────────────────────────────────────────────────── -->
+  <section class="bridge section-pad" id="bridge">
+    <div class="container">
+      <div class="bridge__text raise">
+        <h2 class="bridge__headline">
+          One DNS record.<br><em>Everything changes.</em>
+        </h2>
+        <p class="bridge__sub">No engineers. No rewrites. No waiting.</p>
+      </div>
+      <div class="bridge__line-wrap" id="bridge-line">
+        <div class="bridge__dot bridge__dot-left"></div>
+        <div class="bridge__line-fill" id="bridge-fill"></div>
+        <div class="bridge__dot bridge__dot-mid"></div>
+        <div class="bridge__dot bridge__dot-right"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;max-width:100%;padding:0 2px">
+        <span class="label" style="color:var(--color-red)">Before Hadoseo</span>
+        <span class="label" style="color:var(--color-green)">After Hadoseo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HOW IT WORKS ──────────────────────────────────────────────────── -->
+  <section class="hiw section-pad" id="how-it-works">
+    <div class="container">
+      <p class="label center raise">H O W &nbsp; I T &nbsp; W O R K S</p>
+      <h2 class="serif center raise" style="font-size:clamp(28px,3.5vw,48px);font-weight:700;margin:16px 0 0;letter-spacing:-.02em">
+        Three minutes to full visibility
+      </h2>
+      <div class="hiw__steps">
+        <div class="hiw__connector"></div>
+
+        <!-- Step 01 -->
+        <div class="hiw__step raise">
+          <div class="hiw__num">01</div>
+          <div>
+            <p class="hiw__body-title">Point your DNS</p>
+            <p class="hiw__body-desc">Add a single CNAME record in your domain registrar. That's the only configuration you'll ever touch.</p>
+            <div class="code-card">
+              <div class="code-card__bar">
+                <div class="code-card__dot"></div>
+                <div class="code-card__dot"></div>
+                <div class="code-card__dot"></div>
+              </div>
+              <div class="code-line">
+                <span class="code-key">CNAME</span>
+                <span class="code-arrow">  app.yoursite.com</span>
+              </div>
+              <div class="code-line">
+                <span class="code-arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ </span>
+                <span class="code-val">render.hadoseo.com</span>
+                <span class="code-cursor"></span>
+              </div>
+              <div class="code-tooltip">That's it. Really.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 02 -->
+        <div class="hiw__step raise" style="transition-delay:.1s">
+          <div class="hiw__num">02</div>
+          <div>
+            <p class="hiw__body-title">We render your pages</p>
+            <p class="hiw__body-desc">Every request is intercepted, rendered server-side in our global edge network, and returned as complete semantic HTML.</p>
+            <div class="flow-diagram">
+              <div class="flow-node"><span class="flow-node__icon">🌐</span> Browser</div>
+              <div class="flow-arrow">
+                <div class="flow-particles">
+                  <div class="flow-particle"></div>
+                  <div class="flow-particle"></div>
+                  <div class="flow-particle"></div>
+                </div>
+                →
+              </div>
+              <div class="flow-node flow-node--hado">
+                <span class="flow-node__icon">◉</span> hadoseo edge
+              </div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-node"><span class="flow-node__icon">📄</span> Full HTML</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 03 -->
+        <div class="hiw__step raise" style="transition-delay:.2s">
+          <div class="hiw__num">03</div>
+          <div>
+            <p class="hiw__body-title">Google sees everything</p>
+            <p class="hiw__body-desc">Search engines receive perfectly rendered HTML with complete meta tags, structured data, and Open Graph. Start ranking within days.</p>
+            <div class="google-result">
+              <p class="google-result__url">https://yourapp.com/features</p>
+              <p class="google-result__title">Your App — Feature That Ranks</p>
+              <p class="google-result__desc">Full description visible to search engines. Rich snippets, sitelinks, and metadata all work out of the box with Hadoseo.</p>
+              <div class="google-result__badge">✓ Indexed &nbsp; · &nbsp; 48/48 pages</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress indicator -->
+      <div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-top:56px" class="raise">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--color-green);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:600">✓</div>
+        <div style="height:2px;width:60px;background:var(--color-green);border-radius:1px"></div>
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--color-green);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:600">✓</div>
+        <div style="height:2px;width:60px;background:var(--color-green);border-radius:1px"></div>
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--color-green);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:600">✓</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── BEFORE / AFTER ────────────────────────────────────────────────── -->
+  <section class="beforeafter section-pad">
+    <div class="container">
+      <p class="label center raise">B E F O R E &nbsp; / &nbsp; A F T E R</p>
+      <h2 class="serif center raise" style="font-size:clamp(28px,3.5vw,48px);font-weight:700;margin:16px 0 0;letter-spacing:-.02em">
+        Scrape away the invisible
+      </h2>
+      <p class="raise" style="text-align:center;font-size:16px;color:var(--color-ink-muted);margin-top:12px">Drag the handle to reveal the transformation</p>
+
+      <div class="beforeafter__slider-wrap raise" id="ba-wrap">
+        <div class="beforeafter__panels">
+          <div class="ba-panel ba-panel--before" id="ba-before">
+            <div>
+              <span class="ba-label">Before Hadoseo</span>
+              <div class="ba-code">
+                <div class="dim">&lt;!DOCTYPE html&gt;</div>
+                <div class="dim">&lt;head&gt;</div>
+                <div class="dim">&nbsp;&nbsp;&lt;title&gt;<span class="bad">My App</span>&lt;/title&gt;</div>
+                <div class="bad">&nbsp;&nbsp;&lt;!-- No meta description --&gt;</div>
+                <div class="bad">&nbsp;&nbsp;&lt;!-- No Open Graph --&gt;</div>
+                <div class="bad">&nbsp;&nbsp;&lt;!-- No structured data --&gt;</div>
+                <div class="dim">&lt;/head&gt;</div>
+                <div class="dim">&lt;body&gt;</div>
+                <div class="bad">&nbsp;&nbsp;&lt;div id="root"&gt;&lt;/div&gt;</div>
+                <div class="dim">&lt;/body&gt;</div>
+              </div>
+            </div>
+            <div class="ba-metrics">
+              <div class="ba-metric">Clicks: <span class="bad">0</span></div>
+              <div class="ba-metric">Impressions: <span class="bad">0</span></div>
+              <div class="ba-metric">Indexed pages: <span class="bad">0 / 48</span></div>
+            </div>
+          </div>
+          <div class="ba-panel ba-panel--after" id="ba-after">
+            <div>
+              <span class="ba-label">After Hadoseo</span>
+              <div class="ba-code">
+                <div class="dim">&lt;!DOCTYPE html&gt;</div>
+                <div class="dim">&lt;head&gt;</div>
+                <div class="good">&nbsp;&nbsp;&lt;title&gt;My App — Feature Page&lt;/title&gt;</div>
+                <div class="good">&nbsp;&nbsp;&lt;meta name="description" content="..."&gt;</div>
+                <div class="good">&nbsp;&nbsp;&lt;meta property="og:title" content="..."&gt;</div>
+                <div class="good">&nbsp;&nbsp;&lt;script type="application/ld+json"&gt;</div>
+                <div class="dim">&lt;/head&gt;</div>
+                <div class="dim">&lt;body&gt;</div>
+                <div class="good">&nbsp;&nbsp;&lt;main&gt;&lt;h1&gt;Real content&lt;/h1&gt;...&lt;/main&gt;</div>
+                <div class="dim">&lt;/body&gt;</div>
+              </div>
+            </div>
+            <div class="ba-metrics">
+              <div class="ba-metric">Clicks: <span class="good">↑ 2,840</span></div>
+              <div class="ba-metric">Impressions: <span class="good">↑ 94,200</span></div>
+              <div class="ba-metric">Indexed pages: <span class="good">48 / 48 ✓</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ba-overlay" id="ba-overlay" style="width:50%"></div>
+        <div class="ba-divider" id="ba-divider">
+          <div class="ba-handle">⇄</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TESTIMONIALS ──────────────────────────────────────────────────── -->
+  <section class="testimonials section-pad">
+    <div class="container">
+      <p class="label center raise">W H A T &nbsp; T H E Y &nbsp; S A Y</p>
+      <div class="testimonials__carousel raise">
+        <div class="testimonial active" data-index="0">
+          <div class="testimonial__quote-mark">"</div>
+          <p class="testimonial__text">I built my entire SaaS on Lovable in a week. Hadoseo took it from zero impressions to ranking on page one — without touching a single line of code.</p>
+          <div class="testimonial__author">
+            <img class="testimonial__avatar" src="https://i.pravatar.cc/36?u=marcus-chen" alt="Marcus Chen avatar" />
+            <span>marcus_chen &nbsp;·&nbsp; Founder, Clipify &nbsp;·&nbsp; <span class="mono">lovable.dev</span></span>
+          </div>
+        </div>
+        <div class="testimonial" data-index="1">
+          <div class="testimonial__quote-mark">"</div>
+          <p class="testimonial__text">We were about to hire a DevOps engineer to set up SSR. Hadoseo saved us three months of work and around $40K. Genuinely remarkable.</p>
+          <div class="testimonial__author">
+            <img class="testimonial__avatar" src="https://i.pravatar.cc/36?u=sarah-okonkwo" alt="Sarah Okonkwo avatar" />
+            <span>sarah_ok &nbsp;·&nbsp; CTO, Formbase &nbsp;·&nbsp; <span class="mono">bolt.new</span></span>
+          </div>
+        </div>
+        <div class="testimonial" data-index="2">
+          <div class="testimonial__quote-mark">"</div>
+          <p class="testimonial__text">The setup was almost insultingly simple. CNAME, wait 24 hours, check Search Console. 48 pages indexed. I thought I'd done something wrong.</p>
+          <div class="testimonial__author">
+            <img class="testimonial__avatar" src="https://i.pravatar.cc/36?u=alex-reid" alt="Alex Reid avatar" />
+            <span>alexreid &nbsp;·&nbsp; Indie Dev &nbsp;·&nbsp; <span class="mono">replit.com</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonials__dots">
+        <button class="testi-dot active" data-i="0"></button>
+        <button class="testi-dot" data-i="1"></button>
+        <button class="testi-dot" data-i="2"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PRICING ───────────────────────────────────────────────────────── -->
+  <section class="pricing section-pad" id="pricing">
+    <div class="container">
+      <div class="pricing__inner">
+        <p class="label center raise">P R I C I N G</p>
+        <h2 class="serif center raise" style="font-size:clamp(28px,3.5vw,48px);font-weight:700;margin:16px 0 0;letter-spacing:-.02em">
+          Generous by design
+        </h2>
+        <div class="pricing__grid">
+          <!-- Free -->
+          <div class="pricing-card raise">
+            <div class="pricing-card__eyebrow">
+              <p class="label">Free tier</p>
+            </div>
+            <p class="pricing-card__title-serif">Start with zero</p>
+            <div class="pricing-card__price">$0</div>
+            <p class="pricing-card__price-sub">forever</p>
+            <div class="pricing-card__features">
+              Up to <strong>1,000 pages</strong> rendered monthly.
+              Full SSR on every request.
+              <strong>Core Web Vitals</strong> optimization built-in.
+              Automatic meta tag injection.
+              Setup in under <strong>3 minutes</strong>.
+            </div>
+            <a href="#" class="btn-primary btn-large" style="width:100%;justify-content:center">Get Started Free</a>
+            <p class="pricing-card__note">No credit card. No strings. Seriously.</p>
+          </div>
+          <!-- Pro -->
+          <div class="pricing-card pricing-card--pro raise" style="transition-delay:.1s">
+            <div class="pricing-card__eyebrow">
+              <span class="pill-gold">Pro</span>
+            </div>
+            <p class="pricing-card__title-sans">Scale with confidence</p>
+            <div class="pricing-card__price">$49</div>
+            <p class="pricing-card__price-sub">per month</p>
+            <div class="pricing-card__features">
+              <strong>Unlimited pages</strong> rendered.
+              Priority edge nodes in <strong>35 regions</strong>.
+              Advanced structured data &amp; schema markup.
+              <strong>Custom caching rules</strong> per route.
+              Analytics dashboard &amp; crawl reports.
+              Slack &amp; email support.
+            </div>
+            <a href="#" class="btn-outline" style="width:100%;justify-content:center;border-color:var(--color-gold);color:var(--color-ink)">Upgrade to Pro</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TECHNICAL ─────────────────────────────────────────────────────── -->
+  <section class="tech section-pad" id="tech">
+    <div class="container">
+      <div class="tech__inner">
+        <p class="label raise">U N D E R &nbsp; T H E &nbsp; H O O D</p>
+        <h2 class="serif raise" style="font-size:clamp(28px,3.5vw,44px);font-weight:700;margin:16px 0 0;letter-spacing:-.02em;line-height:1.15">
+          How it actually works
+        </h2>
+        <p class="tech__desc raise">
+          When a crawler or bot visits your app, our edge network intercepts the request
+          at the DNS level. Instead of returning your SPA shell, we spin up a
+          <code>headless Chromium</code> instance, fully execute your JavaScript,
+          and return the completed <code>HTML</code> with all content rendered.
+        </p>
+        <div class="tech__diagram raise">
+          <div class="tech-node">🤖 Googlebot<span>crawler</span></div>
+          <div class="tech-arrow">→</div>
+          <div class="tech-node" style="background:var(--color-green);color:white">◉ hadoseo edge<span style="color:rgba(255,255,255,.65)">DNS intercept</span></div>
+          <div class="tech-arrow">→</div>
+          <div class="tech-node">⚙️ Headless render<span>full JS exec</span></div>
+          <div class="tech-arrow">→</div>
+          <div class="tech-node" style="background:var(--color-mist)">📄 Rich HTML<span>returned</span></div>
+        </div>
+        <p class="tech__desc raise">
+          Real users get your original SPA experience — no performance hit whatsoever.
+          Hadoseo only intercepts requests from known crawler <code>User-Agent</code> strings.
+          Your app runs exactly as before. Google just finally sees it.
+        </p>
+
+        <div class="faq raise">
+          <div class="faq-item">
+            <button class="faq-q">
+              Does this work with any framework?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <div class="faq-a-inner">Yes. Hadoseo is framework-agnostic. React, Vue, Svelte, Angular — if it runs in a browser, we can render it. Built with Lovable or Bolt? Works out of the box.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">
+              Will this slow down my app?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <div class="faq-a-inner">Never. Real users always receive your original SPA directly. Hadoseo only activates for known crawler User-Agents. Your app's performance is untouched.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">
+              How long until Google re-indexes my pages?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <div class="faq-a-inner">Typically 24–72 hours for a first crawl after setup. Full indexation of all pages usually happens within 1–2 weeks. You can accelerate this using Google Search Console's URL inspection tool.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">
+              Is my app's source code ever stored?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <div class="faq-a-inner">No. We only see rendered HTML output — the same thing Google sees. Your source code, API keys, and private routes are never accessed or stored.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FINAL CTA ──────────────────────────────────────────────────────── -->
+  <section class="final-cta">
+    <div class="final-cta__particles" id="particles"></div>
+    <div class="final-cta__content raise">
+      <h2 class="final-cta__headline">Your app deserves<br>to be found.</h2>
+      <p class="final-cta__sub">One DNS record &nbsp;·&nbsp; Three minutes &nbsp;·&nbsp; Full visibility</p>
+      <a href="#pricing" class="btn-cta-final">Fix Your SEO Now →</a>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__logo">
+          <div class="nav__logo-dot"></div>
+          hadoseo
+        </div>
+        <div class="footer__links">
+          <a href="#tech">Docs</a>
+          <a href="#">Blog</a>
+          <a href="#" class="footer__status"><span class="status-dot"></span> Status</a>
+          <a href="#">Twitter / X</a>
+          <a href="#">GitHub</a>
+        </div>
+        <p class="footer__tagline">Made for the apps AI builds</p>
+        <p class="footer__copy">© 2025 Hadoseo, Inc. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── NAV scroll ───────────────────────────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // ─── Hero parallax ────────────────────────────────────────────────────
+    const heroBg = document.getElementById('hero-bg');
+    let ticking = false;
+    document.addEventListener('mousemove', e => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const dx = (e.clientX / window.innerWidth - .5) * 18;
+        const dy = (e.clientY / window.innerHeight - .5) * 12;
+        heroBg.style.transform = `translate(${dx}px, ${dy}px)`;
+        ticking = false;
+      });
+    });
+
+    // ─── Intersection Observer (raise + graph + bridge) ───────────────────
+    const raiseEls = document.querySelectorAll('.raise');
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    raiseEls.forEach(el => io.observe(el));
+
+    // SVG path draw animation
+    const sickPath = document.getElementById('sick-path');
+    const chartDots = [document.getElementById('d0'), document.getElementById('d1'), document.getElementById('d2'), document.getElementById('d3'), document.getElementById('d4')];
+    const chartIo = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        sickPath.style.transition = 'stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1)';
+        sickPath.style.strokeDashoffset = '0';
+        chartDots.forEach((d, i) => {
+          setTimeout(() => {
+            d.style.opacity = '1';
+            d.style.transition = 'opacity .3s';
+            // pulse
+            d.animate([
+              { r: 4, opacity: 1 },
+              { r: 7, opacity: .4 },
+              { r: 4, opacity: 1 }
+            ], { duration: 1200, iterations: Infinity });
+          }, 400 + i * 280);
+        });
+        chartIo.disconnect();
+      }
+    }, { threshold: 0.3 });
+    chartIo.observe(document.getElementById('problem-chart'));
+
+    // Bridge fill animation
+    const bridgeFill = document.getElementById('bridge-fill');
+    const bridgeIo = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        setTimeout(() => { bridgeFill.style.width = '100%'; }, 300);
+        bridgeIo.disconnect();
+      }
+    }, { threshold: 0.4 });
+    bridgeIo.observe(document.getElementById('bridge-line'));
+
+    // ─── Before/After slider ──────────────────────────────────────────────
+    const baWrap = document.getElementById('ba-wrap');
+    const baDivider = document.getElementById('ba-divider');
+    const baOverlay = document.getElementById('ba-overlay');
+    let isDragging = false;
+
+    function moveDivider(clientX) {
+      const rect = baWrap.getBoundingClientRect();
+      let pct = (clientX - rect.left) / rect.width;
+      pct = Math.max(0.08, Math.min(0.92, pct));
+      baDivider.style.left = `${pct * 100}%`;
+      baOverlay.style.width = `${(1 - pct) * 100}%`;
+    }
+    baWrap.addEventListener('mousedown', e => { isDragging = true; moveDivider(e.clientX); });
+    window.addEventListener('mousemove', e => { if (isDragging) moveDivider(e.clientX); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    baWrap.addEventListener('touchstart', e => { isDragging = true; moveDivider(e.touches[0].clientX); }, { passive: true });
+    window.addEventListener('touchmove', e => { if (isDragging) moveDivider(e.touches[0].clientX); }, { passive: true });
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    // ─── Testimonials carousel ────────────────────────────────────────────
+    let current = 0;
+    const testimonials = document.querySelectorAll('.testimonial');
+    const dots = document.querySelectorAll('.testi-dot');
+    function showTestimonial(n) {
+      testimonials[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = n;
+      testimonials[current].classList.add('active');
+      dots[current].classList.add('active');
+    }
+    dots.forEach(d => d.addEventListener('click', () => showTestimonial(+d.dataset.i)));
+    setInterval(() => showTestimonial((current + 1) % testimonials.length), 5000);
+
+    // ─── FAQ accordion ────────────────────────────────────────────────────
+    document.querySelectorAll('.faq-q').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-a').style.maxHeight = null;
+        });
+        if (!isOpen) {
+          item.classList.add('open');
+          const ans = item.querySelector('.faq-a');
+          ans.style.maxHeight = ans.scrollHeight + 'px';
+        }
+      });
+    });
+
+    // ─── Shower particles ─────────────────────────────────────────────────
+    const particleContainer = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 3 + 2;
+      p.style.cssText = `
+        width:${size}px;height:${size}px;
+        left:${Math.random() * 100}%;
+        top:${Math.random() * 100}%;
+        animation-duration:${4 + Math.random() * 8}s;
+        animation-delay:${Math.random() * 8}s;
+      `;
+      particleContainer.appendChild(p);
+    }
+  </script>
+</body>
+</html>
