@@ -3,261 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Cabinet of Curiosities — Kombai Showcases</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    <title>Kombai Showcase</title>
     <style>
-        :root {
-            --timber: #1a1714;
-            --timber-light: #242019;
-            --chalk: #f0ece4;
-            --chalk-text: #e8e2d8;
-            --gold: #a89a7d;
-            --cherry: #b53a4a;
-            --rainbow: linear-gradient(90deg, #b53a4a, #d4943a, #6b8f71, #4a6fa5, #7b5ea7);
-            --ff-serif: 'Playfair Display', serif;
-            --ff-display: 'DM Serif Display', serif;
-            --ff-sans: 'DM Sans', sans-serif;
-            --ff-mono: 'JetBrains Mono', monospace;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background-color: var(--timber);
-            color: var(--chalk-text);
-            font-family: var(--ff-sans);
-            line-height: 1.6;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* --- Navigation --- */
-        nav {
-            position: fixed;
-            top: 0; width: 100%; height: 64px;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 5vw; z-index: 1000;
-            transition: all 0.4s ease;
-        }
-        nav.scrolled {
-            background: rgba(26, 23, 20, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(168, 154, 125, 0.1);
-        }
-        .logo {
-            font-family: var(--ff-serif);
-            font-size: 1.5rem; font-weight: 700;
-            text-decoration: none; color: inherit;
-        }
-        .logo span {
-            background: var(--rainbow);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .nav-right { display: flex; gap: 20px; align-items: center; }
-        .btn-submit {
-            background: var(--cherry);
-            color: white; border: none;
-            padding: 8px 20px; border-radius: 99px;
-            font-weight: 500; cursor: pointer;
-            text-decoration: none; font-size: 0.9rem;
-        }
-
-        @keyframes shiftGradient {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-
-        /* --- Filters --- */
-        .filter-bar {
-            position: sticky; top: 64px;
-            background: var(--timber); padding: 20px 5vw;
-            display: flex; align-items: center; justify-content: space-between;
-            z-index: 900; border-bottom: 1px solid rgba(168, 154, 125, 0.2);
-        }
-        .filters { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px; }
-        .filter-pill {
-            background: transparent; border: 1px solid var(--chalk-text);
-            color: var(--chalk-text); padding: 6px 18px; border-radius: 99px;
-            font-family: var(--ff-mono); font-size: 0.75rem;
-            cursor: pointer; white-space: nowrap; transition: all 0.3s;
-        }
-        .filter-pill.active { background: var(--cherry); border-color: var(--cherry); }
-
-        /* --- Grid --- */
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 32px; padding: 60px 5vw;
-        }
-        .card {
-            background: var(--timber-light); border-radius: 12px;
-            border: 1px solid rgba(232, 226, 216, 0.1);
-            overflow: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-        }
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: transparent;
-            box-shadow: 0 10px 30px rgba(212, 148, 58, 0.15);
-        }
-        .card:hover::before {
-            content: ''; position: absolute; inset: -1px;
-            background: var(--rainbow); border-radius: 12px;
-            z-index: -1; animation: shiftGradient 3s linear infinite;
-        }
-        .iframe-wrapper {
-            position: relative; width: 100%; padding-top: 62.5%;
-            overflow: hidden; background: #000;
-        }
-        .iframe-wrapper iframe {
-            position: absolute; top: 0; left: 0;
-            width: 1280px; height: 800px;
-            transform: scale(0.265625); transform-origin: 0 0;
-            border: none; pointer-events: none;
-            transition: transform 0.5s ease;
-        }
-        .card:hover iframe { transform: scale(0.28); }
-        .card-info { padding: 24px; }
-        .card-title { font-family: var(--ff-serif); font-size: 1.1rem; margin-bottom: 8px; }
-        .card-author { font-family: var(--ff-mono); font-size: 0.75rem; color: var(--gold); }
-        .tag-row { display: flex; gap: 8px; margin-top: 12px; }
-        .tag {
-            font-size: 0.7rem; font-family: var(--ff-mono);
-            padding: 2px 8px; border-left: 2px solid var(--cherry);
-            background: rgba(255,255,255,0.05);
-        }
-
-        /* --- Quote --- */
-        .interstitial {
-            background: var(--chalk); color: var(--timber);
-            padding: 100px 5vw; text-align: center; margin: 40px 0;
-        }
-        .interstitial blockquote {
-            font-family: var(--ff-serif); font-size: 2.5rem;
-            max-width: 800px; margin: 0 auto 20px; line-height: 1.2;
-        }
-        .interstitial cite { font-family: var(--ff-mono); font-style: normal; font-size: 0.9rem; opacity: 0.7; }
-
-        /* --- Footer --- */
-        footer {
-            padding: 80px 5vw 0; border-top: 2px solid;
-            border-image: var(--rainbow) 1;
-        }
-        .footer-grid {
-            display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 60px;
-        }
-        .footer-logo { font-family: var(--ff-serif); font-size: 1.5rem; margin-bottom: 1rem; }
-        .footer-desc { color: var(--gold); max-width: 300px; }
-        .footer-col h4 { font-family: var(--ff-mono); text-transform: uppercase; font-size: 0.8rem; margin-bottom: 20px; color: var(--gold); }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 10px; }
-        .footer-links a { text-decoration: none; color: inherit; font-size: 0.9rem; transition: color 0.3s; }
-        .footer-links a:hover { color: var(--cherry); }
-        .footer-bottom-bar { height: 2px; background: var(--rainbow); width: 100%; }
-
-        @media (max-width: 768px) {
-            .footer-grid { grid-template-columns: 1fr; }
-            .hero-bg-frames { display: none; }
-        }
+        :root { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --primary: #3b82f6; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 2.5rem; margin-bottom: 40px; font-weight: 800; letter-spacing: -0.025em; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .card { background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transition: transform 0.2s ease; }
+        .card:hover { transform: translateY(-4px); }
+        .preview-container { position: relative; width: 100%; padding-top: 56.25%; background: #eee; overflow: hidden; border-bottom: 1px solid #e2e8f0; }
+        .preview-container iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; border: none; transform: scale(0.25); transform-origin: 0 0; pointer-events: none; }
+        @media (max-width: 360px) { .preview-container iframe { transform: scale(0.22); } }
+        .content { padding: 20px; }
+        .content a { font-size: 1.25rem; font-weight: 700; color: var(--text); text-decoration: none; display: block; margin-bottom: 8px; }
+        .content a:hover { color: var(--primary); }
+        .content p { color: #64748b; margin: 0; font-size: 0.95rem; }
     </style>
 </head>
 <body>
-
-    <nav id="navbar">
-        <a href="#" class="logo"><span>S</span>howcases</a>
-        <div class="nav-right">
-            <a href="#" class="btn-submit">Submit Yours</a>
+    <div class="container">
+        <h1>Kombai Showcase</h1>
+        <div class="grid">
+            <div class="card">
+                <div class="preview-container"><iframe src="pet-store-1/"></iframe></div>
+                <div class="content">
+                    <a href="pet-store-1/">Pet Store 1</a>
+                    <p>Beautifully crafted by Kombai AI</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pet-store-2/"></iframe></div>
+                <div class="content">
+                    <a href="pet-store-2/">Pet Store 2</a>
+                    <p>Beautifully crafted by Kombai AI</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pet-store-3/"></iframe></div>
+                <div class="content">
+                    <a href="pet-store-3/">Pet Store 3</a>
+                    <p>Beautifully crafted by Kombai AI</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pet-store-4/"></iframe></div>
+                <div class="content">
+                    <a href="pet-store-4/">Pet Store 4</a>
+                    <p>Beautifully crafted by Kombai AI</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pet-store-5/"></iframe></div>
+                <div class="content">
+                    <a href="pet-store-5/">Pet Store 5</a>
+                    <p>Beautifully crafted by Kombai AI</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pet-store-6/"></iframe></div>
+                <div class="content">
+                    <a href="pet-store-6/">Pet Store 6</a>
+                    <p>Made by Kombai mini</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pet-store-7/"></iframe></div>
+                <div class="content">
+                    <a href="pet-store-7/">Pet Store 7</a>
+                    <p>Beautifully crafted by Kombai AI</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="cafe-1/"></iframe></div>
+                <div class="content">
+                    <a href="cafe-1/">Cafe Website</a>
+                    <p>Beautifully crafted by Kombai AI</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pilates-1/"></iframe></div>
+                <div class="content">
+                    <a href="pilates-1/">Pilates Studio</a>
+                    <p>Kombai vanilla default</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pilates-2/"></iframe></div>
+                <div class="content">
+                    <a href="pilates-2/">Pilates Studio (Augmented)</a>
+                    <p>Augmented prompt by Kombai</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="pilates-3/"></iframe></div>
+                <div class="content">
+                    <a href="pilates-3/">Pilates Studio (Variant)</a>
+                    <p>Beautifully crafted by Kombai AI</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="preview-container"><iframe src="hadoseo-1/"></iframe></div>
+                <div class="content">
+                    <a href="hadoseo-1/">Hadoseo Website</a>
+                    <p>Augmented prompt by Kombai</p>
+                </div>
+            </div>
         </div>
-    </nav>
-
-    <div class="filter-bar" style="margin-top: 64px;">
-        <div class="filters">
-            <button class="filter-pill active">All</button>
-            <button class="filter-pill">Pet Stores</button>
-            <button class="filter-pill">Cafe</button>
-            <button class="filter-pill">Pilates</button>
-            <button class="filter-pill">Kombai AI</button>
-        </div>
-        <div style="font-family: var(--ff-mono); font-size: 0.8rem; color: var(--gold);">SORT: NEWEST</div>
     </div>
-
-    <main class="grid" id="main-grid">
-        <!-- Cards injected via JS -->
-    </main>
-
-    <section class="interstitial">
-        <blockquote>"The best interfaces feel like folklore — passed around, remixed, alive."</blockquote>
-        <cite>— The Curatorial Principle</cite>
-    </section>
-
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <div class="footer-logo">Showcases</div>
-                <p class="footer-desc">Crafted with care and a fine attention to detail. A gallery of digital wonders.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Explore</h4>
-                <ul class="footer-links">
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Submit</a></li>
-                    <li><a href="https://github.com/rusiaaman/kombai-showcase">GitHub</a></li>
-                </ul>
-            </div>
-            <div class="footer-col" style="text-align: right;">
-                <p style="font-family: var(--ff-serif); font-style: italic; color: var(--gold);">The Cabinet of Curiosities</p>
-                <p style="font-size: 0.8rem; margin-top: 10px;">&copy; 2024 Gallery</p>
-            </div>
-        </div>
-        <div class="footer-bottom-bar"></div>
-    </footer>
-
-    <script>
-        const showcases = [
-            { id: 'pet-store-1', title: 'Pet Store 1', author: 'Kombai', tags: ['Pet Store', 'AI'] },
-            { id: 'pet-store-2', title: 'Pet Store 2', author: 'Kombai', tags: ['Pet Store', 'AI'] },
-            { id: 'pet-store-3', title: 'Pet Store 3', author: 'Kombai', tags: ['Pet Store', 'AI'] },
-            { id: 'pet-store-4', title: 'Pet Store 4', author: 'Kombai', tags: ['Pet Store', 'AI'] },
-            { id: 'pet-store-5', title: 'Pet Store 5', author: 'Kombai', tags: ['Pet Store', 'AI'] },
-            { id: 'pet-store-6', title: 'Pet Store 6', author: 'Kombai mini', tags: ['Pet Store', 'Mini'] },
-            { id: 'pet-store-7', title: 'Pet Store 7', author: 'Kombai', tags: ['Pet Store', 'AI'] },
-            { id: 'cafe-1', title: 'The Cafe', author: 'Kombai', tags: ['Hospitality', 'Cafe'] },
-            { id: 'pilates-1', title: 'Pilates Studio', author: 'Kombai vanilla', tags: ['Fitness', 'Studio'] },
-            { id: 'pilates-2', title: 'Pilates (Augmented)', author: 'Kombai prompt+', tags: ['Fitness', 'Augmented'] },
-            { id: 'pilates-3', title: 'Pilates Variant', author: 'Kombai', tags: ['Fitness', 'Variant'] },
-            { id: 'hadoseo-1', title: 'Hadoseo Website', author: 'Kombai augmented', tags: ['SEO', 'Augmented'] }
-        ];
-
-        const grid = document.getElementById('main-grid');
-
-        showcases.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="iframe-wrapper">
-                    <iframe src="${item.id}/" loading="lazy"></iframe>
-                </div>
-                <div class="card-info">
-                    <div class="card-title">${item.title}</div>
-                    <div class="card-author">→ ${item.author}</div>
-                    <div class="tag-row">
-                        ${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-                    </div>
-                </div>
-                <a href="${item.id}/" style="position:absolute; inset:0; z-index:2;"></a>
-            `;
-            grid.appendChild(card);
-        });
-
-        // Parallax and Scroll effects
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) nav.classList.add('scrolled');
-            else nav.classList.remove('scrolled');
-        });
-
-    </script>
 </body>
 </html>
