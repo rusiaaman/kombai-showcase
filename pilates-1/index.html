@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forma Pilates — One-of-a-Kind Studio</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       DESIGN TOKENS
+    ============================================= */
+    :root {
+      --color-bg:          #EDEAE0;
+      --color-bg-alt:      #F9F7F3;
+      --color-bg-dark:     #2A2B25;
+      --color-primary:     #7BA05B;
+      --color-primary-dk:  #5E7C45;
+      --color-warm:        #DAC8AE;
+      --color-warm-dk:     #BCB88A;
+      --color-text:        #3B3C36;
+      --color-text-muted:  #7A7B70;
+      --color-text-light:  #EDEAE0;
+      --color-white:       #FFFFFF;
+      --color-divider:     #D5D1C5;
+
+      --font-heading:      'Cinzel', serif;
+      --font-body:         'Lato', sans-serif;
+
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   16px;
+      --radius-pill: 100px;
+
+      --shadow-soft: 0 8px 32px rgba(59,60,54,0.10);
+      --shadow-card: 0 2px 16px rgba(59,60,54,0.08);
+
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    img { display: block; width: 100%; object-fit: cover; }
+    a   { text-decoration: none; color: inherit; }
+
+    /* =============================================
+       TYPOGRAPHY UTILITIES
+    ============================================= */
+    .display-xl {
+      font-family: var(--font-heading);
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: 0.06em;
+    }
+    .display-lg {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      line-height: 1.15;
+    }
+    .display-md {
+      font-family: var(--font-heading);
+      font-size: clamp(1.3rem, 2.5vw, 2rem);
+      font-weight: 400;
+      letter-spacing: 0.06em;
+    }
+    .label {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .body-lg {
+      font-size: 1.125rem;
+      font-weight: 300;
+      line-height: 1.8;
+    }
+    .body-sm {
+      font-size: 0.9rem;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* =============================================
+       LAYOUT UTILITIES
+    ============================================= */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+    .section-pad { padding: 100px 0; }
+    .section-pad-lg { padding: 130px 0; }
+
+    /* =============================================
+       BUTTONS
+    ============================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 16px 36px;
+      border-radius: var(--radius-pill);
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--color-white);
+    }
+    .btn-primary:hover {
+      background: var(--color-primary-dk);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(123,160,91,0.35);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--color-text);
+      border: 1.5px solid var(--color-text);
+    }
+    .btn-outline:hover {
+      background: var(--color-text);
+      color: var(--color-bg);
+      transform: translateY(-2px);
+    }
+    .btn-outline-light {
+      background: transparent;
+      color: var(--color-text-light);
+      border: 1.5px solid rgba(237,234,224,0.5);
+    }
+    .btn-outline-light:hover {
+      background: var(--color-text-light);
+      color: var(--color-bg-dark);
+      transform: translateY(-2px);
+    }
+
+    /* =============================================
+       NAV
+    ============================================= */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 22px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+    .nav.scrolled {
+      background: rgba(237,234,224,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 var(--color-divider);
+      padding: 16px 40px;
+    }
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--color-white);
+      transition: color var(--transition);
+    }
+    .nav.scrolled .nav-logo { color: var(--color-text); }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 36px;
+      align-items: center;
+    }
+    .nav-links a {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      transition: color var(--transition);
+    }
+    .nav.scrolled .nav-links a { color: var(--color-text-muted); }
+    .nav-links a:hover { color: var(--color-primary) !important; }
+
+    .nav-cta {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 12px 28px;
+      border-radius: var(--radius-pill);
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.55);
+      color: var(--color-white);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .nav.scrolled .nav-cta {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .nav-cta:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-white) !important;
+    }
+
+    /* =============================================
+       HERO
+    ============================================= */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 620px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.pexels.com/photos/33360223/pexels-photo-33360223.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop');
+      background-size: cover;
+      background-position: center 25%;
+      transform: scale(1.04);
+      transition: transform 8s ease-out;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(30,31,25,0.82) 0%,
+        rgba(30,31,25,0.35) 45%,
+        rgba(30,31,25,0.12) 100%
+      );
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      padding: 0 40px 72px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--color-warm);
+      margin-bottom: 20px;
+    }
+    .hero-tag::before {
+      content: '';
+      display: block;
+      width: 36px;
+      height: 1px;
+      background: var(--color-warm);
+    }
+    .hero-title {
+      color: var(--color-white);
+      max-width: 780px;
+      margin-bottom: 24px;
+    }
+    .hero-tagline {
+      color: rgba(237,234,224,0.78);
+      font-size: 1.1rem;
+      font-weight: 300;
+      font-style: italic;
+      max-width: 540px;
+      margin-bottom: 40px;
+    }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      right: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 52px;
+      background: rgba(255,255,255,0.3);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 0.8; transform: scaleY(0.6); }
+    }
+
+    /* =============================================
+       STATS STRIP
+    ============================================= */
+    .stats-strip {
+      background: var(--color-bg-alt);
+      border-bottom: 1px solid var(--color-divider);
+    }
+    .stats-strip-inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .stat-item {
+      padding: 36px 40px;
+      border-right: 1px solid var(--color-divider);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--font-heading);
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+    }
+
+    /* =============================================
+       PHILOSOPHY / ABOUT
+    ============================================= */
+    .about {
+      background: var(--color-bg);
+    }
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-media {
+      position: relative;
+    }
+    .about-img-main {
+      border-radius: var(--radius-lg);
+      height: 580px;
+      object-fit: cover;
+      width: 100%;
+    }
+    .about-img-accent {
+      position: absolute;
+      bottom: -32px;
+      right: -32px;
+      width: 48%;
+      height: 260px;
+      border-radius: var(--radius-lg);
+      border: 6px solid var(--color-bg);
+      box-shadow: var(--shadow-soft);
+    }
+    .about-tag { color: var(--color-primary); margin-bottom: 20px; }
+    .about-title { margin-bottom: 28px; color: var(--color-text); }
+    .about-text { color: var(--color-text-muted); margin-bottom: 20px; }
+    .about-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 36px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
+      border-radius: var(--radius-pill);
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-divider);
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--color-text);
+    }
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      flex-shrink: 0;
+    }
+
+    /* =============================================
+       CLASSES — BENTO
+    ============================================= */
+    .classes { background: var(--color-bg-alt); }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header .label { color: var(--color-primary); margin-bottom: 16px; }
+    .section-header .display-lg { color: var(--color-text); margin-bottom: 16px; }
+    .section-header p { color: var(--color-text-muted); max-width: 480px; margin: 0 auto; }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 280px 280px;
+      gap: 16px;
+    }
+    .bento-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .bento-card:nth-child(1) { grid-column: span 2; }
+    .bento-card:nth-child(4) { grid-column: span 2; }
+
+    .bento-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .bento-card:hover .bento-img { transform: scale(1.06); }
+    .bento-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(30,31,25,0.78) 0%, transparent 55%);
+      transition: var(--transition);
+    }
+    .bento-card:hover .bento-overlay {
+      background: linear-gradient(to top, rgba(30,31,25,0.90) 0%, rgba(30,31,25,0.2) 70%);
+    }
+    .bento-content {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 28px;
+    }
+    .bento-tag {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(123,160,91,0.25);
+      border: 1px solid rgba(123,160,91,0.45);
+      color: #a8d47e;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      backdrop-filter: blur(4px);
+    }
+    .bento-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--color-white);
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .bento-desc {
+      font-size: 0.82rem;
+      color: rgba(237,234,224,0.72);
+      font-weight: 300;
+      line-height: 1.6;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.4s ease;
+      opacity: 0;
+    }
+    .bento-card:hover .bento-desc { max-height: 60px; opacity: 1; }
+
+    /* Solid bento card (no image) */
+    .bento-solid {
+      background: var(--color-primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px;
+    }
+    .bento-solid .bento-tag { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); }
+    .bento-solid .bento-title { font-size: 1.5rem; }
+    .bento-solid p { color: rgba(255,255,255,0.78); font-size: 0.88rem; font-weight: 300; line-height: 1.7; }
+    .bento-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--color-white);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 20px;
+    }
+    .bento-arrow::after {
+      content: '→';
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+    .bento-solid:hover .bento-arrow::after { transform: translateX(6px); }
+
+    /* =============================================
+       STUDIO BREAK (full bleed)
+    ============================================= */
+    .studio-break {
+      position: relative;
+      height: 520px;
+      overflow: hidden;
+    }
+    .studio-break-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 60%;
+      transition: transform 0.1s linear;
+    }
+    .studio-break-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(30,31,25,0.42);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .studio-break-text {
+      color: var(--color-white);
+      max-width: 640px;
+      padding: 0 24px;
+    }
+    .studio-break-text .display-lg { margin-bottom: 16px; }
+    .studio-break-text p { color: rgba(237,234,224,0.78); font-style: italic; font-weight: 300; }
+
+    /* =============================================
+       INSTRUCTORS
+    ============================================= */
+    .instructors { background: var(--color-bg); }
+    .instructors-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .instructor-card {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-divider);
+      transition: var(--transition);
+    }
+    .instructor-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-soft);
+    }
+    .instructor-img {
+      height: 340px;
+      object-fit: cover;
+      object-position: top center;
+      width: 100%;
+      transition: transform 0.5s ease;
+    }
+    .instructor-card:hover .instructor-img { transform: scale(1.04); }
+    .instructor-info { padding: 24px 28px 28px; }
+    .instructor-name {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .instructor-role {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .instructor-bio {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* =============================================
+       TESTIMONIALS
+    ============================================= */
+    .testimonials { background: var(--color-bg-dark); }
+    .testimonials .section-header .display-lg { color: var(--color-text-light); }
+    .testimonials .section-header .label { color: var(--color-warm-dk); }
+    .testimonials .section-header p { color: rgba(237,234,224,0.55); }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .testi-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      backdrop-filter: blur(8px);
+      transition: var(--transition);
+    }
+    .testi-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(123,160,91,0.3);
+    }
+    .testi-stars {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .star { color: var(--color-primary); font-size: 0.9rem; }
+    .testi-quote {
+      color: rgba(237,234,224,0.85);
+      font-size: 0.97rem;
+      font-weight: 300;
+      line-height: 1.8;
+      font-style: italic;
+      margin-bottom: 28px;
+    }
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .testi-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .testi-name {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--color-text-light);
+      margin-bottom: 2px;
+    }
+    .testi-since { font-size: 0.75rem; color: rgba(237,234,224,0.4); }
+
+    /* =============================================
+       BOOK / CTA
+    ============================================= */
+    .book {
+      background: var(--color-bg-alt);
+      border-top: 1px solid var(--color-divider);
+    }
+    .book-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .book-label { color: var(--color-primary); margin-bottom: 20px; }
+    .book-title { margin-bottom: 20px; }
+    .book-desc { color: var(--color-text-muted); margin-bottom: 36px; }
+    .book-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+    }
+    .contact-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--color-bg);
+      border: 1px solid var(--color-divider);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+
+    .book-form {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      padding: 44px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--color-divider);
+    }
+    .book-form h3 {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 28px;
+      color: var(--color-text);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--color-divider);
+      background: var(--color-bg-alt);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--color-text);
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--color-primary);
+    }
+    .form-submit { margin-top: 8px; width: 100%; justify-content: center; border-radius: var(--radius-md); }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    .footer { background: var(--color-bg-dark); color: rgba(237,234,224,0.55); }
+    .footer-cta-strip {
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 60px 0;
+      text-align: center;
+    }
+    .footer-cta-strip p {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4rem, 3vw, 2.4rem);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--color-text-light);
+      margin-bottom: 28px;
+    }
+    .footer-main {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding: 60px 0 40px;
+    }
+    .footer-brand-name {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--color-text-light);
+      margin-bottom: 14px;
+    }
+    .footer-brand-desc {
+      font-size: 0.85rem;
+      line-height: 1.8;
+      max-width: 260px;
+    }
+    .footer-socials {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .social-link {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      transition: var(--transition);
+    }
+    .social-link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .footer-col h4 {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin-bottom: 18px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a {
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--color-primary); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 22px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.76rem;
+    }
+
+    /* =============================================
+       DECORATIVE DIVIDER
+    ============================================= */
+    .divider-ornament {
+      text-align: center;
+      padding: 10px 0;
+      color: var(--color-primary);
+      font-size: 1.1rem;
+      letter-spacing: 0.5em;
+      opacity: 0.5;
+    }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 1024px) {
+      .container { padding: 0 28px; }
+      .about-inner { gap: 48px; }
+      .bento { grid-template-rows: 240px 240px; }
+      .footer-main { grid-template-columns: 1fr 1fr; gap: 36px; }
+    }
+
+    @media (max-width: 768px) {
+      .nav { padding: 18px 24px; }
+      .nav.scrolled { padding: 14px 24px; }
+      .nav-links { display: none; }
+      .hero-content { padding: 0 24px 56px; }
+      .container { padding: 0 20px; }
+      .section-pad { padding: 72px 0; }
+
+      .stats-strip-inner { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2) { border-right: none; }
+      .stat-item { padding: 28px 24px; }
+
+      .about-inner { grid-template-columns: 1fr; gap: 40px; }
+      .about-img-accent { bottom: -20px; right: -16px; }
+
+      .bento { grid-template-columns: 1fr; grid-template-rows: repeat(5, 220px); }
+      .bento-card:nth-child(1),
+      .bento-card:nth-child(4) { grid-column: span 1; }
+
+      .instructors-grid { grid-template-columns: 1fr; }
+
+      .testi-grid { grid-template-columns: 1fr; gap: 16px; }
+
+      .book-inner { grid-template-columns: 1fr; gap: 40px; }
+      .form-row { grid-template-columns: 1fr; }
+
+      .footer-main { grid-template-columns: 1fr 1fr; gap: 28px; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    }
+
+    /* =============================================
+       ANIMATIONS
+    ============================================= */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up.delay-1 { transition-delay: 0.1s; }
+    .fade-up.delay-2 { transition-delay: 0.22s; }
+    .fade-up.delay-3 { transition-delay: 0.34s; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ======================== NAV ======================== -->
+  <nav class="nav" id="mainNav">
+    <a href="#" class="nav-logo">FORMA</a>
+    <ul class="nav-links">
+      <li><a href="#about">Philosophy</a></li>
+      <li><a href="#classes">Classes</a></li>
+      <li><a href="#instructors">Instructors</a></li>
+      <li><a href="#testimonials">Stories</a></li>
+    </ul>
+    <a href="#book" class="nav-cta">Book a Trial</a>
+  </nav>
+
+  <!-- ======================== HERO ======================== -->
+  <section class="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <div class="hero-tag label">Est. 2018 — New York City</div>
+      <h1 class="display-xl hero-title">Where Body<br />Meets Intention</h1>
+      <p class="hero-tagline">
+        "Experience pilates, the most authentic way at our one-of-a-kind studio."
+      </p>
+      <div class="hero-actions">
+        <a href="#book" class="btn btn-primary">Reserve Your Spot</a>
+        <a href="#classes" class="btn btn-outline-light">Explore Classes</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ======================== STATS ======================== -->
+  <div class="stats-strip">
+    <div class="stats-strip-inner">
+      <div class="stat-item fade-up">
+        <div class="stat-num">2,400+</div>
+        <div class="stat-label">Members Transformed</div>
+      </div>
+      <div class="stat-item fade-up delay-1">
+        <div class="stat-num">18+</div>
+        <div class="stat-label">Class Formats</div>
+      </div>
+      <div class="stat-item fade-up delay-2">
+        <div class="stat-num">12</div>
+        <div class="stat-label">Master Instructors</div>
+      </div>
+      <div class="stat-item fade-up delay-3">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Client Satisfaction</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== ABOUT ======================== -->
+  <section class="about section-pad-lg" id="about">
+    <div class="container">
+      <div class="about-inner">
+        <div class="about-media">
+          <img
+            class="about-img-main"
+            src="https://images.pexels.com/photos/4534649/pexels-photo-4534649.jpeg?auto=compress&cs=tinysrgb&w=900&h=1200&fit=crop"
+            alt="Woman performing yoga pose indoors by a window — Vlada Karpovich on Pexels"
+          />
+          <img
+            class="about-img-accent"
+            src="https://images.pexels.com/photos/18499500/pexels-photo-18499500.png?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop"
+            alt="Spacious minimalist pilates studio featuring wooden reformers — Lê Đức on Pexels"
+          />
+        </div>
+
+        <div class="fade-up">
+          <div class="label about-tag">Our Philosophy</div>
+          <h2 class="display-lg about-title">The Art of<br />Authentic Movement</h2>
+          <p class="body-lg about-text">
+            Forma was founded on a single belief: that true pilates is as much a practice of the mind as it is of the body. We honour the original methods of Joseph Pilates — precise, disciplined, deeply mindful.
+          </p>
+          <p class="body-sm about-text">
+            Our studio is intentionally designed — every detail of the space, the equipment, and the instruction is curated to bring you closer to the most authentic pilates experience possible. No shortcuts. No compromises.
+          </p>
+          <div class="about-pills">
+            <span class="pill"><span class="pill-dot"></span>Classical Reformer</span>
+            <span class="pill"><span class="pill-dot"></span>Mat Pilates</span>
+            <span class="pill"><span class="pill-dot"></span>Cadillac & Tower</span>
+            <span class="pill"><span class="pill-dot"></span>Small Group Sessions</span>
+            <span class="pill"><span class="pill-dot"></span>Private Coaching</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== CLASSES ======================== -->
+  <section class="classes section-pad" id="classes">
+    <div class="container">
+      <div class="section-header fade-up">
+        <div class="label">What We Offer</div>
+        <h2 class="display-lg">Classes for Every Body</h2>
+        <p class="body-sm">From foundational mat work to advanced reformer sessions, every class at Forma is led with purpose and care.</p>
+      </div>
+
+      <div class="bento">
+        <!-- Card 1 – wide -->
+        <div class="bento-card">
+          <img
+            class="bento-img"
+            src="https://images.pexels.com/photos/33360219/pexels-photo-33360219.jpeg?auto=compress&cs=tinysrgb&w=1200&h=700&fit=crop"
+            alt="Woman performing side stretch on Pilates reformer — Ahmet Kurt on Pexels"
+          />
+          <div class="bento-overlay"></div>
+          <div class="bento-content">
+            <span class="bento-tag">Signature</span>
+            <div class="bento-title">Classical Reformer</div>
+            <div class="bento-desc">A full-body session using authentic Gratz apparatus for strength, alignment, and control.</div>
+          </div>
+        </div>
+
+        <!-- Card 2 – narrow, solid -->
+        <div class="bento-card bento-solid">
+          <div>
+            <span class="bento-tag">All Levels</span>
+            <div class="bento-title" style="color: #fff; margin-top: 10px;">Foundations<br />Mat</div>
+            <p>Build core intelligence and body awareness through the original mat repertoire.</p>
+          </div>
+          <a href="#book" class="bento-arrow">Book Now</a>
+        </div>
+
+        <!-- Card 3 – narrow -->
+        <div class="bento-card">
+          <img
+            class="bento-img"
+            src="https://images.pexels.com/photos/8436748/pexels-photo-8436748.jpeg?auto=compress&cs=tinysrgb&w=700&h=700&fit=crop"
+            alt="Three women performing yoga poses in a sunlit studio — Yan Krukau on Pexels"
+          />
+          <div class="bento-overlay"></div>
+          <div class="bento-content">
+            <span class="bento-tag">Small Group</span>
+            <div class="bento-title">Duo & Trio Sessions</div>
+            <div class="bento-desc">Train intimately with friends. Personalised attention at a shared pace.</div>
+          </div>
+        </div>
+
+        <!-- Card 4 – wide -->
+        <div class="bento-card">
+          <img
+            class="bento-img"
+            src="https://images.pexels.com/photos/25599829/pexels-photo-25599829.jpeg?auto=compress&cs=tinysrgb&w=1200&h=700&fit=crop"
+            alt="Bright spacious Pilates studio with wooden equipment — Ahmet Kurt on Pexels"
+          />
+          <div class="bento-overlay"></div>
+          <div class="bento-content">
+            <span class="bento-tag">Advanced</span>
+            <div class="bento-title">Cadillac & Tower Work</div>
+            <div class="bento-desc">For the seasoned mover — a deep dive into apparatus-based classical work.</div>
+          </div>
+        </div>
+
+        <!-- Card 5 – narrow -->
+        <div class="bento-card">
+          <img
+            class="bento-img"
+            src="https://images.pexels.com/photos/6019811/pexels-photo-6019811.jpeg?auto=compress&cs=tinysrgb&w=700&h=700&fit=crop"
+            alt="Woman practicing yoga in a studio demonstrating flexibility — Polina on Pexels"
+          />
+          <div class="bento-overlay"></div>
+          <div class="bento-content">
+            <span class="bento-tag">1-on-1</span>
+            <div class="bento-title">Private Sessions</div>
+            <div class="bento-desc">Fully personalised instruction tailored to your body and goals.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== STUDIO BREAK ======================== -->
+  <div class="studio-break">
+    <img
+      class="studio-break-img"
+      id="parallaxImg"
+      src="https://images.pexels.com/photos/18075025/pexels-photo-18075025.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop"
+      alt="Spacious Pilates studio featuring wooden reformers and minimalist decor — Lê Đức on Pexels"
+    />
+    <div class="studio-break-overlay">
+      <div class="studio-break-text">
+        <h2 class="display-lg">A Space Designed<br />to Inspire</h2>
+        <p class="body-lg">Light-filled, calm, and purposeful — our studio is a sanctuary built for deep, focused practice.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== INSTRUCTORS ======================== -->
+  <section class="instructors section-pad" id="instructors">
+    <div class="container">
+      <div class="section-header fade-up">
+        <div class="label">Meet the Team</div>
+        <h2 class="display-lg">Our Instructors</h2>
+        <p class="body-sm">Certified, passionate, and deeply rooted in classical pilates tradition.</p>
+      </div>
+
+      <div class="instructors-grid">
+        <div class="instructor-card fade-up">
+          <img
+            class="instructor-img"
+            src="https://i.pravatar.cc/480?u=isabelle-forma"
+            alt="Isabelle Morin, Lead Instructor"
+          />
+          <div class="instructor-info">
+            <div class="instructor-name">Isabelle Morin</div>
+            <div class="instructor-role">Lead Classical Instructor</div>
+            <p class="instructor-bio">Trained at the Pilates Method Alliance, Isabelle brings 14 years of classical work and a meticulous eye for alignment.</p>
+          </div>
+        </div>
+
+        <div class="instructor-card fade-up delay-1">
+          <img
+            class="instructor-img"
+            src="https://i.pravatar.cc/480?u=dana-forma"
+            alt="Dana Wells, Reformer Specialist"
+          />
+          <div class="instructor-info">
+            <div class="instructor-name">Dana Wells</div>
+            <div class="instructor-role">Reformer Specialist</div>
+            <p class="instructor-bio">A former ballet dancer, Dana's sessions blend classical rigour with a dancer's sensitivity to flow and musicality.</p>
+          </div>
+        </div>
+
+        <div class="instructor-card fade-up delay-2">
+          <img
+            class="instructor-img"
+            src="https://i.pravatar.cc/480?u=marco-forma"
+            alt="Marco Silva, Rehabilitation & Apparatus"
+          />
+          <div class="instructor-info">
+            <div class="instructor-name">Marco Silva</div>
+            <div class="instructor-role">Rehabilitation & Apparatus</div>
+            <p class="instructor-bio">Specialising in injury recovery, Marco works closely with physiotherapists to restore strength and mobility.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== TESTIMONIALS ======================== -->
+  <section class="testimonials section-pad" id="testimonials">
+    <div class="container">
+      <div class="section-header fade-up">
+        <div class="label">Client Stories</div>
+        <h2 class="display-lg">Words from Our Community</h2>
+        <p class="body-sm">Real transformations, told by the people who lived them.</p>
+      </div>
+
+      <div class="testi-grid">
+        <div class="testi-card fade-up">
+          <div class="testi-stars">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="testi-quote">"I've tried studios all over the city. Forma is simply in a different league. The instruction is precise, the space is beautiful, and I feel genuinely cared for."</p>
+          <div class="testi-author">
+            <img class="testi-avatar" src="https://i.pravatar.cc/88?u=client-sophie" alt="Sophie L." />
+            <div>
+              <div class="testi-name">Sophie L.</div>
+              <div class="testi-since">Member since 2021</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card fade-up delay-1">
+          <div class="testi-stars">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="testi-quote">"After two back surgeries I thought my active life was over. Marco and the Forma team brought me back — stronger, more aligned, and more in tune with my body than ever."</p>
+          <div class="testi-author">
+            <img class="testi-avatar" src="https://i.pravatar.cc/88?u=client-james-r" alt="James R." />
+            <div>
+              <div class="testi-name">James R.</div>
+              <div class="testi-since">Member since 2022</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card fade-up delay-2">
+          <div class="testi-stars">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="testi-quote">"The classical approach here is something you won't find elsewhere. Isabelle's attention to the original method has completely changed how I move and feel in my body."</p>
+          <div class="testi-author">
+            <img class="testi-avatar" src="https://i.pravatar.cc/88?u=client-natasha-w" alt="Natasha W." />
+            <div>
+              <div class="testi-name">Natasha W.</div>
+              <div class="testi-since">Member since 2020</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== BOOK / CTA ======================== -->
+  <section class="book section-pad" id="book">
+    <div class="container">
+      <div class="book-inner">
+        <div class="fade-up">
+          <div class="label book-label">Reserve Your Spot</div>
+          <h2 class="display-lg book-title">Begin Your<br />Pilates Journey</h2>
+          <p class="body-lg book-desc">
+            Your first class is a complimentary trial — arrive curious, leave transformed. We'll match you with the right instructor and session from day one.
+          </p>
+          <div class="book-contact">
+            <div class="contact-row">
+              <div class="contact-icon">📍</div>
+              <span>147 West 72nd Street, Studio 4B, New York, NY 10023</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-icon">📞</div>
+              <span>+1 (212) 555 0182</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-icon">✉️</div>
+              <span>hello@formapilates.com</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-icon">🕐</div>
+              <span>Mon–Sat 6:30am – 8:00pm &nbsp;|&nbsp; Sun 8:00am – 2:00pm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-form fade-up delay-1">
+          <h3>Book a Free Trial Class</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" placeholder="Sophie" />
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" placeholder="Laurent" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="sophie@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="classType">Preferred Class</label>
+            <select id="classType">
+              <option value="">Select a class type</option>
+              <option>Classical Reformer</option>
+              <option>Foundations Mat</option>
+              <option>Duo / Trio Session</option>
+              <option>Cadillac & Tower</option>
+              <option>Private Session</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="date">Preferred Date</label>
+              <input type="date" id="date" />
+            </div>
+            <div class="form-group">
+              <label for="time">Preferred Time</label>
+              <select id="time">
+                <option value="">Select time</option>
+                <option>Morning (6:30–9:00am)</option>
+                <option>Midday (9:00am–12:00pm)</option>
+                <option>Afternoon (12:00–5:00pm)</option>
+                <option>Evening (5:00–8:00pm)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary form-submit" onclick="handleBooking()">Confirm Free Trial →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== FOOTER ======================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-cta-strip">
+        <p>"Step onto the mat.<br />Discover what you're made of."</p>
+        <a href="#book" class="btn btn-outline-light">Start Today</a>
+      </div>
+
+      <div class="footer-main">
+        <div>
+          <div class="footer-brand-name">FORMA PILATES</div>
+          <p class="footer-brand-desc">A classical pilates studio committed to authentic movement, mindful practice, and genuine transformation.</p>
+          <div class="footer-socials">
+            <a href="#" class="social-link" aria-label="Instagram">IG</a>
+            <a href="#" class="social-link" aria-label="Facebook">FB</a>
+            <a href="#" class="social-link" aria-label="YouTube">YT</a>
+            <a href="#" class="social-link" aria-label="Pinterest">PT</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Studio</h4>
+          <ul>
+            <li><a href="#about">Our Philosophy</a></li>
+            <li><a href="#classes">Classes</a></li>
+            <li><a href="#instructors">Instructors</a></li>
+            <li><a href="#">Schedule</a></li>
+            <li><a href="#">Pricing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Visit</h4>
+          <ul>
+            <li><a href="#">147 W 72nd Street</a></li>
+            <li><a href="#">Studio 4B, NYC 10023</a></li>
+            <li><a href="#">Getting Here</a></li>
+            <li><a href="#">Parking</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="#">+1 (212) 555 0182</a></li>
+            <li><a href="#">hello@formapilates.com</a></li>
+            <li><a href="#">Gift Cards</a></li>
+            <li><a href="#">Teacher Training</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 Forma Pilates Studio. All rights reserved.</span>
+        <span>Privacy Policy &nbsp;·&nbsp; Terms of Use</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================== SCRIPTS ======================== -->
+  <script>
+    // Nav scroll behaviour
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    // Hero image zoom-in on load
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('load', () => heroBg.classList.add('loaded'));
+
+    // Subtle parallax on studio break image
+    const parallaxImg = document.getElementById('parallaxImg');
+    window.addEventListener('scroll', () => {
+      const rect = parallaxImg.closest('.studio-break').getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+        parallaxImg.style.transform = `translateY(${(progress - 0.5) * 60}px)`;
+      }
+    }, { passive: true });
+
+    // Intersection Observer for fade-up animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Booking form
+    function handleBooking() {
+      const firstName = document.getElementById('firstName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const classType = document.getElementById('classType').value;
+
+      if (!firstName || !email || !classType) {
+        alert('Please fill in your name, email, and select a class type.');
+        return;
+      }
+
+      const btn = document.querySelector('.form-submit');
+      btn.textContent = '✓ Request Received! We\'ll be in touch.';
+      btn.style.background = 'var(--color-primary-dk)';
+      btn.disabled = true;
+    }
+  </script>
+</body>
+</html>
