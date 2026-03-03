@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L'Arte della Pizza — Elite Masterclass · Napoli</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design Tokens ───────────────────────────────────────── */
+    :root {
+      --color-bg:        #0f0401;
+      --color-mahogany:  #3D0C02;
+      --color-maroon:    #800000;
+      --color-gold:      #B8860B;
+      --color-gold-lt:   #D4A017;
+      --color-cream:     #EFDFBB;
+      --color-cream-dim: #c8b48a;
+      --color-white:     #fdf8f2;
+      --color-overlay:   rgba(15, 4, 1, 0.72);
+
+      --font-display: 'Cinzel', serif;
+      --font-body:    'Lato', sans-serif;
+
+      --space-xs:  0.5rem;
+      --space-sm:  1rem;
+      --space-md:  2rem;
+      --space-lg:  4rem;
+      --space-xl:  7rem;
+
+      --radius-sm: 4px;
+      --radius-md: 12px;
+      --radius-lg: 24px;
+
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── Reset & Base ────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-cream);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    img { display: block; max-width: 100%; object-fit: cover; }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Typography Helpers ──────────────────────────────────── */
+    .h-display {
+      font-family: var(--font-display);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+    .h-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      line-height: 1.15;
+    }
+    .h-label {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 0.72rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+    }
+    .body-lg  { font-size: 1.125rem; font-weight: 300; }
+    .body-md  { font-size: 1rem;     font-weight: 300; }
+    .body-sm  { font-size: 0.875rem; font-weight: 300; }
+
+    /* ── Layout ──────────────────────────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 var(--space-md);
+    }
+    .section-pad { padding: var(--space-xl) 0; }
+
+    /* ── Gold Divider ────────────────────────────────────────── */
+    .gold-divider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .gold-divider::before,
+    .gold-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+      max-width: 80px;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.4rem var(--space-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background var(--transition), padding var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(10, 3, 1, 0.92);
+      backdrop-filter: blur(16px);
+      padding: 0.9rem var(--space-md);
+      border-bottom: 1px solid rgba(184, 134, 11, 0.18);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+    }
+    .nav-links {
+      display: flex;
+      gap: var(--space-md);
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-family: var(--font-display);
+      font-weight: 400;
+      color: var(--color-cream-dim);
+      transition: color var(--transition);
+    }
+    .nav-links a:hover { color: var(--color-gold); }
+    .nav-cta {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-family: var(--font-display);
+      font-weight: 600;
+      padding: 0.55rem 1.4rem;
+      border: 1px solid var(--color-gold);
+      color: var(--color-gold);
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), color var(--transition);
+    }
+    .nav-cta:hover {
+      background: var(--color-gold);
+      color: var(--color-bg);
+    }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 680px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1635349030167-776956b1a902?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwyfHxOYXBsZXMlMjBJdGFseSUyMGNvYXN0bGluZSUyMGFlcmlhbCUyMHN1bnNldCUyMGdvbGRlbiUyMGhvdXIlMjBjaW5lbWF0aWN8ZW58MHwwfHx8MTc3MjUzMTg5N3ww&ixlib=rb-4.1.0&q=85');
+      background-size: cover;
+      background-position: center 30%;
+      transform: scale(1.05);
+      transition: transform 8s ease-out;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(10, 3, 1, 0.82) 0%,
+        rgba(61, 12, 2, 0.55) 50%,
+        rgba(10, 3, 1, 0.9) 100%
+      );
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 780px;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: var(--space-md);
+    }
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--color-gold);
+    }
+    .hero-title {
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      color: var(--color-white);
+      margin-bottom: var(--space-sm);
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--color-gold);
+    }
+    .hero-subtitle {
+      font-size: clamp(0.95rem, 2vw, 1.2rem);
+      color: var(--color-cream-dim);
+      max-width: 520px;
+      margin-bottom: var(--space-lg);
+      font-weight: 300;
+      letter-spacing: 0.04em;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-block;
+      padding: 1rem 2.4rem;
+      background: var(--color-gold);
+      color: var(--color-bg);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--color-gold);
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--color-gold);
+      transform: translateY(-2px);
+    }
+    .btn-ghost {
+      display: inline-block;
+      padding: 1rem 2.4rem;
+      background: transparent;
+      color: var(--color-cream);
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(239, 223, 187, 0.3);
+      transition: border-color var(--transition), color var(--transition), transform var(--transition);
+    }
+    .btn-ghost:hover {
+      border-color: var(--color-cream);
+      transform: translateY(-2px);
+    }
+    .hero-badges {
+      position: absolute;
+      bottom: var(--space-lg);
+      right: var(--space-md);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      align-items: flex-end;
+    }
+    .hero-badge {
+      background: rgba(61, 12, 2, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(184, 134, 11, 0.3);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .hero-badge-icon { font-size: 1.4rem; }
+    .hero-badge-text { font-size: 0.78rem; letter-spacing: 0.08em; }
+    .hero-badge-text strong {
+      display: block;
+      font-weight: 700;
+      color: var(--color-gold);
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: var(--space-md);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      animation: bounce 2.4s ease-in-out infinite;
+    }
+    .hero-scroll span {
+      font-size: 0.62rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--color-cream-dim);
+      font-family: var(--font-display);
+    }
+    .scroll-line {
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(to bottom, var(--color-gold), transparent);
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── MANIFESTO ───────────────────────────────────────────── */
+    #manifesto {
+      background: var(--color-mahogany);
+      padding: var(--space-xl) 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #manifesto::before {
+      content: 'PIZZA';
+      position: absolute;
+      font-family: var(--font-display);
+      font-size: 18vw;
+      font-weight: 900;
+      color: rgba(255,255,255,0.03);
+      letter-spacing: 0.1em;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .manifesto-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3.5vw, 2.6rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--color-white);
+      max-width: 900px;
+      margin: 0 auto var(--space-md);
+      line-height: 1.4;
+      position: relative;
+    }
+    .manifesto-quote::before {
+      content: '\201C';
+      font-size: 6rem;
+      color: var(--color-gold);
+      opacity: 0.4;
+      position: absolute;
+      top: -2rem;
+      left: -1.5rem;
+      font-style: normal;
+      line-height: 1;
+    }
+    .manifesto-attr {
+      color: var(--color-gold);
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-family: var(--font-display);
+    }
+
+    /* ── STATS STRIP ─────────────────────────────────────────── */
+    #stats {
+      background: var(--color-bg);
+      border-top: 1px solid rgba(184,134,11,0.15);
+      border-bottom: 1px solid rgba(184,134,11,0.15);
+      padding: var(--space-lg) 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .stat-item {
+      text-align: center;
+      padding: var(--space-md);
+      border-right: 1px solid rgba(184,134,11,0.12);
+      transition: background var(--transition);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: rgba(61,12,2,0.3); }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4vw, 3.6rem);
+      font-weight: 900;
+      color: var(--color-gold);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-cream-dim);
+      font-family: var(--font-display);
+      font-weight: 400;
+    }
+
+    /* ── EXPERIENCE ──────────────────────────────────────────── */
+    #experience { background: var(--color-bg); }
+
+    .exp-section-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: var(--color-white);
+      margin-bottom: var(--space-sm);
+    }
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--color-cream-dim);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .exp-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      align-items: center;
+      margin-bottom: var(--space-xl);
+    }
+    .exp-row:last-child { margin-bottom: 0; }
+    .exp-row.reverse .exp-img  { order: 2; }
+    .exp-row.reverse .exp-text { order: 1; }
+
+    .exp-img {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+    .exp-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .exp-img:hover img { transform: scale(1.04); }
+    .exp-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,3,1,0.6) 0%, transparent 60%);
+    }
+    .exp-img-tag {
+      position: absolute;
+      bottom: var(--space-sm);
+      left: var(--space-sm);
+      padding: 0.4rem 0.9rem;
+      background: rgba(61,12,2,0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(184,134,11,0.3);
+      border-radius: 100px;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      font-family: var(--font-display);
+    }
+
+    .exp-text { padding: var(--space-sm); }
+    .exp-num {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      font-weight: 900;
+      color: rgba(184,134,11,0.12);
+      line-height: 1;
+      margin-bottom: -1rem;
+    }
+    .exp-text h3 {
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      color: var(--color-white);
+      margin-bottom: var(--space-sm);
+    }
+    .exp-text p {
+      color: var(--color-cream-dim);
+      font-size: 1.02rem;
+      margin-bottom: var(--space-sm);
+      line-height: 1.8;
+    }
+    .exp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .exp-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--color-cream-dim);
+    }
+    .exp-list li::before {
+      content: '—';
+      color: var(--color-gold);
+      flex-shrink: 0;
+      margin-top: 0.05em;
+    }
+
+    /* ── GALLERY STRIP ───────────────────────────────────────── */
+    #gallery {
+      padding: var(--space-lg) 0;
+      overflow: hidden;
+    }
+    .gallery-track {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    .gallery-item {
+      flex-shrink: 0;
+      width: 320px;
+      height: 240px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.06); }
+
+    /* ── DETAILS / EVENT INFO ────────────────────────────────── */
+    #details {
+      background: var(--color-mahogany);
+      padding: var(--space-xl) 0;
+      position: relative;
+      overflow: hidden;
+    }
+    #details::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 80% 50%, rgba(184,134,11,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+    .details-left h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      color: var(--color-white);
+      margin-bottom: var(--space-md);
+    }
+    .details-left p {
+      color: var(--color-cream-dim);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: var(--space-lg);
+    }
+    .detail-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .detail-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 1.25rem var(--space-md);
+      background: rgba(10,3,1,0.4);
+      border: 1px solid rgba(184,134,11,0.18);
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(8px);
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .detail-card:hover {
+      border-color: rgba(184,134,11,0.5);
+      background: rgba(10,3,1,0.6);
+    }
+    .detail-icon { font-size: 1.5rem; width: 2rem; text-align: center; }
+    .detail-info { flex: 1; }
+    .detail-info .label { margin-bottom: 0.2rem; }
+    .detail-info .value {
+      color: var(--color-white);
+      font-size: 1rem;
+      font-weight: 400;
+    }
+    .detail-info .value strong { color: var(--color-gold); }
+
+    .pricing-card {
+      background: rgba(10,3,1,0.5);
+      border: 1px solid rgba(184,134,11,0.25);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      backdrop-filter: blur(16px);
+      position: relative;
+      overflow: hidden;
+    }
+    .pricing-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+    }
+    .pricing-badge {
+      display: inline-block;
+      padding: 0.3rem 0.9rem;
+      background: rgba(184,134,11,0.15);
+      border: 1px solid rgba(184,134,11,0.4);
+      border-radius: 100px;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      font-family: var(--font-display);
+      margin-bottom: var(--space-sm);
+    }
+    .pricing-price {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--color-white);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .pricing-price sup {
+      font-size: 1.8rem;
+      vertical-align: super;
+      color: var(--color-gold);
+    }
+    .pricing-includes {
+      list-style: none;
+      margin: var(--space-md) 0 var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .pricing-includes li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      color: var(--color-cream-dim);
+    }
+    .pricing-includes li::before {
+      content: '✦';
+      color: var(--color-gold);
+      font-size: 0.6rem;
+    }
+    .pricing-seats {
+      text-align: center;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: rgba(200,180,138,0.5);
+      text-transform: uppercase;
+      font-family: var(--font-display);
+      margin-top: var(--space-sm);
+    }
+    .seat-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      margin: 0.5rem 0;
+      overflow: hidden;
+    }
+    .seat-fill {
+      height: 100%;
+      width: 78%;
+      background: linear-gradient(90deg, var(--color-maroon), var(--color-gold));
+      border-radius: 100px;
+    }
+
+    /* ── TESTIMONIALS ────────────────────────────────────────── */
+    #testimonials {
+      background: var(--color-bg);
+      padding: var(--space-xl) 0;
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-top: var(--space-xl);
+    }
+    .testimonial-card {
+      padding: var(--space-lg) var(--space-md);
+      border: 1px solid rgba(184,134,11,0.12);
+      border-radius: var(--radius-lg);
+      background: rgba(61,12,2,0.15);
+      transition: border-color var(--transition), transform var(--transition);
+      position: relative;
+    }
+    .testimonial-card:hover {
+      border-color: rgba(184,134,11,0.35);
+      transform: translateY(-4px);
+    }
+    .testimonial-card.featured {
+      border-color: rgba(184,134,11,0.35);
+      background: rgba(61,12,2,0.35);
+      grid-row: span 1;
+    }
+    .quote-mark {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      color: var(--color-gold);
+      opacity: 0.3;
+      line-height: 1;
+      margin-bottom: -1rem;
+    }
+    .testimonial-text {
+      font-size: 0.97rem;
+      color: var(--color-cream-dim);
+      line-height: 1.8;
+      margin-bottom: var(--space-md);
+      font-style: italic;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .author-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(184,134,11,0.4);
+    }
+    .author-name {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-white);
+      letter-spacing: 0.06em;
+    }
+    .author-city {
+      font-size: 0.72rem;
+      color: var(--color-gold);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .stars { color: var(--color-gold); font-size: 0.75rem; margin-bottom: 0.4rem; }
+
+    /* ── CURRICULUM ──────────────────────────────────────────── */
+    #curriculum {
+      background: linear-gradient(180deg, var(--color-bg), var(--color-mahogany));
+      padding: var(--space-xl) 0;
+    }
+    .curriculum-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-top: var(--space-xl);
+    }
+    .module-card {
+      padding: var(--space-md) var(--space-md) var(--space-lg);
+      border: 1px solid rgba(184,134,11,0.12);
+      border-radius: var(--radius-lg);
+      transition: border-color var(--transition), background var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .module-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .module-card:hover { border-color: rgba(184,134,11,0.3); }
+    .module-card:hover::after { opacity: 1; }
+    .module-day {
+      font-family: var(--font-display);
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      margin-bottom: 0.75rem;
+    }
+    .module-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+    .module-title {
+      font-size: 1.1rem;
+      color: var(--color-white);
+      margin-bottom: 0.65rem;
+    }
+    .module-desc {
+      font-size: 0.88rem;
+      color: var(--color-cream-dim);
+      line-height: 1.7;
+    }
+
+    /* ── INSTRUCTOR ──────────────────────────────────────────── */
+    #instructor {
+      background: var(--color-mahogany);
+      padding: var(--space-xl) 0;
+    }
+    .instructor-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: var(--space-xl);
+      align-items: center;
+    }
+    .instructor-photo {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 3/4;
+    }
+    .instructor-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .instructor-photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(61,12,2,0.7) 0%, transparent 50%);
+    }
+    .instructor-photo-badge {
+      position: absolute;
+      bottom: var(--space-sm);
+      left: var(--space-sm);
+      right: var(--space-sm);
+      background: rgba(10,3,1,0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(184,134,11,0.3);
+      border-radius: var(--radius-md);
+      padding: 1rem var(--space-sm);
+      text-align: center;
+    }
+    .instructor-name {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--color-white);
+      margin-bottom: 0.25rem;
+    }
+    .instructor-title-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      font-family: var(--font-display);
+    }
+    .instructor-content h2 {
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      color: var(--color-white);
+      margin-bottom: var(--space-md);
+    }
+    .instructor-content p {
+      color: var(--color-cream-dim);
+      font-size: 1.02rem;
+      line-height: 1.8;
+      margin-bottom: var(--space-sm);
+    }
+    .instructor-accolades {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    .accolade {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid rgba(184,134,11,0.25);
+      border-radius: 100px;
+      font-size: 0.78rem;
+      color: var(--color-cream-dim);
+      letter-spacing: 0.08em;
+    }
+    .accolade-icon { color: var(--color-gold); }
+
+    /* ── CTA ─────────────────────────────────────────────────── */
+    #register {
+      position: relative;
+      padding: var(--space-xl) 0;
+      text-align: center;
+      overflow: hidden;
+    }
+    .cta-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.pexels.com/photos/33882832/pexels-photo-33882832.jpeg');
+      background-size: cover;
+      background-position: center;
+    }
+    .cta-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(10,3,1,0.88), rgba(61,12,2,0.82));
+    }
+    .cta-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .cta-title {
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      color: var(--color-white);
+      margin-bottom: var(--space-sm);
+    }
+    .cta-title em { color: var(--color-gold); font-style: italic; }
+    .cta-sub {
+      color: var(--color-cream-dim);
+      font-size: 1.05rem;
+      margin-bottom: var(--space-lg);
+    }
+    .cta-form {
+      display: flex;
+      gap: var(--space-sm);
+      max-width: 520px;
+      margin: 0 auto var(--space-sm);
+    }
+    .cta-input {
+      flex: 1;
+      padding: 1rem 1.4rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(239,223,187,0.2);
+      border-radius: var(--radius-sm);
+      color: var(--color-white);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .cta-input::placeholder { color: rgba(200,180,138,0.4); }
+    .cta-input:focus { border-color: var(--color-gold); }
+    .cta-disclaimer {
+      font-size: 0.75rem;
+      color: rgba(200,180,138,0.45);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      background: var(--color-bg);
+      border-top: 1px solid rgba(184,134,11,0.12);
+      padding: var(--space-lg) 0 var(--space-md);
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      gap: var(--space-lg);
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid rgba(184,134,11,0.1);
+      margin-bottom: var(--space-md);
+    }
+    .footer-brand .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      margin-bottom: 0.75rem;
+    }
+    .footer-brand p {
+      font-size: 0.85rem;
+      color: rgba(200,180,138,0.5);
+      line-height: 1.7;
+      max-width: 240px;
+    }
+    .footer-center { text-align: center; }
+    .footer-ornament {
+      font-size: 2.5rem;
+      color: var(--color-gold);
+      opacity: 0.4;
+      line-height: 1;
+    }
+    .footer-nav { display: flex; flex-direction: column; align-items: flex-end; gap: 0.65rem; }
+    .footer-nav a {
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(200,180,138,0.5);
+      font-family: var(--font-display);
+      transition: color var(--transition);
+    }
+    .footer-nav a:hover { color: var(--color-gold); }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-copy {
+      font-size: 0.72rem;
+      color: rgba(200,180,138,0.3);
+      letter-spacing: 0.1em;
+    }
+    .footer-location {
+      font-size: 0.72rem;
+      color: rgba(200,180,138,0.3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: var(--font-display);
+    }
+
+    /* ── Animations ──────────────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .stats-grid          { grid-template-columns: repeat(2, 1fr); }
+      .exp-row             { grid-template-columns: 1fr; }
+      .exp-row.reverse .exp-img  { order: unset; }
+      .exp-row.reverse .exp-text { order: unset; }
+      .testimonials-grid   { grid-template-columns: 1fr; }
+      .curriculum-grid     { grid-template-columns: 1fr 1fr; }
+      .details-grid        { grid-template-columns: 1fr; }
+      .instructor-layout   { grid-template-columns: 1fr; }
+      .instructor-photo    { max-width: 360px; margin: 0 auto; }
+      .footer-top          { grid-template-columns: 1fr; text-align: center; }
+      .footer-brand p      { max-width: 100%; }
+      .footer-nav          { align-items: center; }
+      .footer-bottom       { flex-direction: column; gap: 0.5rem; }
+      .nav-links           { display: none; }
+      .hero-badges         { display: none; }
+    }
+    @media (max-width: 600px) {
+      :root { --space-xl: 4rem; }
+      .curriculum-grid { grid-template-columns: 1fr; }
+      .cta-form        { flex-direction: column; }
+      .hero-actions    { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="main-nav">
+    <div class="nav-logo">L'Arte della Pizza</div>
+    <ul class="nav-links">
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#curriculum">Curriculum</a></li>
+      <li><a href="#instructor">Maestro</a></li>
+      <li><a href="#details">Details</a></li>
+    </ul>
+    <a href="#register" class="nav-cta">Reserve Your Seat</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          <span class="h-label">Napoli · September 2025 · By Invitation Only</span>
+        </div>
+        <h1 class="h-display hero-title">
+          L'Arte<br/>della<br/><em>Pizza</em>
+        </h1>
+        <p class="hero-subtitle">
+          A once-a-year elite masterclass in the birthplace of pizza.
+          Twelve seats. Three days. A lifetime of mastery.
+        </p>
+        <div class="hero-actions">
+          <a href="#register" class="btn-primary">Apply for 2025</a>
+          <a href="#experience" class="btn-ghost">Discover the Experience</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-badges">
+      <div class="hero-badge">
+        <span class="hero-badge-icon">🏆</span>
+        <div class="hero-badge-text">
+          <strong>12 Years Running</strong>
+          Elite Masterclass
+        </div>
+      </div>
+      <div class="hero-badge">
+        <span class="hero-badge-icon">🍕</span>
+        <div class="hero-badge-text">
+          <strong>Only 12 Seats</strong>
+          Worldwide Selection
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section id="manifesto">
+    <div class="container">
+      <p class="manifesto-quote">
+        Pizza is not a recipe. It is a philosophy — born from fire, flour, and the soul of Napoli. Here, we do not teach shortcuts. We teach truth.
+      </p>
+      <p class="manifesto-attr">— Maestro Antonio De Luca · Founder</p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item fade-up">
+          <div class="stat-num">12</div>
+          <div class="stat-label">Seats per Year</div>
+        </div>
+        <div class="stat-item fade-up" style="transition-delay:0.1s">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Immersive Days</div>
+        </div>
+        <div class="stat-item fade-up" style="transition-delay:0.2s">
+          <div class="stat-num">500°</div>
+          <div class="stat-label">Wood-Fire Mastery</div>
+        </div>
+        <div class="stat-item fade-up" style="transition-delay:0.3s">
+          <div class="stat-num">12+</div>
+          <div class="stat-label">Years of Tradition</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="section-pad">
+    <div class="container">
+      <div class="exp-section-header fade-up">
+        <p class="h-label">The Experience</p>
+        <div class="gold-divider"><span></span></div>
+        <h2 class="h-title section-title">Three Days of<br/>Pure Artistry</h2>
+        <p class="section-subtitle">From dawn flour selection to the final char of a perfect cornicione — every moment is a lesson in mastery.</p>
+      </div>
+
+      <!-- Row 1 -->
+      <div class="exp-row fade-up">
+        <div class="exp-img">
+          <img
+            src="https://images.pexels.com/photos/6223171/pexels-photo-6223171.jpeg"
+            alt="Chef hands shaping pizza dough on floured surface — Antonius Ferret on Pexels"
+            loading="lazy"
+          />
+          <div class="exp-img-overlay"></div>
+          <span class="exp-img-tag">Day One · The Dough</span>
+        </div>
+        <div class="exp-text">
+          <div class="exp-num">01</div>
+          <h3 class="h-title">The Living Dough</h3>
+          <p>Discover the alchemy of flour, water, salt, and time. You will learn to read fermentation by touch, build gluten structure by hand, and understand why Neapolitan dough breathes differently from any other in the world.</p>
+          <ul class="exp-list">
+            <li>Selecting 00 flour and understanding protein content</li>
+            <li>Traditional hand-kneading & windowpane test</li>
+            <li>72-hour cold fermentation protocol</li>
+            <li>Ball formation & resting science</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="exp-row reverse fade-up">
+        <div class="exp-text">
+          <div class="exp-num">02</div>
+          <h3 class="h-title">The Sacred Fire</h3>
+          <p>Fire management is not a skill — it is a language. You will learn to build, maintain, and read the wood-fired oven at 485°C, understanding how radiant heat, floor temperature and flame arc create the perfect leopard-spotted crust.</p>
+          <ul class="exp-list">
+            <li>Wood selection & fire architecture</li>
+            <li>Floor temperature mapping & management</li>
+            <li>The 60–90 second window: reading the bake</li>
+            <li>Recovery techniques between pizzas</li>
+          </ul>
+        </div>
+        <div class="exp-img">
+          <img
+            src="https://images.pexels.com/photos/33882832/pexels-photo-33882832.jpeg"
+            alt="Pizza being baked in traditional wood-fired oven — Christopher Welsch Leveroni on Pexels"
+            loading="lazy"
+          />
+          <div class="exp-img-overlay"></div>
+          <span class="exp-img-tag">Day Two · The Oven</span>
+        </div>
+      </div>
+
+      <!-- Row 3 -->
+      <div class="exp-row fade-up">
+        <div class="exp-img">
+          <img
+            src="https://pixabay.com/get/gbecf881311998cbdc1d7cefce5d6d0ff1c6053efa7af3f464db1398ce467dcf527836d7b617a5f8263d2333ec95aad78.jpg"
+            alt="Fresh mozzarella tomato basil Italian ingredients — TaniAviles on Pixabay"
+            loading="lazy"
+          />
+          <div class="exp-img-overlay"></div>
+          <span class="exp-img-tag">Day Three · The Soul</span>
+        </div>
+        <div class="exp-text">
+          <div class="exp-num">03</div>
+          <h3 class="h-title">The Neapolitan Soul</h3>
+          <p>The simplest pizza is the hardest to perfect. On day three, you source ingredients from the Mercato di Porta Nolana at dawn, visit a local mozzarella producer in the countryside, and assemble your masterwork under the open Neapolitan sky.</p>
+          <ul class="exp-list">
+            <li>San Marzano DOP tomatoes — selection & preparation</li>
+            <li>Fior di latte vs. buffalo mozzarella masterclass</li>
+            <li>Topping philosophy: less is more</li>
+            <li>Final tasting & critique dinner</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY STRIP -->
+  <section id="gallery">
+    <div class="gallery-track">
+      <div class="gallery-item">
+        <img src="https://images.pexels.com/photos/28945103/pexels-photo-28945103.jpeg"
+             alt="Margherita pizza with fresh basil — Nano Erdozain on Pexels" loading="lazy"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.pexels.com/photos/29021744/pexels-photo-29021744.jpeg"
+             alt="Chef prepares pizza in traditional brick oven — Nano Erdozain on Pexels" loading="lazy"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.pexels.com/photos/12530466/pexels-photo-12530466.jpeg"
+             alt="Aerial view of Sant'Elmo Castle and Naples cityscape at sunset — Kelly on Pexels" loading="lazy"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.pexels.com/photos/6605181/pexels-photo-6605181.jpeg"
+             alt="Chef expertly kneads pizza dough in rustic kitchen — Kampus Production on Pexels" loading="lazy"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.pexels.com/photos/29039072/pexels-photo-29039072.jpeg"
+             alt="Close-up of Neapolitan pizza and wine — Nano Erdozain on Pexels" loading="lazy"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.pexels.com/photos/11856672/pexels-photo-11856672.jpeg"
+             alt="Aerial view of Mount Vesuvius overlooking Castellammare di Stabia at sunset — Francesco Meglio on Pexels" loading="lazy"/>
+      </div>
+    </div>
+  </section>
+
+  <!-- CURRICULUM -->
+  <section id="curriculum" class="section-pad">
+    <div class="container">
+      <div class="exp-section-header fade-up">
+        <p class="h-label">What You Will Learn</p>
+        <div class="gold-divider"><span></span></div>
+        <h2 class="h-title section-title">The Full Curriculum</h2>
+        <p class="section-subtitle">Nine modules across three days, designed for those who already cook — and want to truly master.</p>
+      </div>
+      <div class="curriculum-grid">
+        <div class="module-card fade-up">
+          <div class="module-day">Day 1 · Morning</div>
+          <div class="module-icon">🌾</div>
+          <h4 class="h-title module-title">Flour & Water Theory</h4>
+          <p class="module-desc">Protein content, hydration ratios, and the science of gluten networks in traditional Neapolitan dough.</p>
+        </div>
+        <div class="module-card fade-up" style="transition-delay:0.08s">
+          <div class="module-day">Day 1 · Afternoon</div>
+          <div class="module-icon">🤲</div>
+          <h4 class="h-title module-title">Hand Technique</h4>
+          <p class="module-desc">The Neapolitan slap-stretch method. No rolling pins. No shortcuts. Pure feel and muscle memory.</p>
+        </div>
+        <div class="module-card fade-up" style="transition-delay:0.16s">
+          <div class="module-day">Day 1 · Evening</div>
+          <div class="module-icon">🧫</div>
+          <h4 class="h-title module-title">Fermentation Lab</h4>
+          <p class="module-desc">Reading yeast, controlling temperature, and building the flavour complexity that defines world-class dough.</p>
+        </div>
+        <div class="module-card fade-up" style="transition-delay:0.08s">
+          <div class="module-day">Day 2 · Morning</div>
+          <div class="module-icon">🔥</div>
+          <h4 class="h-title module-title">Fire Architecture</h4>
+          <p class="module-desc">Building and managing a wood-fire at 485°C from first light. Radiant heat, floor heat, flame control.</p>
+        </div>
+        <div class="module-card fade-up" style="transition-delay:0.16s">
+          <div class="module-day">Day 2 · Afternoon</div>
+          <div class="module-icon">🍕</div>
+          <h4 class="h-title module-title">The Perfect Bake</h4>
+          <p class="module-desc">Launching, rotating, reading colour and char. The 60-second window that separates good from transcendent.</p>
+        </div>
+        <div class="module-card fade-up" style="transition-delay:0.24s">
+          <div class="module-day">Day 2 · Evening</div>
+          <div class="module-icon">🍷</div>
+          <h4 class="h-title module-title">Wine & Pairing Dinner</h4>
+          <p class="module-desc">An intimate Campanian wine dinner with your cohort, guided by a Napoli sommelier and local producer.</p>
+        </div>
+        <div class="module-card fade-up">
+          <div class="module-day">Day 3 · Morning</div>
+          <div class="module-icon">🧀</div>
+          <h4 class="h-title module-title">Market to Kitchen</h4>
+          <p class="module-desc">Dawn visit to Porta Nolana market. Source San Marzano, meet the mozzarella maker, taste the terroir.</p>
+        </div>
+        <div class="module-card fade-up" style="transition-delay:0.08s">
+          <div class="module-day">Day 3 · Afternoon</div>
+          <div class="module-icon">🎯</div>
+          <h4 class="h-title module-title">The Masterwork</h4>
+          <p class="module-desc">Design, prepare, and bake your signature pizza — evaluated by the Maestro and your fellow participants.</p>
+        </div>
+        <div class="module-card fade-up" style="transition-delay:0.16s">
+          <div class="module-day">Day 3 · Evening</div>
+          <div class="module-icon">📜</div>
+          <h4 class="h-title module-title">Certification Ceremony</h4>
+          <p class="module-desc">Receive your Certificato dell'Arte — a hand-signed recognition of your mastery, valid for a lifetime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTRUCTOR -->
+  <section id="instructor" class="section-pad">
+    <div class="container">
+      <div class="instructor-layout">
+        <div class="instructor-photo fade-up">
+          <img
+            src="https://images.pexels.com/photos/6605188/pexels-photo-6605188.jpeg"
+            alt="Maestro Antonio De Luca — Kampus Production on Pexels"
+          />
+          <div class="instructor-photo-overlay"></div>
+          <div class="instructor-photo-badge">
+            <div class="instructor-name">Antonio De Luca</div>
+            <div class="instructor-title-tag">Maestro Pizzaiolo · Napoli</div>
+          </div>
+        </div>
+        <div class="instructor-content fade-up">
+          <p class="h-label">Your Maestro</p>
+          <div class="gold-divider"><span></span></div>
+          <h2 class="h-title">Born in the Quartieri.<br/>Forged by Fire.</h2>
+          <p>Antonio De Luca learned to make pizza before he learned to read. The grandson of a Quartieri Spagnoli pizzaiolo, he spent his formative years at the ancestral forno in Via Toledo before training under three Michelin-starred chefs across Italy and France.</p>
+          <p>In 2013, he founded this masterclass as a declaration: that the world's most beloved food deserved the same reverence as haute cuisine. Since then, 144 students from 41 countries have passed through his oven — each leaving with changed hands and a changed perspective.</p>
+          <p>Antonio holds the highest certification from the <em>Associazione Verace Pizza Napoletana</em> and serves as a judge at the annual World Pizza Championship in Parma.</p>
+          <div class="instructor-accolades">
+            <div class="accolade"><span class="accolade-icon">✦</span> AVPN Master Certified</div>
+            <div class="accolade"><span class="accolade-icon">✦</span> 12 Years of Teaching</div>
+            <div class="accolade"><span class="accolade-icon">✦</span> 144 Alumni, 41 Countries</div>
+            <div class="accolade"><span class="accolade-icon">✦</span> World Pizza Championship Judge</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="section-pad">
+    <div class="container">
+      <div class="exp-section-header fade-up">
+        <p class="h-label">Past Participants</p>
+        <div class="gold-divider"><span></span></div>
+        <h2 class="h-title section-title">What They Say</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card featured fade-up">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p class="testimonial-text">Three days in Napoli changed the way I understand food entirely. Antonio doesn't teach you to make pizza — he teaches you to listen to it. I came home a different cook.</p>
+          <div class="testimonial-author">
+            <img class="author-avatar" src="https://i.pravatar.cc/84?u=sophie-bernard" alt="Sophie Bernard avatar"/>
+            <div>
+              <div class="author-name">Sophie Bernard</div>
+              <div class="author-city">Paris, France · 2024</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card fade-up" style="transition-delay:0.1s">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p class="testimonial-text">I had baked bread professionally for 15 years. Nothing prepared me for what I'd learn here. The fermentation session alone was worth the flight.</p>
+          <div class="testimonial-author">
+            <img class="author-avatar" src="https://i.pravatar.cc/84?u=james-whitfield" alt="James Whitfield avatar"/>
+            <div>
+              <div class="author-name">James Whitfield</div>
+              <div class="author-city">London, UK · 2023</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card fade-up" style="transition-delay:0.2s">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p class="testimonial-text">The intimacy of twelve people in that ancient kitchen, with Vesuvius outside the window — I will never forget it. A singular experience on earth.</p>
+          <div class="testimonial-author">
+            <img class="author-avatar" src="https://i.pravatar.cc/84?u=yuki-tanaka" alt="Yuki Tanaka avatar"/>
+            <div>
+              <div class="author-name">Yuki Tanaka</div>
+              <div class="author-city">Tokyo, Japan · 2024</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETAILS -->
+  <section id="details" class="section-pad">
+    <div class="container">
+      <div class="details-grid">
+        <div class="details-left fade-up">
+          <p class="h-label">Event Details</p>
+          <div class="gold-divider"><span></span></div>
+          <h2 class="h-title">Everything You Need<br/>to Know</h2>
+          <p>The 2025 edition is limited to twelve participants selected from a global application pool. Participants are chosen for their passion, their seriousness of intent, and the diversity they bring to the cohort.</p>
+          <div class="detail-cards">
+            <div class="detail-card">
+              <span class="detail-icon">📅</span>
+              <div class="detail-info">
+                <p class="h-label label">Dates</p>
+                <p class="value"><strong>September 12–14, 2025</strong></p>
+              </div>
+            </div>
+            <div class="detail-card">
+              <span class="detail-icon">📍</span>
+              <div class="detail-info">
+                <p class="h-label label">Location</p>
+                <p class="value"><strong>Quartieri Spagnoli, Napoli</strong> · Italy</p>
+              </div>
+            </div>
+            <div class="detail-card">
+              <span class="detail-icon">🌍</span>
+              <div class="detail-info">
+                <p class="h-label label">Language</p>
+                <p class="value">Italian & English · <strong>Translation provided</strong></p>
+              </div>
+            </div>
+            <div class="detail-card">
+              <span class="detail-icon">🏨</span>
+              <div class="detail-info">
+                <p class="h-label label">Accommodation</p>
+                <p class="value">Not included · <strong>Partner hotels available</strong></p>
+              </div>
+            </div>
+            <div class="detail-card">
+              <span class="detail-icon">✈️</span>
+              <div class="detail-info">
+                <p class="h-label label">Nearest Airport</p>
+                <p class="value"><strong>Napoli Capodichino (NAP)</strong> · 15 min</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fade-up" style="transition-delay:0.15s">
+          <div class="pricing-card">
+            <div class="pricing-badge">2025 Edition</div>
+            <div class="h-label" style="margin-bottom:0.5rem;">Investment</div>
+            <div class="pricing-price"><sup>€</sup>4,800</div>
+            <p class="body-sm" style="color:var(--color-cream-dim); margin-top:0.25rem;">per participant · all-inclusive</p>
+            <ul class="pricing-includes">
+              <li>3 full days of hands-on instruction</li>
+              <li>All ingredients, flours & materials</li>
+              <li>Market excursion & mozzarella visit</li>
+              <li>Campanian wine dinner (Day 2)</li>
+              <li>All meals during the programme</li>
+              <li>Certificato dell'Arte (hand-signed)</li>
+              <li>Digital recipe book & technique guide</li>
+              <li>Lifetime alumni community access</li>
+            </ul>
+            <a href="#register" class="btn-primary" style="width:100%; text-align:center; display:block;">Apply Now — 2025 Edition</a>
+            <div class="seat-bar"><div class="seat-fill"></div></div>
+            <p class="pricing-seats">9 of 12 seats reserved · 3 remaining</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGISTER CTA -->
+  <section id="register">
+    <div class="cta-bg"></div>
+    <div class="cta-overlay"></div>
+    <div class="container section-pad">
+      <div class="cta-content fade-up">
+        <p class="h-label" style="margin-bottom:var(--space-sm)">Reserve Your Seat</p>
+        <h2 class="h-display cta-title">Your Table<br/>Awaits in <em>Napoli</em></h2>
+        <p class="cta-sub">Leave your email and we will send you the application form, full programme details, and accommodation recommendations.</p>
+        <form class="cta-form" onsubmit="handleSubmit(event)">
+          <input
+            class="cta-input"
+            type="email"
+            placeholder="your@email.com"
+            required
+            aria-label="Email address"
+          />
+          <button type="submit" class="btn-primary">Send Application</button>
+        </form>
+        <p class="cta-disclaimer">We respond within 48 hours. No spam, ever. Your seat is not reserved until confirmed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo">L'Arte della Pizza</div>
+          <p>An elite homemade pizza masterclass held once a year in the heart of Napoli, Italy.</p>
+        </div>
+        <div class="footer-center">
+          <div class="footer-ornament">✦</div>
+        </div>
+        <nav class="footer-nav">
+          <a href="#experience">Experience</a>
+          <a href="#curriculum">Curriculum</a>
+          <a href="#instructor">Maestro</a>
+          <a href="#details">Details & Pricing</a>
+          <a href="#register">Apply</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 L'Arte della Pizza · All Rights Reserved</p>
+        <p class="footer-location">📍 Quartieri Spagnoli, Napoli, Italia</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll behaviour
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Hero BG parallax + load animation
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('load', () => {
+      setTimeout(() => heroBg.classList.add('loaded'), 100);
+    });
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      heroBg.style.transform = `scale(1) translateY(${y * 0.3}px)`;
+    });
+
+    // Scroll-triggered fade-up
+    const fadeEls = document.querySelectorAll('.fade-up');
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      }),
+      { threshold: 0.12 }
+    );
+    fadeEls.forEach(el => observer.observe(el));
+
+    // Form submit
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const btn = form.querySelector('button');
+      btn.textContent = 'Application Sent ✦';
+      btn.style.background = 'transparent';
+      btn.style.color = 'var(--color-gold)';
+      btn.style.borderColor = 'var(--color-gold)';
+      btn.disabled = true;
+    }
+  </script>
+</body>
+</html>

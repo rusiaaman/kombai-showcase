@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Classe — Elite Pizza Masterclass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700;1,6..96,900&family=Raleway:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================
+       DESIGN TOKENS
+    ========================================= */
+    :root {
+      --color-black:      #1A1A1A;
+      --color-white:      #F5F0E8;
+      --color-ember:      #D4532B;
+      --color-ember-dark: #B03D1E;
+      --color-sepia:      #8B7355;
+
+      --font-display: 'Bodoni Moda', Georgia, serif;
+      --font-body:    'Raleway', sans-serif;
+
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --transition-reveal: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    /* =========================================
+       RESET & BASE
+    ========================================= */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--color-black);
+      color: var(--color-white);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    img { display: block; }
+
+    /* =========================================
+       SCROLL REVEAL
+    ========================================= */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: var(--transition-reveal);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.12s; }
+    .reveal-d2 { transition-delay: 0.24s; }
+    .reveal-d3 { transition-delay: 0.36s; }
+
+    /* =========================================
+       SHARED UTILITIES
+    ========================================= */
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--color-ember);
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(52px, 8vw, 104px);
+      font-weight: 900;
+      font-style: italic;
+      text-transform: uppercase;
+      line-height: 0.88;
+      color: var(--color-white);
+    }
+    .pad-h { padding-left: 56px; padding-right: 56px; }
+
+    /* =========================================
+       NAV
+    ========================================= */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 56px;
+      transform: translateY(-110%);
+      transition: transform 0.55s var(--ease-out);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      background: rgba(26, 26, 26, 0.72);
+      border-bottom: 1px solid rgba(245, 240, 232, 0.07);
+    }
+    .nav.visible { transform: translateY(0); }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--color-white);
+      text-decoration: none;
+    }
+    .nav-cta {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--color-white);
+      text-decoration: none;
+      border: 1px solid rgba(245, 240, 232, 0.35);
+      padding: 10px 26px;
+      transition: background 0.35s, border-color 0.35s;
+    }
+    .nav-cta:hover {
+      background: var(--color-ember);
+      border-color: var(--color-ember);
+    }
+
+    /* =========================================
+       ACT I — HERO
+    ========================================= */
+    .hero {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 600px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://pixabay.com/get/ge98dd4d579aad3cb5cc8f4a33a8c513c6b3c700824d614b690cca4895e7e133161e19edcf01efc17dea8d26e1e453a0d.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      filter: brightness(0.4) saturate(0.8);
+      transform: scale(1.06);
+      transition: transform 9s ease;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+
+    /* Grain texture overlay */
+    .hero-grain {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    /* Bottom fade */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 45%;
+      background: linear-gradient(to top, var(--color-black) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 0 56px 88px;
+      width: 100%;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--color-ember);
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(108px, 20vw, 280px);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 0.82;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--color-white);
+      margin-left: -6px;
+      /* Intentionally bleeds off-screen */
+      white-space: nowrap;
+    }
+    .hero-title span { display: block; }
+    .hero-subtitle {
+      margin-top: 36px;
+      font-family: var(--font-body);
+      font-size: clamp(14px, 1.4vw, 17px);
+      font-weight: 200;
+      font-style: italic;
+      letter-spacing: 0.04em;
+      color: rgba(245, 240, 232, 0.62);
+      max-width: 500px;
+      line-height: 1.7;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 44px;
+      right: 56px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--font-body);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: rgba(245, 240, 232, 0.3);
+    }
+    .hero-scroll::before {
+      content: '';
+      width: 44px;
+      height: 1px;
+      background: rgba(245, 240, 232, 0.25);
+    }
+
+    /* =========================================
+       ACT II — THE LINEAGE
+    ========================================= */
+    .lineage {
+      padding: 180px 0 140px;
+    }
+    .lineage-header {
+      padding: 0 56px;
+      margin-bottom: 80px;
+    }
+    .lineage-intro {
+      margin-top: 24px;
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: rgba(245, 240, 232, 0.38);
+      max-width: 340px;
+      line-height: 1.9;
+    }
+
+    /* Sticky horizontal-scroll container */
+    .lineage-sticky-outer {
+      position: relative;
+      height: 480px; /* controls how long you scroll before moving past */
+    }
+    .lineage-sticky-inner {
+      position: sticky;
+      top: 0;
+      height: 480px;
+      overflow: hidden;
+    }
+    .lineage-track {
+      display: flex;
+      height: 100%;
+      width: max-content;
+      padding: 0 56px;
+      align-items: center;
+      gap: 0;
+      will-change: transform;
+      position: relative;
+    }
+    /* Continuous thin line at mid-height */
+    .lineage-track::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 56px;
+      right: 56px;
+      height: 1px;
+      background: rgba(139, 115, 85, 0.25);
+      pointer-events: none;
+    }
+
+    .lineage-item {
+      display: flex;
+      flex-direction: column;
+      width: 280px;
+      flex-shrink: 0;
+      padding-right: 64px;
+      position: relative;
+    }
+    .lineage-item:last-child { padding-right: 0; }
+
+    .lineage-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-ember);
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+    .lineage-year {
+      font-family: var(--font-display);
+      font-size: 58px;
+      font-weight: 900;
+      color: rgba(139, 115, 85, 0.22);
+      line-height: 1;
+      margin-bottom: 32px;
+      letter-spacing: -0.02em;
+    }
+    .lineage-event-title {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-white);
+      margin-bottom: 10px;
+    }
+    .lineage-event-text {
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(245, 240, 232, 0.45);
+      line-height: 1.75;
+    }
+
+    /* =========================================
+       ACT III — THE ARENA
+    ========================================= */
+    .arena {
+      padding: 100px 56px 180px;
+    }
+    .arena-header {
+      margin-bottom: 56px;
+    }
+    .arena-visual {
+      position: relative;
+      width: 100%;
+      height: clamp(460px, 62vh, 700px);
+      overflow: hidden;
+    }
+    .arena-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.52) saturate(0.85);
+      transition: transform 0.8s var(--ease-out);
+    }
+    .arena-visual:hover .arena-img { transform: scale(1.02); }
+
+    /* Glassmorphism card */
+    .arena-card {
+      position: absolute;
+      bottom: 44px;
+      right: 44px;
+      background: rgba(245, 240, 232, 0.07);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(245, 240, 232, 0.13);
+      padding: 44px 52px;
+      min-width: 320px;
+    }
+    .arena-card-row {
+      margin-bottom: 28px;
+    }
+    .arena-card-row:last-child { margin-bottom: 0; }
+    .arena-card-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--color-ember);
+      margin-bottom: 5px;
+    }
+    .arena-card-value {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-white);
+      letter-spacing: 0.01em;
+    }
+
+    /* =========================================
+       ACT IV — THE MAESTRI
+    ========================================= */
+    .maestri {
+      padding: 100px 56px 180px;
+    }
+    .maestri-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 72px;
+      gap: 40px;
+    }
+    .maestri-note {
+      font-size: 13px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(245, 240, 232, 0.38);
+      max-width: 260px;
+      text-align: right;
+      line-height: 1.8;
+      letter-spacing: 0.04em;
+    }
+    .maestri-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .maestri-item {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+    }
+    .maestri-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      filter: grayscale(100%) contrast(1.18) brightness(0.82);
+      transition: transform 0.9s var(--ease-out), filter 0.9s var(--ease-out);
+    }
+    .maestri-item:hover .maestri-img {
+      transform: scale(1.04);
+      filter: grayscale(100%) contrast(1.25) brightness(0.68);
+    }
+    .maestri-grad {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(26,26,26,0.95) 0%, rgba(26,26,26,0) 52%);
+    }
+    .maestri-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 36px;
+    }
+    .maestri-name {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--color-white);
+      margin-bottom: 6px;
+    }
+    .maestri-role {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--color-ember);
+      margin-bottom: 14px;
+    }
+    .maestri-bio {
+      font-size: 12px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(245, 240, 232, 0.58);
+      line-height: 1.75;
+    }
+
+    /* =========================================
+       ACT V — CTA
+    ========================================= */
+    .cta {
+      padding: 180px 56px 200px;
+      text-align: center;
+      position: relative;
+    }
+    .cta::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 56px; right: 56px;
+      height: 1px;
+      background: rgba(245, 240, 232, 0.08);
+    }
+    .cta-act {
+      text-align: center;
+      letter-spacing: 0.5em;
+    }
+    .cta-price-label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: rgba(245, 240, 232, 0.28);
+      margin-bottom: 12px;
+      margin-top: 32px;
+    }
+    .cta-price {
+      font-family: var(--font-display);
+      font-size: clamp(88px, 14vw, 180px);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 0.88;
+      letter-spacing: -0.02em;
+      color: var(--color-white);
+      margin-bottom: 14px;
+    }
+    .cta-note {
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      color: rgba(245, 240, 232, 0.32);
+      margin-bottom: 68px;
+    }
+
+    /* Fill-wipe CTA button */
+    .cta-btn {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--color-white);
+      text-decoration: none;
+      border: 1px solid var(--color-ember);
+      padding: 22px 72px;
+      transition: color 0.45s;
+      margin-bottom: 88px;
+    }
+    .cta-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--color-ember);
+      transform: translateX(-101%);
+      transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+      z-index: -1;
+    }
+    .cta-btn:hover::before { transform: translateX(0); }
+
+    .cta-tagline {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 3.2vw, 40px);
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(245, 240, 232, 0.35);
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+    }
+
+    /* =========================================
+       FOOTER KICKER
+    ========================================= */
+    .footer {
+      padding: 0 56px 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .footer-line {
+      width: 1px;
+      height: 80px;
+      background: rgba(245, 240, 232, 0.1);
+    }
+    .footer-kicker {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: rgba(245, 240, 232, 0.18);
+    }
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+    @media (max-width: 900px) {
+      .pad-h { padding-left: 28px; padding-right: 28px; }
+      .nav { padding: 20px 28px; }
+      .hero-content { padding: 0 28px 64px; }
+      .hero-title { font-size: clamp(80px, 24vw, 160px); }
+      .hero-scroll { right: 28px; }
+
+      .lineage { padding: 120px 0 100px; }
+      .lineage-header { padding: 0 28px; }
+      .lineage-track { padding: 0 28px; }
+      .lineage-track::before { left: 28px; right: 28px; }
+
+      .arena { padding: 80px 28px 120px; }
+      .arena-card { bottom: 24px; right: 24px; left: 24px; min-width: unset; padding: 32px; }
+
+      .maestri { padding: 80px 28px 120px; }
+      .maestri-header { flex-direction: column; align-items: flex-start; }
+      .maestri-note { text-align: left; }
+      .maestri-grid { grid-template-columns: 1fr; }
+
+      .cta { padding: 120px 28px 160px; }
+      .cta::before { left: 28px; right: 28px; }
+
+      .footer { padding: 0 28px 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav" id="nav">
+    <a href="#" class="nav-logo">La Classe</a>
+    <a href="#enroll" class="nav-cta">Enroll</a>
+  </nav>
+
+  <!-- ===================== ACT I — HERO ===================== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Napoli &nbsp;·&nbsp; One Night &nbsp;·&nbsp; Twelve Seats</p>
+      <h1 class="hero-title">
+        <span>LA</span>
+        <span>CLASSE</span>
+      </h1>
+      <p class="hero-subtitle">
+        "You've been making pizza wrong<br>your entire life.<br>One night fixes that."
+      </p>
+    </div>
+    <div class="hero-scroll">Scroll</div>
+  </section>
+
+  <!-- ===================== ACT II — THE LINEAGE ===================== -->
+  <section class="lineage">
+    <div class="lineage-header reveal">
+      <p class="section-label">Act II</p>
+      <h2 class="section-title">The<br>Lineage</h2>
+      <p class="lineage-intro">Three centuries of a craft that did not change. Because it did not need to.</p>
+    </div>
+
+    <!-- Horizontal scroll driven by vertical scroll -->
+    <div class="lineage-sticky-outer" id="lineageOuter">
+      <div class="lineage-sticky-inner">
+        <div class="lineage-track" id="lineageTrack">
+
+          <div class="lineage-item">
+            <div class="lineage-dot"></div>
+            <div class="lineage-year">1734</div>
+            <div class="lineage-event-title">The First Record</div>
+            <div class="lineage-event-text">Port'Alba, Napoli. The world's first documented pizzeria opens. Flatbread meets fire. No one is impressed yet.</div>
+          </div>
+
+          <div class="lineage-item">
+            <div class="lineage-dot"></div>
+            <div class="lineage-year">1830</div>
+            <div class="lineage-event-title">The Permanent Hearth</div>
+            <div class="lineage-event-text">Fixed ovens replace portable stalls. The craft becomes a discipline. Wood burns at 900°F. Patience becomes method.</div>
+          </div>
+
+          <div class="lineage-item">
+            <div class="lineage-dot"></div>
+            <div class="lineage-year">1889</div>
+            <div class="lineage-event-title">The Royal Commission</div>
+            <div class="lineage-event-text">Raffaele Esposito bakes for Queen Margherita. Basil, mozzarella, tomato. The canon is set. Italy stops arguing. Briefly.</div>
+          </div>
+
+          <div class="lineage-item">
+            <div class="lineage-dot"></div>
+            <div class="lineage-year">1984</div>
+            <div class="lineage-event-title">The Codification</div>
+            <div class="lineage-event-text">Associazione Verace Pizza Napoletana founded. Rules written in stone. The dough may not be rolled. This is non-negotiable.</div>
+          </div>
+
+          <div class="lineage-item">
+            <div class="lineage-dot"></div>
+            <div class="lineage-year">2017</div>
+            <div class="lineage-event-title">UNESCO Heritage</div>
+            <div class="lineage-event-text">The art of the Neapolitan pizzaiuolo inscribed as intangible cultural heritage of humanity. The world finally catches up.</div>
+          </div>
+
+          <div class="lineage-item">
+            <div class="lineage-dot"></div>
+            <div class="lineage-year">Now</div>
+            <div class="lineage-event-title">Your Turn</div>
+            <div class="lineage-event-text">Three centuries of knowledge. One evening in a courtyard. Twelve seats remaining. Do not overthink it.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ACT III — THE ARENA ===================== -->
+  <section class="arena">
+    <div class="arena-header reveal">
+      <p class="section-label">Act III</p>
+      <h2 class="section-title">The<br>Arena</h2>
+    </div>
+    <div class="arena-visual reveal reveal-d1">
+      <img
+        src="https://images.pexels.com/photos/5052209/pexels-photo-5052209.jpeg"
+        alt="Aerial view of illuminated courtyard in Basilicata, Italy at night — Edoardo Colombo on Pexels"
+        class="arena-img"
+      >
+      <div class="arena-card">
+        <div class="arena-card-row">
+          <div class="arena-card-label">Venue</div>
+          <div class="arena-card-value">Corte Antica, Napoli</div>
+        </div>
+        <div class="arena-card-row">
+          <div class="arena-card-label">Date</div>
+          <div class="arena-card-value">14 June 2026</div>
+        </div>
+        <div class="arena-card-row">
+          <div class="arena-card-label">Capacity</div>
+          <div class="arena-card-value">Exactly 12 Seats</div>
+        </div>
+        <div class="arena-card-row">
+          <div class="arena-card-label">Duration</div>
+          <div class="arena-card-value">6 Hours</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ACT IV — THE MAESTRI ===================== -->
+  <section class="maestri">
+    <div class="maestri-header reveal">
+      <div>
+        <p class="section-label">Act IV</p>
+        <h2 class="section-title">The<br>Maestri</h2>
+      </div>
+      <p class="maestri-note">Not teachers. Not influencers. Three humans who know something you don't.</p>
+    </div>
+    <div class="maestri-grid">
+
+      <div class="maestri-item reveal">
+        <img
+          src="https://pixabay.com/get/gd39ee711604f638be5c5c52351637ab1cf5cf173c3fee11d1ca1bd3dd8b691e83fdc8f236a73fdbf79041bbe9eeb33dc.jpg"
+          alt="Maestro Ciro Esposito — erwinbosman on Pixabay"
+          class="maestri-img"
+        >
+        <div class="maestri-grad"></div>
+        <div class="maestri-info">
+          <div class="maestri-name">Ciro Esposito</div>
+          <div class="maestri-role">Dough Architecture</div>
+          <div class="maestri-bio">Third-generation pizzaiuolo who has never left Naples and has no intention of doing so.</div>
+        </div>
+      </div>
+
+      <div class="maestri-item reveal reveal-d1">
+        <img
+          src="https://images.pexels.com/photos/32823218/pexels-photo-32823218.jpeg"
+          alt="Maestro Marco De Luca — Deniz Karbaş on Pexels"
+          class="maestri-img"
+        >
+        <div class="maestri-grad"></div>
+        <div class="maestri-info">
+          <div class="maestri-name">Marco De Luca</div>
+          <div class="maestri-role">Fire &amp; Temperature</div>
+          <div class="maestri-bio">Reads a wood-fired oven the way other men read a clock. Rarely wrong.</div>
+        </div>
+      </div>
+
+      <div class="maestri-item reveal reveal-d2">
+        <img
+          src="https://images.pexels.com/photos/4483620/pexels-photo-4483620.jpeg"
+          alt="Maestra Sofia Ferrante — Zura Modebadze on Pexels"
+          class="maestri-img"
+        >
+        <div class="maestri-grad"></div>
+        <div class="maestri-info">
+          <div class="maestri-name">Sofia Ferrante</div>
+          <div class="maestri-role">Fermentation &amp; Time</div>
+          <div class="maestri-bio">Her 72-hour cold fermentation protocol is not a recipe. It is a philosophy.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== ACT V — CTA ===================== -->
+  <section class="cta" id="enroll">
+    <p class="section-label cta-act reveal">Act V</p>
+    <p class="cta-price-label reveal">Investment</p>
+    <div class="cta-price reveal">€1,200</div>
+    <p class="cta-note reveal">Per person &nbsp;·&nbsp; All materials included &nbsp;·&nbsp; Wine served</p>
+    <div class="reveal reveal-d1">
+      <a href="#" class="cta-btn">Secure Your Seat</a>
+    </div>
+    <p class="cta-tagline reveal reveal-d2">
+      "Twelve seats. No replays.<br>No apologies."
+    </p>
+  </section>
+
+  <!-- ===================== FOOTER KICKER ===================== -->
+  <footer class="footer">
+    <div class="footer-line"></div>
+    <p class="footer-kicker">Naples doesn't wait.</p>
+  </footer>
+
+  <script>
+    // ─── Hero BG Ken Burns ───
+    window.addEventListener('load', () => {
+      document.getElementById('heroBg').classList.add('loaded');
+    });
+
+    // ─── Nav: show after hero ───
+    const nav  = document.getElementById('nav');
+    const hero = document.getElementById('hero');
+    const heroObs = new IntersectionObserver(
+      ([e]) => nav.classList.toggle('visible', !e.isIntersecting),
+      { threshold: 0.08 }
+    );
+    heroObs.observe(hero);
+
+    // ─── Scroll Reveal ───
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            revealObs.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -36px 0px' }
+    );
+    revealEls.forEach(el => revealObs.observe(el));
+
+    // ─── Lineage: vertical scroll → horizontal translate ───
+    const lineageOuter = document.getElementById('lineageOuter');
+    const lineageTrack = document.getElementById('lineageTrack');
+
+    function scrubLineage() {
+      const rect      = lineageOuter.getBoundingClientRect();
+      const viewH     = window.innerHeight;
+      // progress 0→1 as the section scrolls through the viewport
+      const total     = rect.height + viewH;
+      const elapsed   = viewH - rect.top;
+      const progress  = Math.max(0, Math.min(1, elapsed / total));
+      const maxScroll = lineageTrack.scrollWidth - lineageOuter.clientWidth;
+      lineageTrack.style.transform = `translateX(-${progress * maxScroll}px)`;
+    }
+
+    window.addEventListener('scroll', scrubLineage, { passive: true });
+    scrubLineage(); // init
+  </script>
+</body>
+</html>
