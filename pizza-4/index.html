@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Ritual of Napoli — Elite Pizza Class MMXXV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700;1,6..96,900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── DESIGN TOKENS ─────────────────────────────────────────── */
+    :root {
+      --charcoal-ash:   #1B1B1B;
+      --ash-deep:       #141414;
+      --ash-mid:        #232323;
+      --ash-light:      #2E2E2E;
+      --flour-white:    #F0EAD6;
+      --flour-dim:      #B8AF9E;
+      --flour-faint:    #6A6459;
+      --burnt-orange:   #C4622D;
+      --burnt-dim:      #8C3E18;
+      --med-blue:       #1D3557;
+      --rule-color:     #333333;
+
+      --font-serif:     'Bodoni Moda', Georgia, serif;
+      --font-mono:      'Space Mono', 'Courier New', monospace;
+
+      --gap-xs:  0.5rem;
+      --gap-sm:  1rem;
+      --gap-md:  2rem;
+      --gap-lg:  4rem;
+      --gap-xl:  8rem;
+      --gap-2xl: 12rem;
+
+      --transition-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-med:  0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ─── RESET & BASE ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--charcoal-ash);
+      color: var(--flour-white);
+      font-family: var(--font-mono);
+      font-size: clamp(13px, 1.2vw, 15px);
+      overflow-x: hidden;
+    }
+
+    body { overflow-x: hidden; }
+
+    /* ─── NOISE OVERLAY ─────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.6;
+      mix-blend-mode: overlay;
+    }
+
+    /* ─── TYPOGRAPHY CLASSES ────────────────────────────────────── */
+    .t-display {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+    }
+
+    .t-heading {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+
+    .t-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--burnt-orange);
+    }
+
+    .t-body {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.85;
+      color: var(--flour-dim);
+    }
+
+    .t-mono-lg {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--flour-white);
+    }
+
+    /* ─── UTILITY ───────────────────────────────────────────────── */
+    .hr {
+      border: none;
+      border-top: 1px solid var(--rule-color);
+      width: 100%;
+    }
+
+    .orange { color: var(--burnt-orange); }
+    .blue   { color: var(--med-blue); }
+    .dim    { color: var(--flour-faint); }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
+      transition: color var(--transition-med);
+    }
+    a:hover { color: var(--burnt-orange); }
+
+    /* ─── SCROLL ANIMATION SYSTEM ───────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity var(--transition-slow), transform var(--transition-slow);
+    }
+    .reveal.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-60px);
+      transition: opacity var(--transition-slow), transform var(--transition-slow);
+    }
+    .reveal-left.in-view {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity var(--transition-slow), transform var(--transition-slow);
+    }
+    .reveal-right.in-view {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+    .reveal-delay-4 { transition-delay: 0.6s; }
+    .reveal-delay-5 { transition-delay: 0.75s; }
+
+    /* ─── NAV ───────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      background: transparent;
+      transition: background 0.8s ease, border-color 0.8s ease;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(20,20,20,0.95);
+      border-color: var(--rule-color);
+      backdrop-filter: blur(8px);
+    }
+    .nav-brand {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: 1.15rem;
+      letter-spacing: 0.05em;
+      color: var(--flour-white);
+      text-decoration: none;
+    }
+    .nav-brand span { color: var(--burnt-orange); }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--flour-dim);
+      transition: color 0.4s;
+    }
+    .nav-links a:hover { color: var(--burnt-orange); }
+    .nav-cta {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--burnt-orange) !important;
+      text-decoration: underline !important;
+      text-underline-offset: 4px;
+    }
+
+    /* ─── HERO ──────────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.pexels.com/photos/29662450/pexels-photo-29662450.jpeg?auto=compress&cs=tinysrgb&w=1920');
+      background-size: cover;
+      background-position: center 40%;
+      filter: grayscale(100%) contrast(1.4) brightness(0.35);
+      will-change: transform;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 3rem var(--gap-lg);
+      height: 100%;
+    }
+
+    .hero-overline {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .hero-overline .t-label { color: var(--burnt-orange); }
+    .hero-overline-line {
+      height: 1px;
+      width: 80px;
+      background: var(--burnt-orange);
+    }
+
+    .hero-title {
+      font-size: clamp(4rem, 10vw, 11rem);
+      color: var(--flour-white);
+      max-width: 80vw;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-mono);
+      font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--flour-dim);
+      max-width: 40ch;
+      line-height: 1.9;
+    }
+
+    .hero-bottom {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 1.5rem 3rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hero-meta {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--flour-faint);
+    }
+
+    .hero-scroll {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--flour-faint);
+    }
+    .scroll-line {
+      width: 40px;
+      height: 1px;
+      background: var(--burnt-orange);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { width: 40px; opacity: 1; }
+      50% { width: 60px; opacity: 0.5; }
+    }
+
+    /* Cursor blink */
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      background: var(--burnt-orange);
+      animation: blink 0.9s step-end infinite;
+      vertical-align: baseline;
+      margin-left: 4px;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ─── SECTION BASE ──────────────────────────────────────────── */
+    section { position: relative; }
+
+    .section-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 3rem;
+    }
+
+    /* ─── SECTION: MANIFESTO ────────────────────────────────────── */
+    #manifesto {
+      padding: var(--gap-2xl) 0;
+      background: var(--charcoal-ash);
+    }
+
+    .manifesto-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: var(--gap-lg);
+      align-items: start;
+    }
+
+    .manifesto-left {
+      padding-top: 0.5rem;
+    }
+
+    .manifesto-number {
+      font-family: var(--font-serif);
+      font-size: clamp(8rem, 14vw, 16rem);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 1;
+      color: var(--ash-mid);
+      display: block;
+      user-select: none;
+    }
+
+    .manifesto-heading {
+      font-size: clamp(2.5rem, 5vw, 5.5rem);
+      color: var(--flour-white);
+      margin-bottom: var(--gap-md);
+    }
+
+    .manifesto-rule {
+      width: 60px;
+      height: 3px;
+      background: var(--burnt-orange);
+      margin-bottom: var(--gap-md);
+    }
+
+    .typewriter-text { font-size: 0.85rem; }
+    .typewriter-text p {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.9;
+      color: var(--flour-dim);
+      margin-bottom: 1.2rem;
+      min-height: 1.9em;
+    }
+
+    /* ─── FULL-BLEED IMAGE BAND ─────────────────────────────────── */
+    .image-band {
+      position: relative;
+      height: 70vh;
+      overflow: hidden;
+    }
+    .image-band-inner {
+      position: absolute;
+      inset: -20%;
+      background-size: cover;
+      background-position: center;
+      will-change: transform;
+    }
+    .image-band-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+    .image-band-label {
+      position: absolute;
+      bottom: 3rem;
+      left: 3rem;
+      z-index: 2;
+    }
+
+    /* ─── SECTION: PILGRIMAGE ───────────────────────────────────── */
+    #pilgrimage { padding: var(--gap-2xl) 0; }
+
+    .pilgrimage-grid {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: var(--gap-xl);
+      align-items: center;
+    }
+
+    .pilgrimage-heading {
+      font-size: clamp(3rem, 6vw, 7rem);
+      color: var(--flour-white);
+      margin-bottom: var(--gap-md);
+    }
+
+    .pull-quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.1rem, 2vw, 1.6rem);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--burnt-orange);
+      border-left: 3px solid var(--burnt-orange);
+      padding-left: 1.5rem;
+      margin: var(--gap-md) 0;
+    }
+
+    .pilgrimage-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+      padding-left: 2rem;
+      border-left: 1px solid var(--rule-color);
+    }
+
+    .stat-block {}
+    .stat-number {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-style: italic;
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--flour-white);
+      display: block;
+    }
+    .stat-label { margin-top: 0.3rem; }
+
+    /* ─── SECTION: CRAFT ────────────────────────────────────────── */
+    #craft {
+      padding: var(--gap-2xl) 0;
+      background: var(--ash-deep);
+    }
+
+    .craft-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      min-height: 80vh;
+    }
+
+    .craft-image {
+      position: relative;
+      overflow: hidden;
+    }
+    .craft-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(60%) contrast(1.2);
+      transition: filter 1s ease, transform 1.5s ease;
+    }
+    .craft-image:hover img {
+      filter: grayscale(0%) contrast(1.1);
+      transform: scale(1.03);
+    }
+
+    .craft-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--gap-xl) var(--gap-lg);
+    }
+
+    .craft-heading {
+      font-size: clamp(2.5rem, 4.5vw, 5rem);
+      color: var(--flour-white);
+      margin-bottom: var(--gap-md);
+    }
+
+    /* ─── SECTION: DISCIPLINE ───────────────────────────────────── */
+    #discipline { padding: var(--gap-2xl) 0; }
+
+    .discipline-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-lg);
+      margin-bottom: var(--gap-xl);
+      padding-bottom: var(--gap-md);
+      border-bottom: 1px solid var(--rule-color);
+    }
+
+    .discipline-heading {
+      font-size: clamp(2.5rem, 5vw, 5.5rem);
+      color: var(--flour-white);
+    }
+
+    .schedule-list { list-style: none; }
+    .schedule-item {
+      display: grid;
+      grid-template-columns: 4rem 1fr auto;
+      align-items: baseline;
+      gap: 1.5rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--rule-color);
+      transition: background 0.4s;
+    }
+    .schedule-item:hover { background: rgba(255,255,255,0.02); }
+
+    .schedule-num {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--burnt-orange);
+    }
+    .schedule-title {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--flour-white);
+    }
+    .schedule-time {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--flour-faint);
+      text-align: right;
+    }
+
+    /* ─── SECTION: INGREDIENTS ──────────────────────────────────── */
+    #ingredients { padding: var(--gap-2xl) 0; background: var(--ash-deep); }
+
+    .ingredients-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-lg);
+      align-items: center;
+    }
+
+    .ingredient-list { list-style: none; margin-top: var(--gap-md); }
+    .ingredient-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--rule-color);
+    }
+    .ingredient-name {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-style: italic;
+      color: var(--flour-white);
+    }
+    .ingredient-origin {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--flour-faint);
+    }
+
+    .ingredients-image {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1;
+    }
+    .ingredients-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.3) saturate(0.7);
+      transition: filter 1s ease, transform 1.5s ease;
+    }
+    .ingredients-image:hover img {
+      filter: contrast(1.1) saturate(1.2);
+      transform: scale(1.04);
+    }
+
+    /* ─── SECTION: MAESTRO ──────────────────────────────────────── */
+    #maestro { padding: var(--gap-2xl) 0; }
+
+    .maestro-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--gap-xl);
+      align-items: start;
+    }
+
+    .maestro-quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 3.5vw, 3.5rem);
+      font-weight: 900;
+      font-style: italic;
+      line-height: 1.2;
+      color: var(--flour-white);
+      margin-bottom: var(--gap-lg);
+    }
+    .maestro-quote em { color: var(--burnt-orange); }
+
+    .maestro-aside {
+      padding-top: 1rem;
+    }
+    .maestro-title {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--flour-white);
+      margin-bottom: 0.5rem;
+    }
+
+    /* ─── OVEN BAND ─────────────────────────────────────────────── */
+    #oven-band {
+      height: 80vh;
+      position: relative;
+      overflow: hidden;
+    }
+    .oven-bg {
+      position: absolute;
+      inset: -20%;
+      background-image: url('https://images.pexels.com/photos/13366357/pexels-photo-13366357.png?auto=compress&cs=tinysrgb&w=1920');
+      background-size: cover;
+      background-position: center;
+      filter: contrast(1.5) brightness(0.5);
+      will-change: transform;
+    }
+    .oven-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(27,27,27,0.9) 40%, rgba(27,27,27,0.1));
+      z-index: 1;
+    }
+    .oven-content {
+      position: absolute;
+      left: 3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      max-width: 600px;
+    }
+    .oven-heading {
+      font-size: clamp(3rem, 6vw, 7rem);
+      color: var(--flour-white);
+      margin-bottom: var(--gap-sm);
+    }
+
+    /* ─── SECTION: REGISTRATION ─────────────────────────────────── */
+    #registration {
+      padding: var(--gap-2xl) 0;
+      background: var(--ash-deep);
+    }
+
+    .registration-header {
+      margin-bottom: var(--gap-xl);
+      border-bottom: 1px solid var(--rule-color);
+      padding-bottom: var(--gap-lg);
+    }
+
+    .registration-headline {
+      font-size: clamp(3rem, 7vw, 8rem);
+      color: var(--flour-white);
+      margin-bottom: var(--gap-sm);
+    }
+    .registration-headline em { color: var(--burnt-orange); }
+
+    .registration-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-xl);
+      align-items: start;
+    }
+
+    .form-meta { margin-bottom: var(--gap-lg); }
+    .form-detail {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--rule-color);
+    }
+    .form-detail-key {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--flour-faint);
+    }
+    .form-detail-val {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--flour-white);
+    }
+    .form-detail-val.accent { color: var(--burnt-orange); }
+
+    /* Form */
+    .entry-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .form-field {
+      border-bottom: 1px solid var(--rule-color);
+      padding: 1.2rem 0;
+      position: relative;
+      transition: border-color 0.4s;
+    }
+    .form-field:focus-within {
+      border-color: var(--burnt-orange);
+    }
+
+    .form-field label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--flour-faint);
+      margin-bottom: 0.5rem;
+      transition: color 0.4s;
+    }
+    .form-field:focus-within label { color: var(--burnt-orange); }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--flour-white);
+      padding: 0;
+      appearance: none;
+    }
+    .form-field select option { background: var(--ash-mid); color: var(--flour-white); }
+    .form-field textarea { resize: none; }
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: var(--ash-light);
+    }
+
+    .form-submit {
+      margin-top: var(--gap-lg);
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .submit-link {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--burnt-orange);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--burnt-orange);
+      padding-bottom: 4px;
+      cursor: pointer;
+      transition: color var(--transition-med), letter-spacing var(--transition-med), border-color var(--transition-med);
+    }
+    .submit-link:hover {
+      color: var(--flour-white);
+      border-color: var(--flour-white);
+      letter-spacing: 0.3em;
+    }
+
+    .form-note {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--flour-faint);
+    }
+
+    .form-success {
+      display: none;
+      padding: var(--gap-lg) 0;
+      text-align: center;
+    }
+    .form-success .success-heading {
+      font-family: var(--font-serif);
+      font-size: 3rem;
+      font-style: italic;
+      color: var(--burnt-orange);
+      margin-bottom: 1rem;
+    }
+    .form-success .t-body { text-align: center; }
+
+    /* ─── FOOTER ────────────────────────────────────────────────── */
+    footer {
+      padding: var(--gap-lg) 3rem;
+      border-top: 1px solid var(--rule-color);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+      gap: var(--gap-md);
+    }
+
+    .footer-brand {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--flour-white);
+    }
+    .footer-brand span { color: var(--burnt-orange); }
+
+    .footer-center {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--flour-faint);
+    }
+
+    .footer-right {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--flour-faint);
+    }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero-content { padding: 0 1.5rem var(--gap-lg); }
+      .hero-title { max-width: 95vw; }
+      .hero-bottom { padding: 1rem 1.5rem; }
+      .section-inner { padding: 0 1.5rem; }
+      .manifesto-grid { grid-template-columns: 1fr; }
+      .manifesto-number { display: none; }
+      .pilgrimage-grid { grid-template-columns: 1fr; }
+      .pilgrimage-meta { flex-direction: row; padding-left: 0; border-left: none; border-top: 1px solid var(--rule-color); padding-top: 2rem; }
+      .craft-grid { grid-template-columns: 1fr; min-height: auto; }
+      .craft-image { height: 50vw; }
+      .discipline-header { grid-template-columns: 1fr; }
+      .ingredients-grid { grid-template-columns: 1fr; }
+      .maestro-grid { grid-template-columns: 1fr; }
+      .registration-grid { grid-template-columns: 1fr; }
+      .oven-content { left: 1.5rem; right: 1.5rem; max-width: none; }
+      footer { grid-template-columns: 1fr; text-align: center; }
+      .footer-right { text-align: center; }
+      .schedule-item { grid-template-columns: 3rem 1fr; }
+      .schedule-time { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="main-nav">
+    <a href="#" class="nav-brand">The Ritual <span>of Napoli</span></a>
+    <ul class="nav-links">
+      <li><a href="#manifesto">The Doctrine</a></li>
+      <li><a href="#discipline">The Schedule</a></li>
+      <li><a href="#maestro">The Maestro</a></li>
+      <li><a href="#registration" class="nav-cta">Apply — MMXXV</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-overline">
+        <span class="t-label">Napoli — MMXXV</span>
+        <div class="hero-overline-line"></div>
+        <span class="t-label">Once a year. No exceptions.</span>
+      </div>
+      <h1 class="t-display hero-title" id="hero-title"></h1>
+      <p class="hero-subtitle" id="hero-sub"></p>
+    </div>
+    <div class="hero-bottom">
+      <div>
+        <p class="hero-meta">September 12–14 &nbsp;·&nbsp; Napoli, Italia &nbsp;·&nbsp; 12 seats only</p>
+      </div>
+      <div class="hero-scroll">
+        <div class="scroll-line"></div>
+        <span>March forward</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section id="manifesto">
+    <div class="section-inner">
+      <div class="manifesto-grid">
+        <div class="manifesto-left">
+          <span class="manifesto-number reveal reveal-left">01</span>
+        </div>
+        <div>
+          <div class="manifesto-rule reveal"></div>
+          <p class="t-label reveal reveal-delay-1">The Doctrine</p>
+          <h2 class="t-heading manifesto-heading reveal reveal-delay-2">
+            This Is Not A Cooking<br>Class. This Is A<br><em style="color:var(--burnt-orange)">Reckoning.</em>
+          </h2>
+          <div class="typewriter-text reveal reveal-delay-3" id="manifesto-text">
+            <p data-tw="Pizza is not food. It is philosophy. It is the accumulated weight of a thousand years of Neapolitan defiance — against poverty, against mediocrity, against the industrialization of hunger.">
+            </p>
+            <p data-tw="We do not teach you shortcuts. We do not simplify the ancient. We strip away everything you thought you knew and rebuild your understanding from the ground up — from the cold water and the Caputo flour to the 485°C of a correctly-seasoned fornace.">
+            </p>
+            <p data-tw="Twelve seats. Seventy-two hours. Once a year. If you are looking for a weekend activity, close this page.">
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAPLES IMAGE BAND -->
+  <div class="image-band">
+    <div class="image-band-inner" id="naples-band" style="background-image: url('https://images.pexels.com/photos/9708490/pexels-photo-9708490.jpeg?auto=compress&cs=tinysrgb&w=1920'); filter: grayscale(80%) contrast(1.3) brightness(0.5);"></div>
+    <div class="image-band-overlay" style="background: linear-gradient(to bottom, rgba(27,27,27,0.3), rgba(27,27,27,0.7));"></div>
+    <div class="image-band-label reveal">
+      <p class="t-label">Quartieri Spagnoli, Napoli</p>
+    </div>
+  </div>
+
+  <!-- PILGRIMAGE -->
+  <section id="pilgrimage">
+    <div class="section-inner">
+      <div class="pilgrimage-grid">
+        <div>
+          <p class="t-label reveal">The Pilgrimage</p>
+          <h2 class="t-heading pilgrimage-heading reveal reveal-delay-1">You Must<br>Come To<br>The City.</h2>
+          <blockquote class="pull-quote reveal reveal-delay-2">
+            "You cannot understand the dough without first understanding the air that surrounds it."
+          </blockquote>
+          <p class="t-body reveal reveal-delay-3">
+            Napoli is not backdrop. It is ingredient. The specific humidity of the Quartieri Spagnoli, the mineral character of its water drawn from Vesuvian aquifers, the particular temperament of a city that has refused to apologize for itself — these elements are not decorative. They are constitutive.
+          </p>
+          <p class="t-body reveal reveal-delay-4" style="margin-top:1rem;">
+            You will walk the markets at dawn. You will observe before you touch. You will earn the right to the oven.
+          </p>
+        </div>
+        <div class="pilgrimage-meta">
+          <div class="stat-block reveal reveal-delay-1">
+            <span class="stat-number">72</span>
+            <p class="t-label stat-label">Hours of immersion</p>
+          </div>
+          <div class="stat-block reveal reveal-delay-2">
+            <span class="stat-number">12</span>
+            <p class="t-label stat-label">Seats available</p>
+          </div>
+          <div class="stat-block reveal reveal-delay-3">
+            <span class="stat-number">01</span>
+            <p class="t-label stat-label">Event per year</p>
+          </div>
+          <div class="stat-block reveal reveal-delay-4">
+            <span class="stat-number">485°</span>
+            <p class="t-label stat-label">Celsius — the only temperature</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CRAFT SECTION -->
+  <section id="craft">
+    <div class="craft-grid">
+      <div class="craft-image reveal-left">
+        <img
+          src="https://images.pexels.com/photos/32812395/pexels-photo-32812395.jpeg?auto=compress&cs=tinysrgb&w=900"
+          alt="Monochrome hands kneading dough — letizia on Pexels"
+          loading="lazy"
+        />
+      </div>
+      <div class="craft-content">
+        <p class="t-label reveal">The Craft</p>
+        <h2 class="t-heading craft-heading reveal reveal-delay-1">
+          The Hands<br>Do Not Lie.
+        </h2>
+        <div class="manifesto-rule reveal reveal-delay-2"></div>
+        <p class="t-body reveal reveal-delay-3">
+          The dough is a biometric test. It reveals impatience. It records anxiety. It will not forgive a distracted touch or a mind elsewhere. Your hands must be fully present — reading temperature, elasticity, the subtle resistance that signals hydration has reached its correct equilibrium.
+        </p>
+        <p class="t-body reveal reveal-delay-4" style="margin-top:1.2rem;">
+          We work at 65% hydration. We ferment for a minimum of 24 hours. There are no shortcuts because the shortcuts are visible in the final product — and Napoli has been reading pizza for a thousand years.
+        </p>
+        <p class="t-label reveal reveal-delay-5" style="margin-top:2rem;">
+          Technique / Fermentation / Temperament
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCIPLINE -->
+  <section id="discipline">
+    <div class="section-inner">
+      <div class="discipline-header">
+        <div>
+          <p class="t-label reveal">The Schedule</p>
+          <h2 class="t-heading discipline-heading reveal reveal-delay-1">Three<br>Days of<br>Doctrine.</h2>
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <p class="t-body reveal reveal-delay-2">
+            The program is structured as an unbroken narrative. You do not attend sessions. You enter a state of focused study that does not pause for comfort. The schedule is a document of intent — not a suggestion.
+          </p>
+        </div>
+      </div>
+
+      <ul class="schedule-list">
+        <li class="schedule-item reveal">
+          <span class="schedule-num">— DAY I</span>
+          <span class="schedule-title">The Interrogation of Flour</span>
+          <span class="schedule-time">06:00 — 22:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-1">
+          <span class="schedule-num">01.</span>
+          <span class="schedule-title">Dawn market — Piazza Garibaldi</span>
+          <span class="schedule-time">06:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-2">
+          <span class="schedule-num">02.</span>
+          <span class="schedule-title">Flour taxonomy &amp; hydration theory</span>
+          <span class="schedule-time">09:30</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-3">
+          <span class="schedule-num">03.</span>
+          <span class="schedule-title">First mix — observation only</span>
+          <span class="schedule-time">14:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-4">
+          <span class="schedule-num">04.</span>
+          <span class="schedule-title">Fermentation inoculation &amp; theory</span>
+          <span class="schedule-time">18:00</span>
+        </li>
+        <li class="schedule-item reveal">
+          <span class="schedule-num">— DAY II</span>
+          <span class="schedule-title">The Discipline of the Hands</span>
+          <span class="schedule-time">07:00 — 24:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-1">
+          <span class="schedule-num">05.</span>
+          <span class="schedule-title">Stretch &amp; fold — precision repetitions</span>
+          <span class="schedule-time">07:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-2">
+          <span class="schedule-num">06.</span>
+          <span class="schedule-title">Sauce construction — San Marzano doctrine</span>
+          <span class="schedule-time">11:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-3">
+          <span class="schedule-num">07.</span>
+          <span class="schedule-title">Oven preparation &amp; temperature calibration</span>
+          <span class="schedule-time">15:30</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-4">
+          <span class="schedule-num">08.</span>
+          <span class="schedule-title">First firing — supervised evaluation</span>
+          <span class="schedule-time">20:00</span>
+        </li>
+        <li class="schedule-item reveal">
+          <span class="schedule-num">— DAY III</span>
+          <span class="schedule-title">The Reckoning</span>
+          <span class="schedule-time">08:00 — 20:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-1">
+          <span class="schedule-num">09.</span>
+          <span class="schedule-title">Unsupervised production — full sequence</span>
+          <span class="schedule-time">08:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-2">
+          <span class="schedule-num">10.</span>
+          <span class="schedule-title">Critique &amp; final evaluation</span>
+          <span class="schedule-time">14:00</span>
+        </li>
+        <li class="schedule-item reveal reveal-delay-3">
+          <span class="schedule-num">11.</span>
+          <span class="schedule-title">The Final Meal — at the oven, together</span>
+          <span class="schedule-time">18:00</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- INGREDIENTS -->
+  <section id="ingredients">
+    <div class="section-inner">
+      <div class="ingredients-grid">
+        <div>
+          <p class="t-label reveal">The Canon</p>
+          <h2 class="t-heading reveal reveal-delay-1" style="font-size: clamp(2.5rem, 4.5vw, 5rem); color: var(--flour-white); margin-bottom: var(--gap-md);">
+            No substitutes.<br>No exceptions.<br>No apology.
+          </h2>
+          <p class="t-body reveal reveal-delay-2">
+            Every ingredient is a declaration. We use only what Napoli has ordained. This is not sourcing philosophy. This is respect for a living tradition that predates your grandmother's grandmother.
+          </p>
+          <ul class="ingredient-list reveal reveal-delay-3">
+            <li class="ingredient-item">
+              <span class="ingredient-name">Farina Caputo Nuvola</span>
+              <span class="ingredient-origin">Mulino Caputo, Napoli</span>
+            </li>
+            <li class="ingredient-item">
+              <span class="ingredient-name">San Marzano DOP</span>
+              <span class="ingredient-origin">Agro Sarnese-Nocerino</span>
+            </li>
+            <li class="ingredient-item">
+              <span class="ingredient-name">Fior di Latte</span>
+              <span class="ingredient-origin">Agerola, Campania</span>
+            </li>
+            <li class="ingredient-item">
+              <span class="ingredient-name">Acqua Vesuviana</span>
+              <span class="ingredient-origin">Sorgente del Serino</span>
+            </li>
+            <li class="ingredient-item">
+              <span class="ingredient-name">Sale marino integrale</span>
+              <span class="ingredient-origin">Trapani, Sicilia</span>
+            </li>
+            <li class="ingredient-item">
+              <span class="ingredient-name">Olio EVO</span>
+              <span class="ingredient-origin">DOP Colline Salernitane</span>
+            </li>
+          </ul>
+        </div>
+        <div class="ingredients-image reveal reveal-right">
+          <img
+            src="https://images.pexels.com/photos/4247701/pexels-photo-4247701.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Vivid ripe tomatoes in water — Richa Sharma on Pexels"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAESTRO -->
+  <section id="maestro">
+    <div class="section-inner">
+      <hr class="hr" />
+      <div style="height: var(--gap-xl);"></div>
+      <div class="maestro-grid">
+        <div>
+          <p class="t-label reveal">The Maestro</p>
+          <blockquote class="maestro-quote reveal reveal-delay-1">
+            "I have eaten pizza on four continents. I have been<br>
+            <em>insulted</em> on three of them."
+          </blockquote>
+          <p class="t-body reveal reveal-delay-2">
+            Marco Esposito was born in the Quartieri Spagnoli. He trained under the AVPN for eleven years before returning to open a pizzeria that has no menu, no reservations, and no consistent hours. It has a queue that forms at 5am.
+          </p>
+          <p class="t-body reveal reveal-delay-3" style="margin-top: 1rem;">
+            He does not teach because he enjoys teaching. He teaches because he finds the current state of Neapolitan pizza outside of Naples <em style="color:var(--burnt-orange);">professionally offensive</em>, and has decided that intervention is the only honourable response.
+          </p>
+        </div>
+        <div class="maestro-aside reveal reveal-right">
+          <div style="border: 1px solid var(--rule-color); padding: 2rem;">
+            <p class="t-label" style="margin-bottom:1rem;">Credentials</p>
+            <p class="maestro-title">Marco<br>Esposito</p>
+            <hr class="hr" style="margin: 1.5rem 0;" />
+            <p class="t-body">AVPN Certified Master<br>Pizzaiolo — 2009</p>
+            <div style="height:1rem;"></div>
+            <p class="t-body">37 years continuous<br>practice in Napoli</p>
+            <div style="height:1rem;"></div>
+            <p class="t-body">No Michelin stars.<br><em style="color:var(--burnt-orange);">By choice.</em></p>
+          </div>
+        </div>
+      </div>
+      <div style="height: var(--gap-xl);"></div>
+      <hr class="hr" />
+    </div>
+  </section>
+
+  <!-- OVEN BAND -->
+  <div id="oven-band">
+    <div class="oven-bg" id="oven-bg"></div>
+    <div class="oven-overlay"></div>
+    <div class="oven-content">
+      <p class="t-label reveal" style="margin-bottom:1.5rem;">The Fornace</p>
+      <h2 class="t-heading oven-heading reveal reveal-delay-1">485°C.<br>60 seconds.<br>No margin.</h2>
+      <p class="t-body reveal reveal-delay-2" style="margin-top: 1.5rem; max-width: 40ch;">
+        The wood-fired oven is not equipment. It is an interlocutor. It demands that you read it — its colour, its sound, its particular silence when it reaches the correct temperature — before you commit the pizza to its mouth.
+      </p>
+    </div>
+  </div>
+
+  <!-- REGISTRATION -->
+  <section id="registration">
+    <div class="section-inner">
+      <div class="registration-header reveal">
+        <p class="t-label" style="margin-bottom:1.5rem;">MMXXV — Napoli — 12 Seats</p>
+        <h2 class="t-heading registration-headline">
+          Farewell to<br><em>Mediocrity.</em>
+        </h2>
+        <p class="t-body" style="max-width: 55ch; margin-top: 1.5rem;">
+          There is one class per year. There are twelve seats. Applications are reviewed — not first-come, first-served. We are selecting people who are serious, not people who are fast.
+        </p>
+      </div>
+
+      <div class="registration-grid">
+        <div>
+          <div class="form-meta reveal">
+            <div class="form-detail">
+              <span class="form-detail-key">Date</span>
+              <span class="form-detail-val">September 12–14, 2025</span>
+            </div>
+            <div class="form-detail">
+              <span class="form-detail-key">Location</span>
+              <span class="form-detail-val">Quartieri Spagnoli, Napoli, Italia</span>
+            </div>
+            <div class="form-detail">
+              <span class="form-detail-key">Duration</span>
+              <span class="form-detail-val">72 hours — residential</span>
+            </div>
+            <div class="form-detail">
+              <span class="form-detail-key">Seats remaining</span>
+              <span class="form-detail-val accent">3 of 12</span>
+            </div>
+            <div class="form-detail">
+              <span class="form-detail-key">Investment</span>
+              <span class="form-detail-val">€4,800 — all inclusive</span>
+            </div>
+            <div class="form-detail">
+              <span class="form-detail-key">Application closes</span>
+              <span class="form-detail-val accent">June 30, 2025</span>
+            </div>
+          </div>
+          <p class="t-body reveal reveal-delay-1" style="margin-top: var(--gap-md);">
+            Acceptance is not guaranteed by payment. Payment confirms a reserved seat for approved applicants only. We will contact you within 14 days of submission.
+          </p>
+        </div>
+
+        <div>
+          <form class="entry-form reveal reveal-right" id="entry-form" novalidate>
+            <div class="form-field">
+              <label for="f-name">Full Name</label>
+              <input type="text" id="f-name" name="name" placeholder="Your full name" required />
+            </div>
+            <div class="form-field">
+              <label for="f-email">Email Address</label>
+              <input type="email" id="f-email" name="email" placeholder="your@address.com" required />
+            </div>
+            <div class="form-field">
+              <label for="f-country">Country of Residence</label>
+              <input type="text" id="f-country" name="country" placeholder="e.g. United States" required />
+            </div>
+            <div class="form-field">
+              <label for="f-experience">Years of Pizza Making Experience</label>
+              <select id="f-experience" name="experience" required>
+                <option value="" disabled selected>— Select —</option>
+                <option value="0-1">Less than 1 year</option>
+                <option value="1-3">1–3 years</option>
+                <option value="3-7">3–7 years</option>
+                <option value="7+">7+ years</option>
+                <option value="professional">Professional pizzaiolo</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="f-statement">Why do you need this?</label>
+              <textarea id="f-statement" name="statement" rows="3" placeholder="Be honest. We will know if you are not." required></textarea>
+            </div>
+            <div class="form-submit">
+              <button type="submit" class="submit-link">Submit Application →</button>
+              <span class="form-note">No payment collected at this stage.</span>
+            </div>
+          </form>
+          <div class="form-success" id="form-success">
+            <p class="success-heading">Application Received.</p>
+            <p class="t-body">We will deliberate. We will respond within 14 days.<br>Until then — practice.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <p class="footer-brand">The Ritual <span>of Napoli</span></p>
+    </div>
+    <div class="footer-center">
+      <p>© MMXXV &nbsp;·&nbsp; Napoli, Italia</p>
+      <p style="margin-top:0.4rem; color: var(--flour-faint);">Once a year. No exceptions.</p>
+    </div>
+    <div class="footer-right">
+      <p><a href="mailto:info@ritualdinapoli.it" style="color: var(--flour-faint); text-decoration:none;">info@ritualdinapoli.it</a></p>
+      <p style="margin-top:0.4rem;">All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    /* ─── NAV SCROLL ─────────────────────────────────────────── */
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    /* ─── HERO TYPEWRITER ────────────────────────────────────── */
+    function typewrite(el, text, speed, delay) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          let i = 0;
+          el.textContent = '';
+          const timer = setInterval(() => {
+            el.textContent += text[i++];
+            if (i >= text.length) { clearInterval(timer); resolve(); }
+          }, speed);
+        }, delay);
+      });
+    }
+
+    const heroTitle = document.getElementById('hero-title');
+    const heroSub = document.getElementById('hero-sub');
+    const titleText = 'The Ritual of Napoli';
+    const subText = 'An elite, once-a-year\nhomemade pizza immersion.\nNapoli. September. Twelve seats.';
+
+    // Add cursor span
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    cursor.innerHTML = '&nbsp;';
+
+    window.addEventListener('load', async () => {
+      heroTitle.appendChild(cursor);
+      await typewrite(heroTitle, titleText, 70, 400);
+      heroTitle.removeChild(cursor);
+
+      // Fade in subtitle
+      heroSub.style.opacity = '0';
+      heroSub.style.transition = 'opacity 1.2s ease';
+      heroSub.textContent = subText.replace(/\n/g, ' · ');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { heroSub.style.opacity = '1'; });
+      });
+    });
+
+    /* ─── PARALLAX ───────────────────────────────────────────── */
+    const heroBg    = document.getElementById('hero-bg');
+    const naplesBand = document.getElementById('naples-band');
+    const ovenBg    = document.getElementById('oven-bg');
+
+    window.addEventListener('scroll', () => {
+      const sy = window.scrollY;
+      if (heroBg) heroBg.style.transform = `translateY(${sy * 0.35}px)`;
+      if (naplesBand) {
+        const rect = naplesBand.parentElement.getBoundingClientRect();
+        naplesBand.style.transform = `translateY(${-rect.top * 0.2}px)`;
+      }
+      if (ovenBg) {
+        const rect = ovenBg.parentElement.getBoundingClientRect();
+        ovenBg.style.transform = `translateY(${-rect.top * 0.2}px)`;
+      }
+    }, { passive: true });
+
+    /* ─── INTERSECTION OBSERVER — REVEAL ─────────────────────── */
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+
+    /* ─── MANIFESTO TYPEWRITER ON REVEAL ─────────────────────── */
+    const twParagraphs = document.querySelectorAll('[data-tw]');
+    const twObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const el = e.target;
+          const text = el.getAttribute('data-tw');
+          let i = 0;
+          el.textContent = '';
+          const speed = 18;
+          const delay = Array.from(twParagraphs).indexOf(el) * 600;
+          setTimeout(() => {
+            const timer = setInterval(() => {
+              el.textContent += text[i++];
+              if (i >= text.length) clearInterval(timer);
+            }, speed);
+          }, delay);
+          twObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.3 });
+    twParagraphs.forEach(p => twObserver.observe(p));
+
+    /* ─── FORM SUBMIT ────────────────────────────────────────── */
+    document.getElementById('entry-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const fields = this.querySelectorAll('[required]');
+      let valid = true;
+      fields.forEach(f => {
+        f.style.borderBottom = '';
+        if (!f.value.trim()) {
+          f.closest('.form-field').style.borderColor = 'var(--burnt-orange)';
+          valid = false;
+        } else {
+          f.closest('.form-field').style.borderColor = '';
+        }
+      });
+      if (!valid) return;
+      this.style.opacity = '0';
+      this.style.transition = 'opacity 0.6s ease';
+      setTimeout(() => {
+        this.style.display = 'none';
+        const success = document.getElementById('form-success');
+        success.style.display = 'block';
+        success.style.opacity = '0';
+        success.style.transition = 'opacity 1s ease';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => { success.style.opacity = '1'; });
+        });
+      }, 600);
+    });
+  </script>
+</body>
+</html>
